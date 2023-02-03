@@ -94,3 +94,22 @@ modifyBook()
 deleteBook()
 ~~~
 
+## 프로젝트 구조
+클래스가 많은 것으로 예상되지 않기 때문에 기본적인 계층형 구조를 따른다. 
+~~~xml
+|---main
+   |----java
+   |      |----vanille
+   |             |----vocabe
+   |                     |----entity
+   |                     |----global
+   |                     |        |----common
+   |                     |        |----config
+   |                     |        |----error
+   |                     |----payload
+   |                     |----repository
+   |                     |----service
+   |
+   |----resources
+~~~
+
