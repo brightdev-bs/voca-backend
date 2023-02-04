@@ -2,9 +2,9 @@ package vanille.vocabe.entity;
 
 import lombok.Getter;
 import lombok.ToString;
+import vanille.vocabe.payload.UserDTO;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Getter
 @ToString
@@ -20,5 +20,41 @@ public class User extends BaseEntity {
 
     @Column(unique = true, nullable = false)
     private String email;
+
+    @Column(unique = true, nullable = false)
+    private String password;
+
+    private boolean verified;
+
+    protected User() {}
+
+    protected User(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
+
+    protected User(String username, String email, String password, boolean verified) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.verified = verified;
+    }
+
+    public static User of(String username, String email, String password) {
+        return new User(username, email, password);
+    }
+
+    public static User of(String username, String email, String password, boolean verified) {
+        return new User(username, email, password, verified);
+    }
+
+    public static User from(UserDTO.SignForm form) {
+        return new User(form.getUsername(), form.getEmail(), form.getPassword());
+    }
+
+    public void setVerified() {
+        this.verified = true;
+    }
 
 }
