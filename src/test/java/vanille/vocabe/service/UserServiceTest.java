@@ -10,6 +10,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.global.exception.DuplicatedEntityException;
+import vanille.vocabe.global.exception.InvalidPasswordException;
+import vanille.vocabe.global.exception.NotFoundException;
+import vanille.vocabe.global.exception.UnverifiedEmailException;
 import vanille.vocabe.payload.UserDTO;
 import vanille.vocabe.repository.UserRepository;
 import vanille.vocabe.service.email.EmailServiceImpl;
@@ -78,5 +81,62 @@ class UserServiceTest {
                 .build();
         Assertions.assertThrows(DuplicatedEntityException.class, () -> userService.saveUser(userDto));
     }
+
+    @DisplayName("[성공] 로그인")
+    @Test
+    void loginUser() {
+        User user = UserFixture.getVerifiedUser();
+        given(userRepository.findByEmail("vanille@gmail.com")).willReturn(Optional.ofNullable(user));
+
+        UserDTO.loginForm loginForm = UserDTO.loginForm.builder()
+                .email("vanille@gmail.com")
+                .password("1kdasdfwcv")
+                .build();
+
+        User loginUser = userService.login(loginForm);
+        Assertions.assertEquals(user.getEmail(), loginUser.getEmail());
+        Assertions.assertEquals(user.getPassword(), loginUser.getPassword());
+        Assertions.assertEquals(user.getUsername(), loginUser.getUsername());
+    }
+
+    @DisplayName("[실패] 로그인 - 존재하지 않는 이메일")
+    @Test
+    void loginUserFailWrongEmail() {
+        given(userRepository.findByEmail(anyString())).willReturn(Optional.ofNullable(null));
+
+        UserDTO.loginForm loginForm = UserDTO.loginForm.builder()
+                .email("vanille@gmail.com")
+                .password("wdfwdfxcv")
+                .build();
+        Assertions.assertThrows(NotFoundException.class, () -> userService.login(loginForm));
+
+    }
+
+    @DisplayName("[실패] 로그인 - 인증하지 않은 사용자")
+    @Test
+    void loginUserFailUnverified() {
+        User user = UserFixture.getUnverifiedUser();
+        given(userRepository.findByEmail("vanille@gmail.com")).willReturn(Optional.of(user));
+
+        UserDTO.loginForm loginForm = UserDTO.loginForm.builder()
+                .email("vanille@gmail.com")
+                .password("1kdasdfwcv")
+                .build();
+        Assertions.assertThrows(UnverifiedEmailException.class, () -> userService.login(loginForm));
+    }
+
+    @DisplayName("[실패] 로그인 - 패스워드 오류")
+    @Test
+    void loginUserFailWrongPassword() {
+        User user = UserFixture.getVerifiedUser();
+        given(userRepository.findByEmail("vanille@gmail.com")).willReturn(Optional.of(user));
+
+        UserDTO.loginForm loginForm = UserDTO.loginForm.builder()
+                .email("vanille@gmail.com")
+                .password("wdfwdfxcv")
+                .build();
+        Assertions.assertThrows(InvalidPasswordException.class, () -> userService.login(loginForm));
+    }
+
 
 }

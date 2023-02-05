@@ -6,10 +6,14 @@ import org.springframework.transaction.annotation.Transactional;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.global.exception.DuplicatedEntityException;
+import vanille.vocabe.global.exception.InvalidPasswordException;
+import vanille.vocabe.global.exception.NotFoundException;
+import vanille.vocabe.global.exception.UnverifiedEmailException;
 import vanille.vocabe.payload.UserDTO;
 import vanille.vocabe.repository.UserRepository;
 import vanille.vocabe.service.email.EmailService;
 
+import javax.naming.AuthenticationException;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -38,6 +42,21 @@ public class UserServiceImpl implements UserService{
         }
 
         emailService.sendConfirmEmail(form.getEmail());
+        return user;
+    }
+
+    @Override
+    public User login(UserDTO.loginForm form) {
+        User user = userRepository.findByEmail(form.getEmail()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
+
+        if(!user.getPassword().equals(form.getPassword())) {
+            throw new InvalidPasswordException(ErrorCode.INVALID_PASSWORD);
+        }
+
+        if(!user.isVerified()) {
+            throw new UnverifiedEmailException(ErrorCode.UNVERIFIED_USER);
+        }
+
         return user;
     }
 }

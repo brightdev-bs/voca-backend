@@ -9,7 +9,11 @@ public enum ErrorCode {
     DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "이미 사용중인 이메일입니다."),
 
     NOT_FOUND_EMAIL_TOKEN(HttpStatus.BAD_REQUEST, "인증 정보를 찾을 수 없습니다."),
-    NOT_FOUND_USER(HttpStatus.BAD_REQUEST, "사용자를 찾을 수 없습니다.")
+    NOT_FOUND_USER(HttpStatus.BAD_REQUEST, "사용자를 찾을 수 없습니다."),
+
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+
+    UNVERIFIED_USER(HttpStatus.BAD_REQUEST, "인증되지 않은 사용자입니다."),
 
     ;
 
