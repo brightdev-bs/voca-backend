@@ -60,7 +60,7 @@ public class GeneralExceptionHandler {
      */
     @ExceptionHandler(value = { InvalidHeaderException.class })
     protected ResponseEntity<ApiResponse> handleNotFoundException(InvalidHeaderException e) {
-        log.error("NotFoundException", e);
+        log.error("InvalidHeaderException", e);
         ApiResponse errorResponse = ApiResponse.of(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
                 .body(errorResponse);
@@ -71,7 +71,18 @@ public class GeneralExceptionHandler {
      */
     @ExceptionHandler(value = { DuplicatedEntityException.class })
     protected ResponseEntity<ApiResponse> handleNotFoundException(DuplicatedEntityException e) {
-        log.error("NotFoundException", e);
+        log.error("DuplicatedEntityException", e);
+        ApiResponse errorResponse = ApiResponse.of(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(errorResponse);
+    }
+
+    /**
+     * 이메일 인증 안한 경우
+     */
+    @ExceptionHandler(value = { UnverifiedEmailException.class })
+    protected ResponseEntity<ApiResponse> handleUnverifiedEmailException(DuplicatedEntityException e) {
+        log.error("UnverifiedEmailException", e);
         ApiResponse errorResponse = ApiResponse.of(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
                 .body(errorResponse);
@@ -82,7 +93,7 @@ public class GeneralExceptionHandler {
      */
     @ExceptionHandler(value = { InvalidPasswordException.class })
     protected ResponseEntity<ApiResponse> handleInvalidPasswordException(DuplicatedEntityException e) {
-        log.error("NotFoundException", e);
+        log.error("InvalidPasswordException", e);
         ApiResponse errorResponse = ApiResponse.of(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
                 .body(errorResponse);
