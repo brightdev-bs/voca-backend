@@ -94,6 +94,18 @@ modifyBook()
 deleteBook()
 ~~~
 
+### 테스트
+1. @DisplayName을 사용하여 어떤 테스트인지 명확하게 표현한다. 실패 TC의 경우 메소드 이름 뒤에 실패한 이유를 네이밍한다.
+~~~java
+@DisplayName("[성공] 회원가입")
+@Test
+void signUp();
+
+@DisplayName("[실패] 회원가입 - 이메일 중복")
+@Test
+void signUpFailWithEmailDuplicated();
+~~~
+
 ## 프로젝트 구조
 클래스가 많은 것으로 예상되지 않기 때문에 기본적인 계층형 구조를 따른다. 
 ~~~xml
@@ -101,6 +113,7 @@ deleteBook()
    |----java
    |      |----vanille
    |             |----vocabe
+   |                     |----controller
    |                     |----entity
    |                     |----global
    |                     |        |----common

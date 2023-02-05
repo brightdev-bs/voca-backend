@@ -65,7 +65,7 @@ class UserServiceTest {
         then(emailService).should().sendConfirmEmail(anyString());
     }
 
-    @DisplayName("[실패] 이메일 중복 (인증)")
+    @DisplayName("[실패] 이메일 중복")
     @Test
     void saveUserFailWithDuplicateEmail() {
         User user = UserFixture.getVerifiedUser();
