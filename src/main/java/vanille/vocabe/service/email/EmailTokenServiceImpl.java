@@ -3,12 +3,14 @@ package vanille.vocabe.service.email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import vanille.vocabe.entity.EmailToken;
 import vanille.vocabe.repository.EmailTokenRepository;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -17,12 +19,20 @@ public class EmailTokenServiceImpl implements EmailTokenService {
     private final EmailSender emailSender;
     private final EmailTokenRepository emailTokenRepository;
 
+    @Transactional
     @Override
-    public Long createEmailToken(String email) {
+    public UUID createEmailToken(String email) {
         Assert.notNull(email, "받는 이메일은 필수입니다.");
 
-        EmailToken emailToken = EmailToken.createEmailToken(email);
-        emailTokenRepository.save(emailToken);
+        Optional<EmailToken> byEmail = emailTokenRepository.findByEmail(email);
+        EmailToken emailToken;
+        if(byEmail.isPresent()) {
+            emailToken = byEmail.get();
+            emailToken.refreshEmailToken();
+        } else {
+            emailToken = EmailToken.createEmailToken(email);
+            emailTokenRepository.save(emailToken);
+        }
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(email);
@@ -34,12 +44,9 @@ public class EmailTokenServiceImpl implements EmailTokenService {
     }
 
     @Override
-    public EmailToken findByIdAndExpirationDateAfterAndExpired(String emailTokenId) {
-        Optional<EmailToken> emailToken = emailTokenRepository
-                .findByIdAndExpirationDateAfterAndExpired(emailTokenId, LocalDateTime.now(), false);
-
-        // 토큰이 없다면 예외 발생
-        return emailToken.orElseThrow(() -> new RuntimeException());
+    public Optional<EmailToken> findByIdAndExpirationDateAfterAndExpired(String emailTokenId) {
+        return emailTokenRepository
+                .findByIdAndExpirationDateAfterAndExpired(UUID.fromString(emailTokenId), LocalDateTime.now(), false);
     }
 
 }

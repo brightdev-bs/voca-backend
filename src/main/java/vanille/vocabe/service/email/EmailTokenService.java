@@ -2,8 +2,11 @@ package vanille.vocabe.service.email;
 
 import vanille.vocabe.entity.EmailToken;
 
-public interface EmailTokenService {
-    Long createEmailToken(String email);
+import java.util.Optional;
+import java.util.UUID;
 
-    EmailToken findByIdAndExpirationDateAfterAndExpired(String emailTokenId);
+public interface EmailTokenService {
+    UUID createEmailToken(String email);
+
+    Optional<EmailToken> findByIdAndExpirationDateAfterAndExpired(String emailTokenId);
 }
