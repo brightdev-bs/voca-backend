@@ -8,8 +8,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: voca.cs@gmail.com
-    password: doidtzbmkvflofel
+    username: voca.service@gmail.com
+    password: bdsuiipzgeqykywe
     properties:
       mail:
         smtp:
@@ -26,12 +26,16 @@ spring:
 #    defer-datasource-initialization: true
     database: mysql
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-    hibernate.ddl-auto: create
+    hibernate.ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         default_batch_fetch_size:  100
         format_sql: true
+
+jwt:
+  secret-key: fast-campus.simple_sns_2022_secret_key
+  token.expired-time-ms: 2592000000   # 30 days
 
 server.port: 8088
 

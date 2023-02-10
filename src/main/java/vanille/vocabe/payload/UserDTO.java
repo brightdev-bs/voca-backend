@@ -20,6 +20,8 @@ public class UserDTO {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class loginForm {
         private String email;
         private String password;
@@ -29,10 +31,12 @@ public class UserDTO {
     @Builder
     public static class UserResponse {
         private String username;
+        private String token;
 
-        public static UserResponse from(User user) {
+        public static UserResponse from(User user, String token) {
             return UserResponse.builder()
                     .username(user.getUsername())
+                    .token(token)
                     .build();
         }
     }

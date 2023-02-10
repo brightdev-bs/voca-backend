@@ -1,6 +1,8 @@
 package vanille.vocabe.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vanille.vocabe.entity.User;
@@ -9,6 +11,7 @@ import vanille.vocabe.global.exception.DuplicatedEntityException;
 import vanille.vocabe.global.exception.InvalidPasswordException;
 import vanille.vocabe.global.exception.NotFoundException;
 import vanille.vocabe.global.exception.UnverifiedEmailException;
+import vanille.vocabe.global.util.JwtTokenUtils;
 import vanille.vocabe.payload.UserDTO;
 import vanille.vocabe.repository.UserRepository;
 import vanille.vocabe.service.email.EmailService;
@@ -16,6 +19,7 @@ import vanille.vocabe.service.email.EmailService;
 import javax.naming.AuthenticationException;
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service

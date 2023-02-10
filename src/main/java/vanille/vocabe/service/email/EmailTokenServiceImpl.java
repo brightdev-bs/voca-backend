@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import static vanille.vocabe.global.constants.Constants.FRONT_SERVER;
+
 @RequiredArgsConstructor
 @Service
 public class EmailTokenServiceImpl implements EmailTokenService {
@@ -37,7 +39,7 @@ public class EmailTokenServiceImpl implements EmailTokenService {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(email);
         mailMessage.setSubject("회원가입 이메일 인증 메일");
-        mailMessage.setText("http://localhost:8080/email?token=" + emailToken.getId());
+        mailMessage.setText(FRONT_SERVER + "/email?token=" + emailToken.getId());
         emailSender.sendEmail(mailMessage);
 
         return emailToken.getId();
