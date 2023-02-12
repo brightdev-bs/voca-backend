@@ -49,4 +49,8 @@ public class EmailToken {
         this.id = UUID.randomUUID();
         this.expirationDate = LocalDateTime.now().plusMinutes(EMAIL_TOKEN_EXPIRATION_TIME);
     }
+
+    public void changeExpirationTimeForTest() {
+        this.expirationDate = LocalDateTime.now().minusYears(3L);
+    }
 }

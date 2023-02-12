@@ -3,9 +3,11 @@ package vanille.vocabe.service.email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import vanille.vocabe.entity.EmailToken;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.global.constants.ErrorCode;
+import vanille.vocabe.global.exception.InvalidVerificationCodeException;
 import vanille.vocabe.global.exception.NotFoundException;
 import vanille.vocabe.repository.UserRepository;
 
@@ -26,6 +28,10 @@ public class EmailServiceImpl implements EmailService{
     @Transactional
     @Override
     public boolean verifyEmail(String tokenId) {
+        if(!StringUtils.hasText(tokenId)) {
+            throw new InvalidVerificationCodeException(ErrorCode.INVALID_VERIFICATION_CODE);
+        }
+
         EmailToken emailToken = emailTokenService
                 .findByIdAndExpirationDateAfterAndExpired(tokenId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_EMAIL_TOKEN));

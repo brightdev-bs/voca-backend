@@ -1,12 +1,14 @@
 package vanille.vocabe.global.exception;
 
+import lombok.Getter;
 import vanille.vocabe.global.constants.ErrorCode;
 
-public class UnverifiedEmailException extends RuntimeException {
+@Getter
+public class UnverifiedException extends RuntimeException {
 
     private final ErrorCode errorCode;
 
-    public UnverifiedEmailException(ErrorCode errorCode) {
+    public UnverifiedException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }

@@ -80,9 +80,20 @@ public class GeneralExceptionHandler {
     /**
      * 이메일 인증 안한 경우
      */
-    @ExceptionHandler(value = { UnverifiedEmailException.class })
-    protected ResponseEntity<ApiResponse> handleUnverifiedEmailException(DuplicatedEntityException e) {
+    @ExceptionHandler(value = { UnverifiedException.class })
+    protected ResponseEntity<ApiResponse> handleUnverifiedException(UnverifiedException e) {
         log.error("UnverifiedEmailException", e);
+        ApiResponse errorResponse = ApiResponse.of(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(errorResponse);
+    }
+
+    /**
+     * 이메일 인증 코드가 부적절한 경우
+     */
+    @ExceptionHandler(value = { InvalidVerificationCodeException.class })
+    protected ResponseEntity<ApiResponse> handleInvalidVerificationCodeException(InvalidVerificationCodeException e) {
+        log.error("InvalidPasswordException", e);
         ApiResponse errorResponse = ApiResponse.of(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
                 .body(errorResponse);
@@ -92,7 +103,7 @@ public class GeneralExceptionHandler {
      * 패스워드가 일치하지 않을 때
      */
     @ExceptionHandler(value = { InvalidPasswordException.class })
-    protected ResponseEntity<ApiResponse> handleInvalidPasswordException(DuplicatedEntityException e) {
+    protected ResponseEntity<ApiResponse> handleInvalidPasswordException(InvalidPasswordException e) {
         log.error("InvalidPasswordException", e);
         ApiResponse errorResponse = ApiResponse.of(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())

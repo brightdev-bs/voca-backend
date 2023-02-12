@@ -12,7 +12,7 @@ import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.global.exception.DuplicatedEntityException;
 import vanille.vocabe.global.exception.InvalidPasswordException;
 import vanille.vocabe.global.exception.NotFoundException;
-import vanille.vocabe.global.exception.UnverifiedEmailException;
+import vanille.vocabe.global.exception.UnverifiedException;
 import vanille.vocabe.payload.UserDTO;
 import vanille.vocabe.repository.UserRepository;
 import vanille.vocabe.service.email.EmailServiceImpl;
@@ -43,7 +43,7 @@ class UserServiceTest {
         UserDTO.SignForm userDto = UserDTO.SignForm.builder()
                 .email("vanille@gmail.com")
                 .password("1kdasdfwcv")
-                .username("vanille")
+                .username("test")
                 .build();
         userService.saveUser(userDto);
 
@@ -60,7 +60,7 @@ class UserServiceTest {
         UserDTO.SignForm userDto = UserDTO.SignForm.builder()
                 .email("vanille@gmail.com")
                 .password("1kdasdfwcv")
-                .username("vanille")
+                .username("test")
                 .build();
         userService.saveUser(userDto);
 
@@ -77,7 +77,7 @@ class UserServiceTest {
         UserDTO.SignForm userDto = UserDTO.SignForm.builder()
                 .email("vanille@gmail.com")
                 .password("1kdasdfwcv")
-                .username("vanille")
+                .username("test")
                 .build();
         Assertions.assertThrows(DuplicatedEntityException.class, () -> userService.saveUser(userDto));
     }
@@ -122,7 +122,7 @@ class UserServiceTest {
                 .email("vanille@gmail.com")
                 .password("1kdasdfwcv")
                 .build();
-        Assertions.assertThrows(UnverifiedEmailException.class, () -> userService.login(loginForm));
+        Assertions.assertThrows(UnverifiedException.class, () -> userService.login(loginForm));
     }
 
     @DisplayName("[실패] 로그인 - 패스워드 오류")

@@ -6,6 +6,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import vanille.vocabe.entity.User;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 public class UserDTO {
 
     @Data
@@ -13,8 +18,12 @@ public class UserDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SignForm {
+        @NotBlank
         private String username;
+        @NotBlank
         private String email;
+        @NotBlank
+        @Size(min = 8)
         private String password;
     }
 

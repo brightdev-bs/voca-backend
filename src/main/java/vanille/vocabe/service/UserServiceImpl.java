@@ -9,7 +9,7 @@ import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.global.exception.DuplicatedEntityException;
 import vanille.vocabe.global.exception.InvalidPasswordException;
 import vanille.vocabe.global.exception.NotFoundException;
-import vanille.vocabe.global.exception.UnverifiedEmailException;
+import vanille.vocabe.global.exception.UnverifiedException;
 import vanille.vocabe.payload.UserDTO;
 import vanille.vocabe.repository.UserRepository;
 import vanille.vocabe.service.email.EmailService;
@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService{
         }
 
         if(!user.isVerified()) {
-            throw new UnverifiedEmailException(ErrorCode.UNVERIFIED_USER);
+            throw new UnverifiedException(ErrorCode.UNVERIFIED_USER);
         }
 
         return user;
@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User findUserByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
+        return userRepository.findByUsernameAndVerifiedTrue(username).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
     }
 
 
