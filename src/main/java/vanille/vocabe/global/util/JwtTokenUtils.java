@@ -38,7 +38,7 @@ public class JwtTokenUtils {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public static String generateAccessToken(String username, String key, long expiredTimeMs) {
+    public static String generateAccessToken(String username, long expiredTimeMs, String key) {
         return doGenerateToken(username, expiredTimeMs, key);
     }
 

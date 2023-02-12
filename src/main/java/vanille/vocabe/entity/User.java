@@ -26,12 +26,16 @@ public class User extends BaseEntity {
 
     private boolean verified;
 
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
+
     protected User() {}
 
     protected User(String username, String email, String password) {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.role = UserRole.USER;
     }
 
     protected User(String username, String email, String password, boolean verified) {
@@ -39,6 +43,7 @@ public class User extends BaseEntity {
         this.email = email;
         this.password = password;
         this.verified = verified;
+        this.role = UserRole.USER;
     }
 
     public static User of(String username, String email, String password) {
@@ -55,6 +60,10 @@ public class User extends BaseEntity {
 
     public void setVerified() {
         this.verified = true;
+    }
+
+    public void setPremiumRole() {
+        this.role = UserRole.PREMIUM;
     }
 
 }

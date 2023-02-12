@@ -9,4 +9,6 @@ public interface UserService {
     User saveUser(UserDTO.SignForm form);
 
     User login(UserDTO.loginForm form);
+
+    User findUserByUsername(String username);
 }

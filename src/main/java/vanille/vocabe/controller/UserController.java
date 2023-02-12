@@ -34,7 +34,7 @@ public class UserController {
     @PostMapping("/login")
     public ApiResponse login(@RequestBody UserDTO.loginForm request) {
         User user = userService.login(request);
-        String token = JwtTokenUtils.generateAccessToken(user.getUsername(), key, expiredTime);
+        String token = JwtTokenUtils.generateAccessToken(user.getUsername(), expiredTime, key);
         return ApiResponse.of(HttpStatus.OK.toString(), UserDTO.UserResponse.from(user, token));
     }
 
