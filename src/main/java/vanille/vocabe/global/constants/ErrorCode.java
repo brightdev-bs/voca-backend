@@ -13,6 +13,7 @@ public enum ErrorCode {
 
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "유효하지 않은 인증 코드입니다."),
+    INVALID_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 토큰입니다."),
 
     UNVERIFIED_USER(HttpStatus.BAD_REQUEST, "인증되지 않은 사용자입니다."),
 
