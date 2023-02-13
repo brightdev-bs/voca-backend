@@ -10,6 +10,7 @@ public enum ErrorCode {
 
     NOT_FOUND_EMAIL_TOKEN(HttpStatus.BAD_REQUEST, "인증 정보를 찾을 수 없습니다."),
     NOT_FOUND_USER(HttpStatus.BAD_REQUEST, "사용자를 찾을 수 없습니다."),
+    NOT_FOUND_TOKEN(HttpStatus.BAD_REQUEST, "토큰이 없습니다."),
 
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "유효하지 않은 인증 코드입니다."),

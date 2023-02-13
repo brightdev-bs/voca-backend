@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.global.constants.ErrorCode;
@@ -41,14 +42,23 @@ public class BearerAuthInterceptor implements HandlerInterceptor {
         }
 
         String token = extractToken(request, "Bearer");
+        if(!StringUtils.hasText(token)) {
+            throw new InvalidTokenException(ErrorCode.NOT_FOUND_TOKEN);
+        }
 
-        String username = JwtTokenUtils.getUsername(token, secretKey);
-        User userDetails = userService.findUserByUsername(username);
+        User userDetails;
+        try {
+            String username = JwtTokenUtils.getUsername(token, secretKey);
+            userDetails = userService.findUserByUsername(username);
 
-        if (!JwtTokenUtils.validate(token, userDetails.getUsername(), secretKey)) {
-            log.error("Token is not valid {}", token);
+            if (!JwtTokenUtils.validate(token, userDetails.getUsername(), secretKey)) {
+                log.error("Token is not valid {}", token);
+                throw new InvalidTokenException(ErrorCode.INVALID_TOKEN);
+            }
+        } catch (Exception e) {
             throw new InvalidTokenException(ErrorCode.INVALID_TOKEN);
         }
+
 
         setSession(userDetails);
 
