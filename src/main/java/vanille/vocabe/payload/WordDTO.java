@@ -16,7 +16,7 @@ public class WordDTO {
     public static class Request {
         @NotBlank
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        private LocalDateTime date;
+        private String date;
         private User user;
     }
 

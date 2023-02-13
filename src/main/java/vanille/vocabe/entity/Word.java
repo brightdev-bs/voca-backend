@@ -17,7 +17,6 @@ public class Word extends BaseEntity {
     private String word;
     private String definition;
     private String note;
-    @Column(columnDefinition = "tinyint(1) default 0")
     private boolean checked;
 
     @ManyToOne(fetch = FetchType.LAZY)
