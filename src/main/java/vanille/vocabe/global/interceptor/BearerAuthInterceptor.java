@@ -14,6 +14,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.global.exception.InvalidTokenException;
+import vanille.vocabe.global.exception.NotFoundException;
 import vanille.vocabe.global.util.JwtTokenUtils;
 import vanille.vocabe.service.UserService;
 
@@ -41,9 +42,9 @@ public class BearerAuthInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        String token = extractToken(request, "Bearer");
+        final String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         if(!StringUtils.hasText(token)) {
-            throw new InvalidTokenException(ErrorCode.NOT_FOUND_TOKEN);
+            throw new NotFoundException(ErrorCode.NOT_FOUND_TOKEN);
         }
 
         User userDetails;
