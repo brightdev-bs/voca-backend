@@ -32,6 +32,9 @@ dependencies {
 
     implementation 'org.apache.httpcomponents:httpclient'
 
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2'
+
+
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'

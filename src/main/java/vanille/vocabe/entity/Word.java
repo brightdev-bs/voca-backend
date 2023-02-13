@@ -4,9 +4,10 @@ import lombok.Getter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
-@ToString
+@ToString(callSuper = true)
 @Entity
 public class Word extends BaseEntity {
 
@@ -16,7 +17,8 @@ public class Word extends BaseEntity {
     private String word;
     private String definition;
     private String note;
-    private Boolean checked;
+    @Column(columnDefinition = "tinyint(1) default 0")
+    private boolean checked;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
@@ -35,4 +37,7 @@ public class Word extends BaseEntity {
         return new Word(word, definition, note, user);
     }
 
+    public void changeCheckStatus() {
+        this.checked = !this.checked;
+    }
 }

@@ -13,8 +13,6 @@ import vanille.vocabe.service.UserService;
 import vanille.vocabe.service.email.EmailService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 
 import static vanille.vocabe.global.constants.Constants.EMAIL_VERIFICATION;
 
@@ -47,7 +45,7 @@ public class UserController {
     public ApiResponse login(@RequestBody UserDTO.loginForm request) {
         User user = userService.login(request);
         String token = JwtTokenUtils.generateAccessToken(user.getUsername(), expiredTime, key);
-        return ApiResponse.of(HttpStatus.OK.toString(), UserDTO.UserResponse.from(user, token));
+        return ApiResponse.of(HttpStatus.OK.toString(), UserDTO.UserLoginResponse.from(user, token));
     }
 
 }
