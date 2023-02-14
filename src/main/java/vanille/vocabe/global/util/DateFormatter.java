@@ -11,7 +11,7 @@ import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 public class DateFormatter {
 
     public static LocalDateTime from(String date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return LocalDateTime.parse(date, formatter);
     }
 }
