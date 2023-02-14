@@ -2,7 +2,6 @@ package vanille.vocabe.global.interceptor;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,7 +19,6 @@ import vanille.vocabe.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Enumeration;
 import java.util.List;
 
 @Slf4j
@@ -66,17 +64,6 @@ public class BearerAuthInterceptor implements HandlerInterceptor {
         return true;
     }
 
-
-    private String extractToken(HttpServletRequest request, String type) {
-        Enumeration<String> headers = request.getHeaders(HttpHeaders.AUTHORIZATION);
-        while(headers.hasMoreElements()) {
-            String value = headers.nextElement();
-            if(value.toLowerCase().startsWith(type.toLowerCase())) {
-                return value.substring(type.length()).trim();
-            }
-        }
-        return Strings.EMPTY;
-    }
     private static void setSession(User userDetails) {
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                 userDetails, null, List.of(new SimpleGrantedAuthority(userDetails.getRole().toString()))

@@ -1,5 +1,6 @@
 package vanille.vocabe.service;
 
+import vanille.vocabe.entity.User;
 import vanille.vocabe.entity.Word;
 import vanille.vocabe.payload.WordDTO;
 
@@ -11,4 +12,6 @@ public interface WordService {
     Word saveWord(WordDTO.NewWord request);
 
     Word changeCheck(Long id);
+
+    List<String> findPriorStudyRecords(User user);
 }

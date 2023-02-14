@@ -3,11 +3,13 @@ package vanille.vocabe.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import vanille.vocabe.entity.User;
 import vanille.vocabe.entity.Word;
 import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.global.exception.NotFoundException;
 import vanille.vocabe.global.util.DateFormatter;
 import vanille.vocabe.payload.WordDTO;
+import vanille.vocabe.repository.WordQuerydslRepository;
 import vanille.vocabe.repository.WordRepository;
 
 import java.time.LocalDate;
@@ -21,6 +23,7 @@ import java.util.List;
 public class WordServiceImpl implements WordService {
 
     private final WordRepository wordRepository;
+    private final WordQuerydslRepository wordQuerydslRepository;
 
     @Override
     public List<Word> findWordsWithDate(WordDTO.Request request) {
@@ -47,5 +50,15 @@ public class WordServiceImpl implements WordService {
         word.changeCheckStatus();
         wordRepository.save(word);
         return word;
+    }
+
+    @Override
+    public List<String> findPriorStudyRecords(User user) {
+        LocalDateTime date = LocalDateTime.now();
+        return wordQuerydslRepository.findByUserAndCreatedAtBetweenAndGroupBy(
+                user,
+                date.withDayOfMonth(1),
+                LocalDateTime.of(date.getYear(), date.getMonth(), date.toLocalDate().lengthOfMonth(), 23, 59, 59)
+        );
     }
 }

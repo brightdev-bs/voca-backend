@@ -8,6 +8,7 @@ import vanille.vocabe.entity.User;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 public class UserDTO {
 
@@ -61,6 +62,22 @@ public class UserDTO {
                     .email(user.getEmail())
                     .role(user.getRole().toString())
                     .build();
+        }
+    }
+
+    @Data
+    @Builder
+    public static class UserDetailWithStudyRecords {
+        private UserDetail user;
+        private List<String> dates;
+
+        protected UserDetailWithStudyRecords(UserDetail user, List<String> dates) {
+            this.user = user;
+            this.dates = dates;
+        }
+
+        public static UserDetailWithStudyRecords from(User user, List<String> list) {
+            return new UserDetailWithStudyRecords(UserDetail.from(user), list);
         }
     }
 }

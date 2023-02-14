@@ -4,15 +4,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.global.response.common.ApiResponse;
 import vanille.vocabe.global.util.JwtTokenUtils;
 import vanille.vocabe.payload.UserDTO;
 import vanille.vocabe.service.UserService;
+import vanille.vocabe.service.WordService;
 import vanille.vocabe.service.email.EmailService;
 
 import javax.validation.Valid;
+
+import java.util.List;
 
 import static vanille.vocabe.global.constants.Constants.EMAIL_VERIFICATION;
 
@@ -23,6 +27,7 @@ public class UserController {
 
     private final UserService userService;
     private final EmailService emailService;
+    private final WordService wordService;
 
     @Value("${jwt.secret-key}")
     private String key;
@@ -46,6 +51,13 @@ public class UserController {
         User user = userService.login(request);
         String token = JwtTokenUtils.generateAccessToken(user.getUsername(), expiredTime, key);
         return ApiResponse.of(HttpStatus.OK.toString(), UserDTO.UserLoginResponse.from(user, token));
+    }
+
+    @GetMapping("/my-page")
+    public ApiResponse myPage(@AuthenticationPrincipal User user) {
+        log.info("user = {}", user);
+        List<String> priorStudyRecords = wordService.findPriorStudyRecords(user);
+        return ApiResponse.of(HttpStatus.OK.toString(), UserDTO.UserDetailWithStudyRecords.from(user, priorStudyRecords));
     }
 
 }
