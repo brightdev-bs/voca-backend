@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.Rollback;
 import vanille.vocabe.entity.EmailToken;
 import vanille.vocabe.global.config.JpaConfig;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -29,24 +31,10 @@ class EmailTokenRepositoryTest {
         emailTokenRepository.saveAndFlush(emailToken);
 
         EmailToken findEmailToken = emailTokenRepository
-                .findByIdAndExpirationDateAfterAndExpired(emailToken.getId(), LocalDateTime.now(), false)
-                .orElseThrow();
+                .findByToken(emailToken.getToken())
+                .orElseThrow(() -> new IllegalArgumentException());
         Assertions.assertEquals(email, findEmailToken.getEmail());
         Assertions.assertEquals(emailToken.getId(), findEmailToken.getId());
     }
-
-    @DisplayName("[실패] 유효기간이 지난 토큰만 있는 경우")
-    @Test
-    void getInvalidEmailToken() {
-        String email = "vanille@gmail.com";
-        EmailToken emailToken = EmailToken.createEmailToken(email);
-        emailTokenRepository.saveAndFlush(emailToken);
-
-        Optional<EmailToken> findToken
-                = emailTokenRepository.findByIdAndExpirationDateAfterAndExpired(emailToken.getId(), LocalDateTime.now().plusMinutes(10L), false);
-
-        Assertions.assertFalse(findToken.isPresent());
-    }
-
 
 }

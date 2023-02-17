@@ -39,7 +39,7 @@ jwt:
 
 server.port: 8088
 
-front-server: 'http://localhost:8089'
+front-server: http://localhost:8089
 
 
 ---

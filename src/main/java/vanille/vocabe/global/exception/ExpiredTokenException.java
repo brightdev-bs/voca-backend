@@ -4,11 +4,11 @@ import lombok.Getter;
 import vanille.vocabe.global.constants.ErrorCode;
 
 @Getter
-public class InvalidTokenException extends RuntimeException {
+public class ExpiredTokenException extends RuntimeException {
 
     private final ErrorCode errorCode;
 
-    public InvalidTokenException(ErrorCode errorCode) {
+    public ExpiredTokenException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }

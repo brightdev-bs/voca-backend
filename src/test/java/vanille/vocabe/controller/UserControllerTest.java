@@ -103,12 +103,13 @@ class UserControllerTest {
     @Test
     void setVerificationStatusAsVerified() throws Exception {
         EmailToken emailToken = EmailToken.createEmailToken("vanille@gmail.com");
+        emailToken.changeExpirationTimeForTest(-3L);
         emailTokenRepository.save(emailToken);
 
         User user = UserFixture.getUnverifiedUser();
         userRepository.save(user);
 
-        mockMvc.perform(get("/sign-up?token=" + emailToken.getId()))
+        mockMvc.perform(get("/sign-up?token=" + emailToken.getToken()))
                 .andDo(print());
 
         assertTrue(emailToken.isExpired());
@@ -120,14 +121,13 @@ class UserControllerTest {
     @Test
     void expiredVerificationEmail() throws Exception {
         EmailToken emailToken = EmailToken.createEmailToken("test@naver.com");
-        emailToken.changeExpirationTimeForTest();
+        emailToken.changeExpirationTimeForTest(3L);
         emailTokenRepository.save(emailToken);
 
-        mockMvc.perform(get("/sign-up?token=" + emailToken.getId()))
-                .andExpect(jsonPath("statusCode").value(ErrorCode.NOT_FOUND_EMAIL_TOKEN.getHttpStatus().toString()))
-                .andExpect(jsonPath("data").value(ErrorCode.NOT_FOUND_EMAIL_TOKEN.getMessage()))
+        mockMvc.perform(get("/sign-up?token=" + emailToken.getToken()))
+                .andExpect(jsonPath("statusCode").value(ErrorCode.EXPIRED_TOKEN.getHttpStatus().toString()))
+                .andExpect(jsonPath("data").value(ErrorCode.EXPIRED_TOKEN.getMessage()))
                 .andDo(print());
-
     }
 
     @DisplayName("[실패] 확인 메일로 token 파라미터가 넘어오지 않을 때")

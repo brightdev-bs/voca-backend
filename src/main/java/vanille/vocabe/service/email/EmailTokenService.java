@@ -8,5 +8,5 @@ import java.util.UUID;
 public interface EmailTokenService {
     UUID createEmailToken(String email);
 
-    Optional<EmailToken> findByIdAndExpirationDateAfterAndExpired(String emailTokenId);
+    Optional<EmailToken> findByToken(String emailTokenId);
 }

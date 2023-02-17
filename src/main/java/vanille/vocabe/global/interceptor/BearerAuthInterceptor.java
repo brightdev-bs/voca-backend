@@ -12,7 +12,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.global.constants.ErrorCode;
-import vanille.vocabe.global.exception.InvalidTokenException;
+import vanille.vocabe.global.exception.ExpiredTokenException;
 import vanille.vocabe.global.exception.NotFoundException;
 import vanille.vocabe.global.util.JwtTokenUtils;
 import vanille.vocabe.service.UserService;
@@ -52,10 +52,10 @@ public class BearerAuthInterceptor implements HandlerInterceptor {
 
             if (!JwtTokenUtils.validate(token, userDetails.getUsername(), secretKey)) {
                 log.error("Token is not valid {}", token);
-                throw new InvalidTokenException(ErrorCode.INVALID_TOKEN);
+                throw new ExpiredTokenException(ErrorCode.EXPIRED_TOKEN);
             }
         } catch (Exception e) {
-            throw new InvalidTokenException(ErrorCode.INVALID_TOKEN);
+            throw new ExpiredTokenException(ErrorCode.EXPIRED_TOKEN);
         }
 
 

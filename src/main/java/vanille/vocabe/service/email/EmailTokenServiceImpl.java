@@ -41,16 +41,16 @@ public class EmailTokenServiceImpl implements EmailTokenService {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(email);
         mailMessage.setSubject("회원가입 이메일 인증 메일");
-        mailMessage.setText(FRONT_SERVER + "/email?token=" + emailToken.getId());
+        mailMessage.setText(FRONT_SERVER + "/email?token=" + emailToken.getToken());
         emailSender.sendEmail(mailMessage);
 
-        return emailToken.getId();
+        return emailToken.getToken();
     }
 
     @Override
-    public Optional<EmailToken> findByIdAndExpirationDateAfterAndExpired(String emailTokenId) {
+    public Optional<EmailToken> findByToken(String emailTokenId) {
         return emailTokenRepository
-                .findByIdAndExpirationDateAfterAndExpired(UUID.fromString(emailTokenId), LocalDateTime.now(), false);
+                .findByToken(UUID.fromString(emailTokenId));
     }
 
 }

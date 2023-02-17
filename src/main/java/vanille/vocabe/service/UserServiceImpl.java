@@ -50,12 +50,12 @@ public class UserServiceImpl implements UserService{
     public User login(UserDTO.loginForm form) {
         User user = userRepository.findByEmail(form.getEmail()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
 
-        if(!user.getPassword().equals(form.getPassword())) {
-            throw new InvalidPasswordException(ErrorCode.INVALID_PASSWORD);
-        }
-
         if(!user.isVerified()) {
             throw new UnverifiedException(ErrorCode.UNVERIFIED_USER);
+        }
+
+        if(!user.getPassword().equals(form.getPassword())) {
+            throw new InvalidPasswordException(ErrorCode.INVALID_PASSWORD);
         }
 
         return user;

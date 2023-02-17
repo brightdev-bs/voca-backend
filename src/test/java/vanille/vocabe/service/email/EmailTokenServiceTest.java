@@ -45,14 +45,15 @@ class EmailTokenServiceTest {
         String email = "vanille@gmail.com";
         LocalDateTime now = LocalDateTime.now();
         EmailToken emailToken = EmailToken.createFixtureForTest(email, now);
-        UUID tokenId = emailToken.getId();
+        UUID tokenId = emailToken.getToken();
 
         given(emailTokenRepository.findByEmail(email)).willReturn(Optional.of(emailToken));
 
         emailTokenService.createEmailToken(email);
         Assertions.assertNotEquals(emailToken.getExpirationDate(), now);
-        Assertions.assertNotEquals(emailToken.getId(), tokenId);
-
+        Assertions.assertNotEquals(emailToken.getToken(), tokenId);
     }
+
+
 
 }

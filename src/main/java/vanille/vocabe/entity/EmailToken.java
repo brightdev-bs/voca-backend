@@ -15,10 +15,11 @@ import static vanille.vocabe.global.constants.Constants.EMAIL_TOKEN_EXPIRATION_T
 public class EmailToken {
 
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name="uuid2", strategy = "uuid2")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(columnDefinition = "BINARY(16)")
-    private UUID id;
+    private UUID token;
 
     private LocalDateTime expirationDate;
     private boolean expired;
@@ -29,6 +30,7 @@ public class EmailToken {
         emailToken.expirationDate = LocalDateTime.now().plusMinutes(EMAIL_TOKEN_EXPIRATION_TIME);
         emailToken.expired = false;
         emailToken.email = email;
+        emailToken.token = UUID.randomUUID();
         return emailToken;
     }
 
@@ -36,21 +38,22 @@ public class EmailToken {
         this.expired = true;
     }
 
+    public void refreshEmailToken() {
+        this.token = UUID.randomUUID();
+        this.expirationDate = LocalDateTime.now().plusMinutes(EMAIL_TOKEN_EXPIRATION_TIME);
+    }
+
     public static EmailToken createFixtureForTest(String email, LocalDateTime time) {
         EmailToken emailToken = new EmailToken();
         emailToken.expirationDate = time;
         emailToken.expired = false;
         emailToken.email = email;
-        emailToken.id = UUID.randomUUID();
+        emailToken.token = UUID.randomUUID();
         return emailToken;
     }
 
-    public void refreshEmailToken() {
-        this.id = UUID.randomUUID();
-        this.expirationDate = LocalDateTime.now().plusMinutes(EMAIL_TOKEN_EXPIRATION_TIME);
-    }
 
-    public void changeExpirationTimeForTest() {
-        this.expirationDate = LocalDateTime.now().minusYears(3L);
+    public void changeExpirationTimeForTest(Long hours) {
+        this.expirationDate = LocalDateTime.now().plusHours(hours);
     }
 }

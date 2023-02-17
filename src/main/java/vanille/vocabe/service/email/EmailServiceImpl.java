@@ -7,10 +7,12 @@ import org.springframework.util.StringUtils;
 import vanille.vocabe.entity.EmailToken;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.global.constants.ErrorCode;
+import vanille.vocabe.global.exception.ExpiredTokenException;
 import vanille.vocabe.global.exception.InvalidVerificationCodeException;
 import vanille.vocabe.global.exception.NotFoundException;
 import vanille.vocabe.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -33,8 +35,13 @@ public class EmailServiceImpl implements EmailService{
         }
 
         EmailToken emailToken = emailTokenService
-                .findByIdAndExpirationDateAfterAndExpired(tokenId)
+                .findByToken(tokenId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_EMAIL_TOKEN));
+
+        if (emailToken.isExpired() || emailToken.getExpirationDate().isAfter(LocalDateTime.now())) {
+            throw new ExpiredTokenException(ErrorCode.EXPIRED_TOKEN);
+        }
+
         emailToken.setExpired();
 
         Optional<User> findUser = userRepository.findByEmail(emailToken.getEmail());

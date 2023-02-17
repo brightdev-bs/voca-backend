@@ -113,8 +113,8 @@ public class GeneralExceptionHandler {
     /**
      * 토큰이 유효하지 않을 때
      */
-    @ExceptionHandler(value = { InvalidTokenException.class })
-    protected ResponseEntity<ApiResponse> handleInvalidTokenException(InvalidTokenException e) {
+    @ExceptionHandler(value = { ExpiredTokenException.class })
+    protected ResponseEntity<ApiResponse> handleInvalidTokenException(ExpiredTokenException e) {
         log.error("InvalidPasswordException", e);
         ApiResponse errorResponse = ApiResponse.of(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
