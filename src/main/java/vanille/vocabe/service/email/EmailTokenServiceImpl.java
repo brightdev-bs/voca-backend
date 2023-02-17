@@ -1,6 +1,7 @@
 package vanille.vocabe.service.email;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,12 +13,13 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-import static vanille.vocabe.global.constants.Constants.FRONT_SERVER;
 
 @RequiredArgsConstructor
 @Service
 public class EmailTokenServiceImpl implements EmailTokenService {
 
+    @Value("${front-server}")
+    private String FRONT_SERVER;
     private final EmailSender emailSender;
     private final EmailTokenRepository emailTokenRepository;
 
