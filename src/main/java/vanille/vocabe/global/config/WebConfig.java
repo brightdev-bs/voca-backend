@@ -8,6 +8,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static vanille.vocabe.global.constants.Constants.FRONT_SERVER;
+import static vanille.vocabe.global.constants.Constants.LOCAL_SERVER;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -15,7 +16,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins(FRONT_SERVER)
+                .allowedOrigins(FRONT_SERVER, LOCAL_SERVER)
                 .allowedMethods(
                         HttpMethod.GET.name(),
                         HttpMethod.HEAD.name(),
