@@ -29,18 +29,24 @@ public class UserServiceImpl implements UserService{
     @Override
     public User saveUser(UserDTO.SignForm form) {
 
-        Optional<User> optionalUser = userRepository.findByEmail(form.getEmail());
+        User user = userRepository.findByEmail(form.getEmail()).orElseGet(() -> null);
 
-        User user;
-        if(optionalUser.isPresent()) {
-            user = optionalUser.get();
+        if(user != null) {
             if(user.isVerified()) {
-                throw new DuplicatedEntityException(ErrorCode.DUPLICATED_EMAIL);
+                throw new DuplicatedEntityException(ErrorCode.DUPLICATED_USER);
             }
+
+            Optional<User> byUsername = userRepository.findByUsername(form.getUsername());
+            if(byUsername.isPresent()) {
+                throw new DuplicatedEntityException(ErrorCode.DUPLICATED_USERNAME);
+            }
+
+            user.changeUsernameAndPassword(form.getUsername(), form.getPassword());
         } else {
             user = User.from(form);
-            userRepository.save(user);
         }
+
+        userRepository.save(user);
 
         emailService.sendConfirmEmail(form.getEmail());
         return user;

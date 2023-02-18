@@ -6,7 +6,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
 
-    DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "이미 사용중인 이메일입니다."),
+    DUPLICATED_USER(HttpStatus.BAD_REQUEST, "이미 가입한 사용자입니다."),
+    DUPLICATED_USERNAME(HttpStatus.BAD_REQUEST, "이미 사용중인 이름입니다."),
 
     NOT_FOUND_EMAIL_TOKEN(HttpStatus.BAD_REQUEST, "잘못된 인증 코드입니다."),
     NOT_FOUND_USER(HttpStatus.BAD_REQUEST, "사용자를 찾을 수 없습니다."),

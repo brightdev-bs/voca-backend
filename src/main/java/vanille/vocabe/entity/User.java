@@ -58,6 +58,11 @@ public class User extends BaseEntity {
         return new User(form.getUsername(), form.getEmail(), form.getPassword());
     }
 
+    public void changeUsernameAndPassword(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
     public void setVerified() {
         this.verified = true;
     }

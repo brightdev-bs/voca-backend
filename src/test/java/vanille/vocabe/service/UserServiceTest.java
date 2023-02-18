@@ -59,13 +59,14 @@ class UserServiceTest {
 
         UserDTO.SignForm userDto = UserDTO.SignForm.builder()
                 .email("vanille@gmail.com")
-                .password("1kdasdfwcv")
-                .username("test")
+                .password("changedPassword")
+                .username("changeName")
                 .build();
         userService.saveUser(userDto);
 
-        then(userRepository).should(never()).save(any(User.class));
         then(emailService).should().sendConfirmEmail(anyString());
+        Assertions.assertEquals("changedPassword", user.getPassword());
+        Assertions.assertEquals("changeName", user.getUsername());
     }
 
     @DisplayName("[실패] 이메일 중복")
