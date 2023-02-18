@@ -40,7 +40,7 @@ public class UserController {
         return ApiResponse.of(HttpStatus.OK.toString(), request.getEmail());
     }
 
-    @GetMapping("/sign-up")
+    @GetMapping("/email")
     public ApiResponse confirmVerification(@RequestParam String token) throws Exception {
         emailService.verifyEmail(token);
         return ApiResponse.of(HttpStatus.OK.toString(), EMAIL_VERIFICATION);

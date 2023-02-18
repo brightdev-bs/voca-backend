@@ -38,14 +38,21 @@ public class EmailServiceImpl implements EmailService{
                 .findByToken(tokenId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_EMAIL_TOKEN));
 
-        if (emailToken.isExpired() || emailToken.getExpirationDate().isAfter(LocalDateTime.now())) {
+        Optional<User> findUser = userRepository.findByEmail(emailToken.getEmail());
+        if (emailToken.isExpired() || emailToken.getExpirationDate().isBefore(LocalDateTime.now())) {
+            if(verifyUser(findUser)) {
+                emailTokenService.createEmailToken(findUser.get().getEmail());
+            }
             throw new ExpiredTokenException(ErrorCode.EXPIRED_TOKEN);
         }
 
         emailToken.setExpired();
 
-        Optional<User> findUser = userRepository.findByEmail(emailToken.getEmail());
 
+        return verifyUser(findUser);
+    }
+
+    private static boolean verifyUser(Optional<User> findUser) {
         if(findUser.isPresent()) {
             User user = findUser.get();
             user.setVerified();

@@ -1,8 +1,6 @@
 package vanille.vocabe.entity;
 
-import lombok.Builder;
 import lombok.Getter;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -53,7 +51,7 @@ public class EmailToken {
     }
 
 
-    public void changeExpirationTimeForTest(Long hours) {
+    public void plusExpirationTimeForTest(Long hours) {
         this.expirationDate = LocalDateTime.now().plusHours(hours);
     }
 }

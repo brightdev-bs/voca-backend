@@ -22,7 +22,7 @@ import static org.mockito.BDDMockito.given;
 @ExtendWith(MockitoExtension.class)
 class EmailServiceTest {
 
-    private static final long EMAIL_TOKEN_EXPIRATION_TIME = -5L;
+    private static final long EMAIL_TOKEN_EXPIRATION_TIME = 5L;
 
     @Mock
     private EmailTokenService emailTokenService;

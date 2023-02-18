@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import vanille.vocabe.entity.EmailToken;
 import vanille.vocabe.repository.EmailTokenRepository;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,7 +23,7 @@ public class EmailTokenServiceImpl implements EmailTokenService {
     private final EmailSender emailSender;
     private final EmailTokenRepository emailTokenRepository;
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
     public UUID createEmailToken(String email) {
         Assert.notNull(email, "받는 이메일은 필수입니다.");
@@ -53,4 +53,8 @@ public class EmailTokenServiceImpl implements EmailTokenService {
                 .findByToken(UUID.fromString(emailTokenId));
     }
 
+    @Override
+    public Optional<EmailToken> findByEmail(String email) {
+        return emailTokenRepository.findByEmail(email);
+    }
 }

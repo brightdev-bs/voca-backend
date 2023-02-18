@@ -9,4 +9,6 @@ public interface EmailTokenService {
     UUID createEmailToken(String email);
 
     Optional<EmailToken> findByToken(String emailTokenId);
+
+    Optional<EmailToken> findByEmail(String email);
 }
