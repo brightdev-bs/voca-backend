@@ -23,7 +23,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -89,7 +88,7 @@ class UserServiceTest {
         User user = UserFixture.getVerifiedUser();
         given(userRepository.findByEmail("vanille@gmail.com")).willReturn(Optional.ofNullable(user));
 
-        UserDTO.loginForm loginForm = UserDTO.loginForm.builder()
+        UserDTO.LoginForm loginForm = UserDTO.LoginForm.builder()
                 .email("vanille@gmail.com")
                 .password("1kdasdfwcv")
                 .build();
@@ -105,7 +104,7 @@ class UserServiceTest {
     void loginUserFailWrongEmail() {
         given(userRepository.findByEmail(anyString())).willReturn(Optional.ofNullable(null));
 
-        UserDTO.loginForm loginForm = UserDTO.loginForm.builder()
+        UserDTO.LoginForm loginForm = UserDTO.LoginForm.builder()
                 .email("vanille@gmail.com")
                 .password("wdfwdfxcv")
                 .build();
@@ -119,7 +118,7 @@ class UserServiceTest {
         User user = UserFixture.getUnverifiedUser();
         given(userRepository.findByEmail("vanille@gmail.com")).willReturn(Optional.of(user));
 
-        UserDTO.loginForm loginForm = UserDTO.loginForm.builder()
+        UserDTO.LoginForm loginForm = UserDTO.LoginForm.builder()
                 .email("vanille@gmail.com")
                 .password("1kdasdfwcv")
                 .build();
@@ -132,7 +131,7 @@ class UserServiceTest {
         User user = UserFixture.getVerifiedUser();
         given(userRepository.findByEmail("vanille@gmail.com")).willReturn(Optional.of(user));
 
-        UserDTO.loginForm loginForm = UserDTO.loginForm.builder()
+        UserDTO.LoginForm loginForm = UserDTO.LoginForm.builder()
                 .email("vanille@gmail.com")
                 .password("wdfwdfxcv")
                 .build();

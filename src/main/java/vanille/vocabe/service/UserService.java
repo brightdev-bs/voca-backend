@@ -8,7 +8,7 @@ public interface UserService {
     @Transactional
     User saveUser(UserDTO.SignForm form);
 
-    User login(UserDTO.loginForm form);
+    User login(UserDTO.LoginForm form);
 
     User findUserByUsername(String username);
 }

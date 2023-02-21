@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User login(UserDTO.loginForm form) {
+    public User login(UserDTO.LoginForm form) {
         User user = userRepository.findByEmail(form.getEmail()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
 
         if(!user.isVerified()) {

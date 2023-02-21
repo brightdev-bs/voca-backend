@@ -41,6 +41,12 @@ public class UserController {
         return ApiResponse.of(HttpStatus.OK.toString(), request.getEmail());
     }
 
+    @PostMapping("/v1/email")
+    public ApiResponse sendEmail(@RequestBody @Valid UserDTO.LoginForm request) {
+        emailService.sendConfirmEmail(request.getEmail());
+        return ApiResponse.of(HttpStatus.OK.toString(), request.getEmail());
+    }
+
     @GetMapping("/v1/email")
     public ApiResponse confirmVerification(@RequestParam String token) throws Exception {
         emailService.verifyEmail(token);
@@ -48,7 +54,7 @@ public class UserController {
     }
 
     @PostMapping("/v1/login")
-    public ApiResponse login(@RequestBody UserDTO.loginForm request) {
+    public ApiResponse login(@RequestBody UserDTO.LoginForm request) {
         User user = userService.login(request);
         String token = JwtTokenUtils.generateAccessToken(user.getUsername(), expiredTime, key);
         return ApiResponse.of(HttpStatus.OK.toString(), UserDTO.UserLoginResponse.from(user, token));

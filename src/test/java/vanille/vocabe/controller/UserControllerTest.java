@@ -159,7 +159,7 @@ class UserControllerTest {
         User user = UserFixture.getVerifiedUser();
         userRepository.save(user);
 
-        UserDTO.loginForm request = UserDTO.loginForm.builder()
+        UserDTO.LoginForm request = UserDTO.LoginForm.builder()
                 .email("vanille@gmail.com")
                 .password("1kdasdfwcv")
                 .build();
@@ -177,7 +177,7 @@ class UserControllerTest {
         User user = UserFixture.getVerifiedUser();
         userRepository.save(user);
 
-        UserDTO.loginForm request = UserDTO.loginForm.builder()
+        UserDTO.LoginForm request = UserDTO.LoginForm.builder()
                 .email("vanille@gmail.com")
                 .password("wrongpassword")
                 .build();
@@ -198,7 +198,7 @@ class UserControllerTest {
         User user = UserFixture.getUnverifiedUser();
         userRepository.save(user);
 
-        UserDTO.loginForm request = UserDTO.loginForm.builder()
+        UserDTO.LoginForm request = UserDTO.LoginForm.builder()
                 .email("vanille@gmail.com")
                 .password("1kdasdfwcv")
                 .build();

@@ -30,7 +30,7 @@ public class UserDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class loginForm {
+    public static class LoginForm {
         private String email;
         private String password;
     }
