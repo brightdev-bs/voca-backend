@@ -21,6 +21,7 @@ import java.util.List;
 import static vanille.vocabe.global.constants.Constants.EMAIL_VERIFICATION;
 
 @Slf4j
+@RequestMapping("/api")
 @RequiredArgsConstructor
 @RestController
 public class UserController {
@@ -34,26 +35,26 @@ public class UserController {
     @Value("${jwt.token.expired-time-ms}")
     private long expiredTime;
 
-    @PostMapping("/sign-up")
+    @PostMapping("/v1/sign-up")
     public ApiResponse signup(@RequestBody @Valid UserDTO.SignForm request) {
         userService.saveUser(request);
         return ApiResponse.of(HttpStatus.OK.toString(), request.getEmail());
     }
 
-    @GetMapping("/email")
+    @GetMapping("/v1/email")
     public ApiResponse confirmVerification(@RequestParam String token) throws Exception {
         emailService.verifyEmail(token);
         return ApiResponse.of(HttpStatus.OK.toString(), EMAIL_VERIFICATION);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/v1/login")
     public ApiResponse login(@RequestBody UserDTO.loginForm request) {
         User user = userService.login(request);
         String token = JwtTokenUtils.generateAccessToken(user.getUsername(), expiredTime, key);
         return ApiResponse.of(HttpStatus.OK.toString(), UserDTO.UserLoginResponse.from(user, token));
     }
 
-    @GetMapping("/my-page")
+    @GetMapping("/v1/my-page")
     public ApiResponse myPage(@AuthenticationPrincipal User user) {
         log.info("user = {}", user);
         List<String> priorStudyRecords = wordService.findPriorStudyRecords(user);
