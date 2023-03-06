@@ -54,10 +54,11 @@ public class WordServiceImpl implements WordService {
 
     @Override
     public List<String> findPriorStudyRecords(User user) {
+        LocalDateTime joinDate = user.getCreatedAt();
         LocalDateTime date = LocalDateTime.now();
         return wordQuerydslRepository.findByUserAndCreatedAtBetweenAndGroupBy(
                 user,
-                date.withDayOfMonth(1),
+                LocalDateTime.of(joinDate.getYear(), joinDate.getMonth(), 1, 0,0,0),
                 LocalDateTime.of(date.getYear(), date.getMonth(), date.toLocalDate().lengthOfMonth(), 23, 59, 59)
         );
     }
