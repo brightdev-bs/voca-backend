@@ -1,15 +1,22 @@
 package vanille.vocabe.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
 import vanille.vocabe.payload.UserDTO;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
-@ToString
+@ToString(callSuper = true)
+@EntityListeners(AuditingEntityListener.class)
 @Entity
-public class User extends BaseEntity {
+public class User {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -28,6 +35,15 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+//    @OneToMany(mappedBy = "user")
+//    private List<UserVocabulary> vocabularies;
 
     protected User() {}
 

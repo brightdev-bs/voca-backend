@@ -26,7 +26,7 @@ public class BaseEntity {
 
     @CreatedBy
     @Column(updatable = false)
-    private String createdBy;
+    private Long createdBy;
 
     public void setCreatedAt(LocalDateTime date, long days) {
         this.createdAt = date.minusDays(days);

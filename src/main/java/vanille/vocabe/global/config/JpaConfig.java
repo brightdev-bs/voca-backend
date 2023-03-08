@@ -16,13 +16,13 @@ import java.util.Optional;
 public class JpaConfig {
 
     @Bean
-    public Optional<String> auditorAware() {
+    public Optional<Long> auditorAware() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (null == authentication || !authentication.isAuthenticated()) {
             return Optional.empty();
         }
         User user = (User) authentication.getPrincipal();
-        return Optional.of(user.getUsername());
+        return Optional.of(user.getId());
     }
 
     @Bean

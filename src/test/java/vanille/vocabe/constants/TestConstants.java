@@ -1,6 +1,12 @@
 package vanille.vocabe.constants;
 
+import static vanille.vocabe.global.util.JwtTokenUtils.generateAccessToken;
+
 public class TestConstants {
 
-    public static final String BEARER_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InZhbmlsbGUiLCJpYXQiOjE2NzYyNjYwNTcsImV4cCI6MTY3ODg1ODA1N30.kdx8ZTIhV_LYvZTIMEhZPXEg_0Gx4VipZD_AEFQgV5o";
+    public static final String BEARER_TOKEN = getBearerToken();
+
+    private static String getBearerToken() {
+        return generateAccessToken("test", 2592000000000L, "voca-backend-secretkey-application-yml-local");
+    }
 }
