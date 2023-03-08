@@ -63,7 +63,7 @@ class UserControllerTest {
                 .password("1a2s3d4f5g")
                 .build();
 
-        mockMvc.perform(post("/sign-up")
+        mockMvc.perform(post("/api/v1/sign-up")
                         .content(objectMapper.writeValueAsString(signForm))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -81,7 +81,7 @@ class UserControllerTest {
                 .password(password)
                 .build();
 
-        mockMvc.perform(post("/sign-up")
+        mockMvc.perform(post("/api/v1/sign-up")
                         .content(objectMapper.writeValueAsString(signForm))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -109,7 +109,7 @@ class UserControllerTest {
         User user = UserFixture.getUnverifiedUser();
         userRepository.save(user);
 
-        mockMvc.perform(get("/email?token=" + emailToken.getToken()))
+        mockMvc.perform(get("/api/v1/email?token=" + emailToken.getToken()))
                 .andDo(print());
 
         assertTrue(emailToken.isExpired());
@@ -124,7 +124,7 @@ class UserControllerTest {
         emailToken.plusExpirationTimeForTest(-3L);
         emailTokenRepository.save(emailToken);
 
-        mockMvc.perform(get("/email?token=" + emailToken.getToken()))
+        mockMvc.perform(get("/api/v1/email?token=" + emailToken.getToken()))
                 .andExpect(jsonPath("statusCode").value(ErrorCode.NOT_FOUND_USER.getHttpStatus().toString()))
                 .andExpect(jsonPath("data").value(ErrorCode.NOT_FOUND_USER.getMessage()))
                 .andDo(print());
@@ -139,7 +139,7 @@ class UserControllerTest {
         emailToken.plusExpirationTimeForTest(-3L);
         emailTokenRepository.save(emailToken);
 
-        mockMvc.perform(get("/email?token=" + emailToken.getToken()))
+        mockMvc.perform(get("/api/v1/email?token=" + emailToken.getToken()))
                 .andExpect(jsonPath("statusCode").value(ErrorCode.EXPIRED_TOKEN.getHttpStatus().toString()))
                 .andExpect(jsonPath("data").value(ErrorCode.EXPIRED_TOKEN.getMessage()))
                 .andDo(print());
@@ -148,7 +148,7 @@ class UserControllerTest {
     @DisplayName("[실패] 확인 메일로 token 파라미터가 넘어오지 않을 때")
     @Test
     void confirmVerificationFail() throws Exception {
-        mockMvc.perform(get("/email?token="))
+        mockMvc.perform(get("/api/v1/email?token="))
                 .andExpect(jsonPath("statusCode").value(ErrorCode.INVALID_VERIFICATION_CODE.getHttpStatus().toString()))
                 .andExpect(jsonPath("data").value(ErrorCode.INVALID_VERIFICATION_CODE.getMessage()));
     }
@@ -164,7 +164,7 @@ class UserControllerTest {
                 .password("1kdasdfwcv")
                 .build();
 
-        mockMvc.perform(post("/login")
+        mockMvc.perform(post("/api/v1/login")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -182,7 +182,7 @@ class UserControllerTest {
                 .password("wrongpassword")
                 .build();
 
-        mockMvc.perform(post("/login")
+        mockMvc.perform(post("/api/v1/login")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -203,7 +203,7 @@ class UserControllerTest {
                 .password("1kdasdfwcv")
                 .build();
 
-        mockMvc.perform(post("/login")
+        mockMvc.perform(post("/api/v1/login")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
