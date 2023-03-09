@@ -2,20 +2,25 @@ package vanille.vocabe.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.stereotype.Service;
 import vanille.vocabe.entity.User;
+import vanille.vocabe.entity.Vocabulary;
 import vanille.vocabe.entity.Word;
 import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.global.exception.NotFoundException;
 import vanille.vocabe.global.util.DateFormatter;
 import vanille.vocabe.payload.WordDTO;
+import vanille.vocabe.repository.VocabularyRepository;
 import vanille.vocabe.repository.WordQuerydslRepository;
 import vanille.vocabe.repository.WordRepository;
 
+import javax.naming.AuthenticationException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -24,6 +29,7 @@ public class WordServiceImpl implements WordService {
 
     private final WordRepository wordRepository;
     private final WordQuerydslRepository wordQuerydslRepository;
+    private final VocabularyRepository vocabularyRepository;
 
     @Override
     public List<Word> findWordsWithDate(WordDTO.Request request) {
@@ -39,8 +45,19 @@ public class WordServiceImpl implements WordService {
     }
 
     @Override
-    public Word saveWord(WordDTO.NewWord request) {
-        Word word = Word.of(request.getWord(), request.getDefinition(), request.getNote(), request.getUser());
+    public Word saveWord(WordDTO.NewWord request) throws IllegalAccessException {
+        Optional<Vocabulary> ofVoca = vocabularyRepository.findByName(request.getVocabularyName());
+        Vocabulary vocabulary = null;
+        if(ofVoca.isPresent()) {
+            vocabulary = ofVoca.get();
+        }
+
+        User user = request.getUser();
+        if(vocabulary != null && !vocabulary.getCreatedBy().equals(user.getId())) {
+            throw new IllegalAccessException(ErrorCode.NO_AUTHORITY.getMessage());
+        }
+
+        Word word = Word.of(request.getWord(), request.getDefinition(), request.getNote(), user, vocabulary);
         return wordRepository.save(word);
     }
 

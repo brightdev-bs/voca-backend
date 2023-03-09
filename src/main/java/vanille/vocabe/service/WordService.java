@@ -9,7 +9,7 @@ import java.util.List;
 public interface WordService {
     List<Word> findWordsWithDate(WordDTO.Request request);
 
-    Word saveWord(WordDTO.NewWord request);
+    Word saveWord(WordDTO.NewWord request) throws IllegalAccessException;
 
     Word changeCheck(Long id);
 

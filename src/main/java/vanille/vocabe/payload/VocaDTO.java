@@ -16,7 +16,6 @@ public class VocaDTO {
         private String name;
         private String description;
         private User user;
-        @NotBlank
         private boolean isPublic;
 
         public SaveForm() {}
@@ -55,17 +54,20 @@ public class VocaDTO {
 
     @Data
     public static class Response {
+        private Long id;
         private String name;
         private String description;
 
         @Builder
-        public Response(String name, String description) {
+        public Response(Long id, String name, String description) {
+            this.id = id;
             this.name = name;
             this.description = description;
         }
 
         public static Response from(Vocabulary voca) {
             return Response.builder()
+                    .id(voca.getId())
                     .name(voca.getName())
                     .description(voca.getDescription())
                     .build();

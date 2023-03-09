@@ -43,6 +43,7 @@ public class User {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "user")
     private final List<UserVocabulary> vocabularies = new ArrayList<>();
 
@@ -86,6 +87,13 @@ public class User {
 
     public void setPremiumRole() {
         this.role = UserRole.PREMIUM;
+    }
+
+    public void setIdForTest(Long id) {
+        this.id = id;
+    }
+    public void setCreatedAtForTest() {
+        this.createdAt = LocalDateTime.now();
     }
 
 }

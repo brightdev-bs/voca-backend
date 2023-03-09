@@ -30,7 +30,7 @@ public class WordController {
     }
 
     @PostMapping("/words")
-    public ApiResponse saveWord(@RequestBody @Valid WordDTO.NewWord request, @AuthenticationPrincipal User user) {
+    public ApiResponse saveWord(@RequestBody @Valid WordDTO.NewWord request, @AuthenticationPrincipal User user) throws IllegalAccessException {
         request.setUser(user);
         Word word = wordService.saveWord(request);
         return ApiResponse.of(HttpStatus.OK.toString(), WordDTO.WordDetail.from(word));

@@ -19,21 +19,27 @@ public class Word extends BaseEntity {
     private String note;
     private boolean checked;
 
-    @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
+
+    @ToString.Exclude
+    @OneToOne
+    @JoinColumn(name = "vocabulary_id")
+    private Vocabulary vocabulary;
 
     protected Word() {}
 
-    protected Word(String word, String definition, String note, User user) {
+    protected Word(String word, String definition, String note, User user, Vocabulary vocabulary) {
         this.word = word;
         this.definition = definition;
         this.note = note;
         this.user = user;
+        this.vocabulary = vocabulary;
     }
 
-    public static Word of(String word, String definition, String note, User user) {
-        return new Word(word, definition, note, user);
+    public static Word of(String word, String definition, String note, User user, Vocabulary vocabulary) {
+        return new Word(word, definition, note, user, vocabulary);
     }
 
     public void changeCheckStatus() {

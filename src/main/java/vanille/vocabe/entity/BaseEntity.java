@@ -32,4 +32,8 @@ public class BaseEntity {
         this.createdAt = date.minusDays(days);
     }
 
+    public void setCreatedByForTest(Long id) {
+        this.createdBy = id;
+    }
+
 }

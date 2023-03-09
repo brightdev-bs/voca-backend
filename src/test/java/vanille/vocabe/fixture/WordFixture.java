@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public class WordFixture {
 
     public static Word get(User user) {
-        return Word.of("mango", "망고", "mango is delicious", user);
+        return Word.of("mango", "망고", "mango is delicious", user, null);
     }
 
 }
