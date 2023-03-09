@@ -10,6 +10,7 @@ import vanille.vocabe.payload.UserDTO;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -42,8 +43,8 @@ public class User {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-//    @OneToMany(mappedBy = "user")
-//    private List<UserVocabulary> vocabularies;
+    @OneToMany(mappedBy = "user")
+    private final List<UserVocabulary> vocabularies = new ArrayList<>();
 
     protected User() {}
 

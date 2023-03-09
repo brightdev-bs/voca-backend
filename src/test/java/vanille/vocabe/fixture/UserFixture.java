@@ -9,6 +9,10 @@ public class UserFixture {
         return User.of("test", "vanille@gmail.com", "1kdasdfwcv", true);
     }
 
+    public static User getVerifiedUser(String username) {
+        return User.of(username, "vanille@gmail.com", "1kdasdfwcv", true);
+    }
+
     public static User getUnverifiedUser() {
 
         return User.of("test", "vanille@gmail.com", "1kdasdfwcv");
