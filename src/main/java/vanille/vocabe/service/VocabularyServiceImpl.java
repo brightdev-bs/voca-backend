@@ -6,11 +6,15 @@ import org.springframework.transaction.annotation.Transactional;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.entity.UserVocabulary;
 import vanille.vocabe.entity.Vocabulary;
+import vanille.vocabe.entity.Word;
+import vanille.vocabe.global.constants.ErrorCode;
+import vanille.vocabe.global.exception.NotFoundException;
 import vanille.vocabe.payload.VocaDTO;
+import vanille.vocabe.payload.WordDTO;
 import vanille.vocabe.repository.UserVocabularyRepository;
 import vanille.vocabe.repository.VocabularyRepository;
+import vanille.vocabe.repository.WordRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +26,7 @@ public class VocabularyServiceImpl implements VocabularyService {
 
     private final VocabularyRepository vocabularyRepository;
     private final UserVocabularyRepository userVocabularyRepository;
+    private final WordRepository wordRepository;
 
     @Override
     public List<VocaDTO.Response> findAllVocabularies(User user) {
@@ -42,6 +47,21 @@ public class VocabularyServiceImpl implements VocabularyService {
         userVocabularyRepository.save(userVocabulary);
 
         return VocaDTO.Detail.from(user, voca);
+    }
+
+    @Override
+    public WordDTO.WordsResponse findAllWordsByVocabularies(VocaDTO.SearchForm form) throws IllegalAccessException {
+        Vocabulary vocabulary = vocabularyRepository.findById(form.getVoca())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_VOCABULARY));
+
+        User user = form.getUser();
+        if(!vocabulary.getCreatedBy().equals(user.getId())) {
+            throw new IllegalAccessException(ErrorCode.NO_AUTHORITY.getMessage());
+        }
+
+        List<Word> words = wordRepository.findALLByVocabularyId(vocabulary.getId());
+        return WordDTO.WordsResponse.from(user, words);
+
     }
 
 }

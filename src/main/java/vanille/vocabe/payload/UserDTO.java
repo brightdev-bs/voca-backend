@@ -5,10 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import vanille.vocabe.entity.User;
+import vanille.vocabe.entity.Vocabulary;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class UserDTO {
 
@@ -66,18 +68,19 @@ public class UserDTO {
     }
 
     @Data
-    @Builder
     public static class UserDetailWithStudyRecords {
         private UserDetail user;
+        private List<VocaDTO.Response> vocabularyList;
         private List<String> dates;
 
-        protected UserDetailWithStudyRecords(UserDetail user, List<String> dates) {
-            this.user = user;
+        protected UserDetailWithStudyRecords(User user, List<String> dates, List<Vocabulary> vocabularyList) {
+            this.user = UserDetail.from(user);
             this.dates = dates;
+            this.vocabularyList = vocabularyList.stream().map(VocaDTO.Response::from).collect(Collectors.toList());
         }
 
-        public static UserDetailWithStudyRecords from(User user, List<String> list) {
-            return new UserDetailWithStudyRecords(UserDetail.from(user), list);
+        public static UserDetailWithStudyRecords from(User user, List<String> list, List<Vocabulary> vocabularyList) {
+            return new UserDetailWithStudyRecords(user, list, vocabularyList);
         }
     }
 }

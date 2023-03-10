@@ -6,7 +6,6 @@ import vanille.vocabe.entity.User;
 import vanille.vocabe.entity.Vocabulary;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 public class VocaDTO {
 
@@ -24,6 +23,17 @@ public class VocaDTO {
             this.name = name;
             this.description = description;
             this.isPublic = isPublic;
+        }
+    }
+
+    @Data
+    public static class SearchForm {
+        private Long voca;
+        private User user;
+
+        public SearchForm(Long voca, User user) {
+            this.voca = voca;
+            this.user = user;
         }
     }
 

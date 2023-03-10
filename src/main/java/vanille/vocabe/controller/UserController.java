@@ -62,9 +62,8 @@ public class UserController {
 
     @GetMapping("/v1/my-page")
     public ApiResponse myPage(@AuthenticationPrincipal User user) {
-        log.info("user = {}", user);
-        List<String> priorStudyRecords = wordService.findPriorStudyRecords(user);
-        return ApiResponse.of(HttpStatus.OK.toString(), UserDTO.UserDetailWithStudyRecords.from(user, priorStudyRecords));
+        UserDTO.UserDetailWithStudyRecords userInfo = wordService.findPriorStudyRecords(user);
+        return ApiResponse.of(HttpStatus.OK.toString(), userInfo);
     }
 
 }
