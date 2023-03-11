@@ -35,8 +35,6 @@ public class WordServiceImpl implements WordService {
     @Override
     public List<Word> findWordsWithDate(WordDTO.Request request) {
 
-        log.info("time = {}", request.getDate());
-
         LocalDate now = DateFormatter.from(request.getDate()).toLocalDate();
 
         LocalDateTime start = LocalDateTime.of(now, LocalTime.of(0, 0, 0));
