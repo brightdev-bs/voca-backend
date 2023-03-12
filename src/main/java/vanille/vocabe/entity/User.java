@@ -1,15 +1,22 @@
 package vanille.vocabe.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
 import vanille.vocabe.payload.UserDTO;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
-@ToString
+@ToString(callSuper = true)
 @Entity
-public class User extends BaseEntity {
+public class User {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -28,6 +35,16 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "user")
+    private final List<UserVocabulary> vocabularies = new ArrayList<>();
 
     protected User() {}
 
@@ -69,6 +86,16 @@ public class User extends BaseEntity {
 
     public void setPremiumRole() {
         this.role = UserRole.PREMIUM;
+    }
+
+    public void setIdForTest(Long id) {
+        this.id = id;
+    }
+    public void setPasswordForTest(String pw) {
+        this.password = pw;
+    }
+    public void setCreatedAtForTest() {
+        this.createdAt = LocalDateTime.now();
     }
 
 }

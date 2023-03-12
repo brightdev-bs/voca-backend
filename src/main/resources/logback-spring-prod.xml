@@ -8,7 +8,7 @@
             <fileNamePattern>
                 ${LOG_DIR}/archive/request.%d{yyyy-MM-dd}_%i.log
             </fileNamePattern>
-            <maxFileSize>1KB</maxFileSize> <!-- 로그파일의 최대 크기 -->
+            <maxFileSize>10MB</maxFileSize> <!-- 로그파일의 최대 크기 -->
             <maxHistory>30</maxHistory> <!-- 로그파일 최대 보관주기 (단위 : 일) -->
         </rollingPolicy>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -29,7 +29,7 @@
             <fileNamePattern>
                 ${LOG_DIR}/archive/error.%d{yyyy-MM-dd}_%i.log
             </fileNamePattern>
-            <maxFileSize>10KB</maxFileSize> <!-- 로그파일의 최대 크기 -->
+            <maxFileSize>10MB</maxFileSize> <!-- 로그파일의 최대 크기 -->
             <maxHistory>30</maxHistory> <!-- 로그파일 최대 보관주기 (단위 : 일) -->
         </rollingPolicy>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -39,7 +39,7 @@
         </encoder>
     </appender>
 
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="REQUEST" />
         <appender-ref ref="ERROR" />
     </root>

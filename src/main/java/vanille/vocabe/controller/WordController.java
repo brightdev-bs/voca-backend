@@ -23,15 +23,14 @@ public class WordController {
     private final WordService wordService;
 
     @GetMapping("/words")
-    public ApiResponse getWords(WordDTO.Request request, @AuthenticationPrincipal User user) {
-        log.info("request = {}", request);
+    public ApiResponse getWords(@Valid WordDTO.Request request, @AuthenticationPrincipal User user) {
         request.setUser(user);
         List<Word> words = wordService.findWordsWithDate(request);
         return ApiResponse.of(HttpStatus.OK.toString(), WordDTO.WordsResponse.from(user, words));
     }
 
     @PostMapping("/words")
-    public ApiResponse saveWord(@RequestBody @Valid WordDTO.NewWord request, @AuthenticationPrincipal User user) {
+    public ApiResponse saveWord(@RequestBody @Valid WordDTO.NewWord request, @AuthenticationPrincipal User user) throws IllegalAccessException {
         request.setUser(user);
         Word word = wordService.saveWord(request);
         return ApiResponse.of(HttpStatus.OK.toString(), WordDTO.WordDetail.from(word));

@@ -7,8 +7,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.fixture.UserFixture;
+import vanille.vocabe.global.config.TestConfig;
 import vanille.vocabe.global.exception.DuplicatedEntityException;
 import vanille.vocabe.global.exception.InvalidPasswordException;
 import vanille.vocabe.global.exception.NotFoundException;
@@ -24,6 +28,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.anyString;
 
+@Import(TestConfig.class)
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
@@ -31,6 +36,10 @@ class UserServiceTest {
     private UserRepository userRepository;
     @Mock
     private EmailServiceImpl emailService;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @InjectMocks
     private UserServiceImpl userService;
 
@@ -38,6 +47,7 @@ class UserServiceTest {
     @Test
     void saveUser() {
         given(userRepository.findByEmail("vanille@gmail.com")).willReturn(Optional.ofNullable(null));
+        given(passwordEncoder.encode(any(String.class))).willReturn(any(String.class));
 
         UserDTO.SignForm userDto = UserDTO.SignForm.builder()
                 .email("vanille@gmail.com")
@@ -55,6 +65,7 @@ class UserServiceTest {
     void saveUserMoreThanOne() {
         User user = UserFixture.getUnverifiedUser();
         given(userRepository.findByEmail("vanille@gmail.com")).willReturn(Optional.ofNullable(user));
+        given(passwordEncoder.encode(any(String.class))).willReturn("changedPassword");
 
         UserDTO.SignForm userDto = UserDTO.SignForm.builder()
                 .email("vanille@gmail.com")
@@ -68,15 +79,31 @@ class UserServiceTest {
         Assertions.assertEquals("changeName", user.getUsername());
     }
 
-    @DisplayName("[실패] 이메일 중복")
+    @DisplayName("[실패] 회원가입 - 이메일 중복")
     @Test
     void saveUserFailWithDuplicateEmail() {
         User user = UserFixture.getVerifiedUser();
         given(userRepository.findByEmail("vanille@gmail.com")).willReturn(Optional.ofNullable(user));
+        given(passwordEncoder.encode(any(String.class))).willReturn(any(String.class));
 
         UserDTO.SignForm userDto = UserDTO.SignForm.builder()
                 .email("vanille@gmail.com")
                 .password("1kdasdfwcv")
+                .username("test")
+                .build();
+        Assertions.assertThrows(DuplicatedEntityException.class, () -> userService.saveUser(userDto));
+    }
+
+    @DisplayName("[실패] 회원가입 - 이름 중복")
+    @Test
+    void saveUserFailWithDuplicateName() {
+        User user = UserFixture.getVerifiedUser();
+        given(userRepository.findByEmail(any(String.class))).willReturn(Optional.ofNullable(null));
+        given(userRepository.findByUsername(any(String.class))).willReturn(Optional.ofNullable(user));
+
+        UserDTO.SignForm userDto = UserDTO.SignForm.builder()
+                .email("test@gmail.com")
+                .password("test")
                 .username("test")
                 .build();
         Assertions.assertThrows(DuplicatedEntityException.class, () -> userService.saveUser(userDto));
@@ -87,6 +114,7 @@ class UserServiceTest {
     void loginUser() {
         User user = UserFixture.getVerifiedUser();
         given(userRepository.findByEmail("vanille@gmail.com")).willReturn(Optional.ofNullable(user));
+        given(passwordEncoder.matches("1kdasdfwcv", "{bcrypt}1kdasdfwcv")).willReturn(true);
 
         UserDTO.LoginForm loginForm = UserDTO.LoginForm.builder()
                 .email("vanille@gmail.com")

@@ -6,7 +6,6 @@ import vanille.vocabe.entity.User;
 import vanille.vocabe.entity.Word;
 
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,5 +72,6 @@ public class WordDTO {
         private String definition;
         private String note;
         private User user;
+        private Long vocaId;
     }
 }

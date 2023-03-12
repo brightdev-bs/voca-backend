@@ -1,19 +1,26 @@
 package vanille.vocabe.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.aspectj.lang.annotation.Before;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import vanille.vocabe.entity.EmailToken;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.fixture.UserFixture;
+import vanille.vocabe.global.config.OpenEntityManagerConfig;
+import vanille.vocabe.global.config.SecurityConfig;
+import vanille.vocabe.global.config.TestConfig;
 import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.payload.UserDTO;
 import vanille.vocabe.repository.EmailTokenRepository;
@@ -31,16 +38,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @Transactional
 @AutoConfigureMockMvc
 @SpringBootTest
 class UserControllerTest {
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private EmailService emailService;
 
     @Autowired
     private EmailTokenRepository emailTokenRepository;
@@ -52,7 +54,20 @@ class UserControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
+    private WebApplicationContext webApplicationContext;
+
+    @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @BeforeEach
+    public void setup() {
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(webApplicationContext)
+                .build();
+    }
 
     @DisplayName("[성공] 회원가입 성공")
     @Test
@@ -63,7 +78,7 @@ class UserControllerTest {
                 .password("1a2s3d4f5g")
                 .build();
 
-        mockMvc.perform(post("/sign-up")
+        mockMvc.perform(post("/api/v1/sign-up")
                         .content(objectMapper.writeValueAsString(signForm))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -81,7 +96,7 @@ class UserControllerTest {
                 .password(password)
                 .build();
 
-        mockMvc.perform(post("/sign-up")
+        mockMvc.perform(post("/api/v1/sign-up")
                         .content(objectMapper.writeValueAsString(signForm))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -109,7 +124,7 @@ class UserControllerTest {
         User user = UserFixture.getUnverifiedUser();
         userRepository.save(user);
 
-        mockMvc.perform(get("/email?token=" + emailToken.getToken()))
+        mockMvc.perform(get("/api/v1/email?token=" + emailToken.getToken()))
                 .andDo(print());
 
         assertTrue(emailToken.isExpired());
@@ -124,7 +139,7 @@ class UserControllerTest {
         emailToken.plusExpirationTimeForTest(-3L);
         emailTokenRepository.save(emailToken);
 
-        mockMvc.perform(get("/email?token=" + emailToken.getToken()))
+        mockMvc.perform(get("/api/v1/email?token=" + emailToken.getToken()))
                 .andExpect(jsonPath("statusCode").value(ErrorCode.NOT_FOUND_USER.getHttpStatus().toString()))
                 .andExpect(jsonPath("data").value(ErrorCode.NOT_FOUND_USER.getMessage()))
                 .andDo(print());
@@ -139,7 +154,7 @@ class UserControllerTest {
         emailToken.plusExpirationTimeForTest(-3L);
         emailTokenRepository.save(emailToken);
 
-        mockMvc.perform(get("/email?token=" + emailToken.getToken()))
+        mockMvc.perform(get("/api/v1/email?token=" + emailToken.getToken()))
                 .andExpect(jsonPath("statusCode").value(ErrorCode.EXPIRED_TOKEN.getHttpStatus().toString()))
                 .andExpect(jsonPath("data").value(ErrorCode.EXPIRED_TOKEN.getMessage()))
                 .andDo(print());
@@ -148,7 +163,7 @@ class UserControllerTest {
     @DisplayName("[실패] 확인 메일로 token 파라미터가 넘어오지 않을 때")
     @Test
     void confirmVerificationFail() throws Exception {
-        mockMvc.perform(get("/email?token="))
+        mockMvc.perform(get("/api/v1/email?token="))
                 .andExpect(jsonPath("statusCode").value(ErrorCode.INVALID_VERIFICATION_CODE.getHttpStatus().toString()))
                 .andExpect(jsonPath("data").value(ErrorCode.INVALID_VERIFICATION_CODE.getMessage()));
     }
@@ -157,14 +172,15 @@ class UserControllerTest {
     @Test
     void login() throws Exception {
         User user = UserFixture.getVerifiedUser();
+        user.setPasswordForTest(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
 
         UserDTO.LoginForm request = UserDTO.LoginForm.builder()
                 .email("vanille@gmail.com")
-                .password("1kdasdfwcv")
+                .password("{bcrypt}1kdasdfwcv")
                 .build();
 
-        mockMvc.perform(post("/login")
+        mockMvc.perform(post("/api/v1/login")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -182,7 +198,7 @@ class UserControllerTest {
                 .password("wrongpassword")
                 .build();
 
-        mockMvc.perform(post("/login")
+        mockMvc.perform(post("/api/v1/login")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -200,10 +216,10 @@ class UserControllerTest {
 
         UserDTO.LoginForm request = UserDTO.LoginForm.builder()
                 .email("vanille@gmail.com")
-                .password("1kdasdfwcv")
+                .password("{bcrypt}1kdasdfwcv")
                 .build();
 
-        mockMvc.perform(post("/login")
+        mockMvc.perform(post("/api/v1/login")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON)
                 )

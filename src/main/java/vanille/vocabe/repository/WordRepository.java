@@ -11,5 +11,6 @@ import java.util.List;
 public interface WordRepository extends JpaRepository<Word, Long> {
 
     List<Word> findByUserAndCreatedAtBetween(User user, LocalDateTime startDate, LocalDateTime endDateTime);
+    List<Word> findALLByVocabularyId(Long vocaId);
 
 }
