@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -18,6 +19,8 @@ import vanille.vocabe.entity.EmailToken;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.global.config.OpenEntityManagerConfig;
+import vanille.vocabe.global.config.SecurityConfig;
+import vanille.vocabe.global.config.TestConfig;
 import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.payload.UserDTO;
 import vanille.vocabe.repository.EmailTokenRepository;
@@ -55,6 +58,9 @@ class UserControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     public void setup() {
@@ -166,11 +172,12 @@ class UserControllerTest {
     @Test
     void login() throws Exception {
         User user = UserFixture.getVerifiedUser();
+        user.setPasswordForTest(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
 
         UserDTO.LoginForm request = UserDTO.LoginForm.builder()
                 .email("vanille@gmail.com")
-                .password("1kdasdfwcv")
+                .password("{bcrypt}1kdasdfwcv")
                 .build();
 
         mockMvc.perform(post("/api/v1/login")
@@ -209,7 +216,7 @@ class UserControllerTest {
 
         UserDTO.LoginForm request = UserDTO.LoginForm.builder()
                 .email("vanille@gmail.com")
-                .password("1kdasdfwcv")
+                .password("{bcrypt}1kdasdfwcv")
                 .build();
 
         mockMvc.perform(post("/api/v1/login")

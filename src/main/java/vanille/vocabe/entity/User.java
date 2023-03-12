@@ -15,7 +15,6 @@ import java.util.List;
 
 @Getter
 @ToString(callSuper = true)
-@EntityListeners(AuditingEntityListener.class)
 @Entity
 public class User {
 
@@ -91,6 +90,9 @@ public class User {
 
     public void setIdForTest(Long id) {
         this.id = id;
+    }
+    public void setPasswordForTest(String pw) {
+        this.password = pw;
     }
     public void setCreatedAtForTest() {
         this.createdAt = LocalDateTime.now();

@@ -2,6 +2,7 @@ package vanille.vocabe.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vanille.vocabe.entity.User;
@@ -24,6 +25,7 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     private final EmailService emailService;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     @Override
@@ -31,18 +33,19 @@ public class UserServiceImpl implements UserService{
 
         User user = userRepository.findByEmail(form.getEmail()).orElseGet(() -> null);
 
+        String encodedPassword = passwordEncoder.encode(form.getPassword());
+        form.setPassword(encodedPassword);
+
         if(user != null) {
             if(user.isVerified()) {
                 throw new DuplicatedEntityException(ErrorCode.DUPLICATED_USER);
             }
 
-            Optional<User> byUsername = userRepository.findByUsername(form.getUsername());
-            if(byUsername.isPresent()) {
-                throw new DuplicatedEntityException(ErrorCode.DUPLICATED_USERNAME);
-            }
+            checkIfNameIsDuplicated(form);
 
             user.changeUsernameAndPassword(form.getUsername(), form.getPassword());
         } else {
+            checkIfNameIsDuplicated(form);
             user = User.from(form);
         }
 
@@ -50,6 +53,13 @@ public class UserServiceImpl implements UserService{
 
         emailService.sendConfirmEmail(form.getEmail());
         return user;
+    }
+
+    private void checkIfNameIsDuplicated(UserDTO.SignForm form) {
+        Optional<User> byUsername = userRepository.findByUsername(form.getUsername());
+        if(byUsername.isPresent()) {
+            throw new DuplicatedEntityException(ErrorCode.DUPLICATED_USERNAME);
+        }
     }
 
     @Override
@@ -60,7 +70,8 @@ public class UserServiceImpl implements UserService{
             throw new UnverifiedException(ErrorCode.UNVERIFIED_USER);
         }
 
-        if(!user.getPassword().equals(form.getPassword())) {
+        String password = user.getPassword();
+        if (!passwordEncoder.matches(form.getPassword(), password)) {
             throw new InvalidPasswordException(ErrorCode.INVALID_PASSWORD);
         }
 
