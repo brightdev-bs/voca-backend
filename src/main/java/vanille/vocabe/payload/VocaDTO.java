@@ -39,13 +39,15 @@ public class VocaDTO {
 
     @Data
     public static class Detail {
+        private Long id;
         private String name;
         private String description;
         private String username;
         private String createdAt;
 
         @Builder
-        public Detail(String name, String description, String username, String createdAt) {
+        public Detail(Long id, String name, String description, String username, String createdAt) {
+            this.id = id;
             this.name = name;
             this.description = description;
             this.username = username;
@@ -54,6 +56,7 @@ public class VocaDTO {
 
         public static Detail from(User user, Vocabulary voca) {
             return VocaDTO.Detail.builder()
+                    .id(voca.getId())
                     .name(voca.getName())
                     .description(voca.getDescription())
                     .username(user.getUsername())

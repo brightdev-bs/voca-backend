@@ -45,14 +45,11 @@ public class WordServiceImpl implements WordService {
 
     @Override
     public Word saveWord(WordDTO.NewWord request) throws IllegalAccessException {
-        Optional<Vocabulary> ofVoca = vocabularyRepository.findByName(request.getVocabularyName());
-        Vocabulary vocabulary = null;
-        if(ofVoca.isPresent()) {
-            vocabulary = ofVoca.get();
-        }
+        Vocabulary vocabulary = vocabularyRepository.findById(request.getVocaId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_VOCABULARY));
 
         User user = request.getUser();
-        if(vocabulary != null && !vocabulary.getCreatedBy().equals(user.getId())) {
+        if(!vocabulary.getCreatedBy().equals(user.getId())) {
             throw new IllegalAccessException(ErrorCode.NO_AUTHORITY.getMessage());
         }
 

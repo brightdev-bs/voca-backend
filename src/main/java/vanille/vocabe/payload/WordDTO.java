@@ -72,6 +72,6 @@ public class WordDTO {
         private String definition;
         private String note;
         private User user;
-        private String vocabularyName;
+        private Long vocaId;
     }
 }
