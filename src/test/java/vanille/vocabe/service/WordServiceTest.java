@@ -50,14 +50,14 @@ class WordServiceTest {
 
         Vocabulary voca = VocabularyFixture.getVocabularyFixture("test");
         voca.setCreatedByForTest(1L);
-        when(vocabularyRepository.findByName(any(String.class)))
+        when(vocabularyRepository.findById(any(Long.class)))
                 .thenReturn(Optional.of(voca));
 
         WordDTO.NewWord request = WordDTO.NewWord.builder()
                 .word("test-word1")
                 .definition("definition")
                 .user(user)
-                .vocabularyName("test")
+                .vocaId(1L)
                 .build();
 
         Word word = wordService.saveWord(request);
@@ -68,20 +68,20 @@ class WordServiceTest {
 
     @DisplayName("[실패] 자신이 만든 단어장이 아니라면 단어를 추가할 수 없다")
     @Test
-    void saveWordFail() throws IllegalAccessException {
+    void saveWordFail() {
         User user = UserFixture.getVerifiedUser();
         user.setIdForTest(2L);
 
         Vocabulary voca = VocabularyFixture.getVocabularyFixture("test");
         voca.setCreatedByForTest(1L);
-        when(vocabularyRepository.findByName(any(String.class)))
+        when(vocabularyRepository.findById(any(Long.class)))
                 .thenReturn(Optional.of(voca));
 
         WordDTO.NewWord request = WordDTO.NewWord.builder()
                 .word("test-word1")
                 .definition("definition")
                 .user(user)
-                .vocabularyName("test")
+                .vocaId(1L)
                 .build();
 
         Assertions.assertThrows(IllegalAccessException.class, () -> wordService.saveWord(request));

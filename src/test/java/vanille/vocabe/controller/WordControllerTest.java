@@ -82,10 +82,11 @@ class WordControllerTest {
                 .build();
 
         mockMvc.perform(post("/api/v1/words")
-                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
-                .content(objectMapper.writeValueAsString(request))
-                .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(jsonPath("statusCode").value(HttpStatus.OK.toString()));
+                        .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(jsonPath("statusCode").value(HttpStatus.OK.toString()));
     }
 
     @DisplayName("[실패] 새로운 단어 추가 실패 - 파라미터")
