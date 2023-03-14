@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.format.annotation.DateTimeFormat;
 import vanille.vocabe.payload.UserDTO;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @Getter
 @ToString(callSuper = true)
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class User {
 
     @Id

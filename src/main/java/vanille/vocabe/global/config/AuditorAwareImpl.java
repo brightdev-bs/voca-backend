@@ -15,6 +15,11 @@ public class AuditorAwareImpl implements AuditorAware<Long> {
         if (null == authentication || !authentication.isAuthenticated()) {
             return Optional.empty();
         }
+
+        if(authentication.getPrincipal().equals("anonymousUser")) {
+            return Optional.empty();
+        }
+
         User user = (User) authentication.getPrincipal();
         return Optional.of(user.getId());
     }
