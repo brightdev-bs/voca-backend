@@ -46,7 +46,7 @@ public class EmailServiceImpl implements EmailService{
             throw new ExpiredTokenException(ErrorCode.EXPIRED_TOKEN);
         }
 
-        emailToken.setExpired();
+        emailToken.setExpired(true);
 
 
         return verifyUser(findUser);

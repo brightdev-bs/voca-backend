@@ -52,6 +52,7 @@ class EmailTokenServiceTest {
         emailTokenService.createEmailToken(email);
         Assertions.assertNotEquals(emailToken.getExpirationDate(), now);
         Assertions.assertNotEquals(emailToken.getToken(), tokenId);
+        Assertions.assertFalse(emailToken.isExpired());
     }
 
 
