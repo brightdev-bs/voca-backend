@@ -32,8 +32,8 @@ public class EmailToken {
         return emailToken;
     }
 
-    public void setExpired() {
-        this.expired = true;
+    public void setExpired(boolean flag) {
+        this.expired = flag;
     }
 
     public void refreshEmailToken() {

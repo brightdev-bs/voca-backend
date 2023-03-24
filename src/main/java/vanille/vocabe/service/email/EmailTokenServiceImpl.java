@@ -33,6 +33,7 @@ public class EmailTokenServiceImpl implements EmailTokenService {
         if(byEmail.isPresent()) {
             emailToken = byEmail.get();
             emailToken.refreshEmailToken();
+            emailToken.setExpired(false);
         } else {
             emailToken = EmailToken.createEmailToken(email);
             emailTokenRepository.save(emailToken);
