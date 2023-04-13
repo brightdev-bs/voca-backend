@@ -12,14 +12,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    @Value("${front-server}")
+    @Value("${front-server.host}")
     private String FRONT_SERVER;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins(FRONT_SERVER)
-                .allowedOriginPatterns("https://voca-world.com")
+                .allowedOrigins("*")
+                .allowedOriginPatterns("https://voca-world.com", "http://localhost")
                 .allowedMethods(
                         HttpMethod.GET.name(),
                         HttpMethod.HEAD.name(),

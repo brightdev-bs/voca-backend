@@ -1,13 +1,17 @@
 version: "3.8"
 services:
-#  web:
-#    image: nginx
-#    ports:
-#      - 80:80
-#    volumes:
-#      - ./nginx/conf.d:/etc/nginx/conf.d
-#    depends_on:
-#      - application
+  voca-front:
+    container_name: voca-front
+    build:
+      context: ../voca-front
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+    restart: always
+    depends_on:
+      - voca-backend
+    networks:
+      - voca
   mysql:
     container_name: mysql-8.0.30
     image: mysql:8.0.30
@@ -21,9 +25,10 @@ services:
       - TZ=Asia/Seoul
     networks:
       - voca
-  application:
+  voca-backend:
     build:
       context: .
+      dockerfile: Dockerfile
     ports:
       - 8088:8088
     container_name: voca-backend
