@@ -1,5 +1,17 @@
 version: "3.8"
 services:
+  voca-front:
+    container_name: voca-front
+    build:
+      context: ../voca-front
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+    restart: always
+    depends_on:
+      - voca-backend
+    networks:
+      - voca
   mysql:
     container_name: mysql-8.0.30
     image: mysql:8.0.30
@@ -11,3 +23,25 @@ services:
       - MYSQL_PASSWORD=localpassword
       - MYSQL_ROOT_PASSWORD=vanille
       - TZ=Asia/Seoul
+    networks:
+      - voca
+  voca-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8088:8088
+    container_name: voca-backend
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/voca-api?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+      SPRING_DATASOURCE_USERNAME: local
+      SPRING_DATASOURCE_PASSWORD: localpassword
+      spring.profiles.active: local
+    depends_on:
+      - mysql
+    networks:
+      - voca
+
+networks:
+  voca:
