@@ -18,7 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*")
+                .allowedOrigins("FRONT_SERVER")
                 .allowedOriginPatterns("https://voca-world.com", "http://localhost")
                 .allowedMethods(
                         HttpMethod.GET.name(),
@@ -29,6 +29,4 @@ public class WebConfig implements WebMvcConfigurer {
                         HttpMethod.DELETE.name()
                 );
     }
-
-
 }

@@ -62,29 +62,30 @@ version: "3.8"
 services:
   mysql:
     ...
-  application:
-    build:
-      context: .
-    ports:
-      - 8088:8088
-    container_name: voca-backend
-    restart: always
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/voca-api?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
-      SPRING_DATASOURCE_USERNAME: local
-      SPRING_DATASOURCE_PASSWORD: localpassword
-      spring.profiles.active: local
-    depends_on:
-      - mysql
-    networks:
-      - voca
+  voca-backend:
+   build:
+    context: .
+    dockerfile: Dockerfile
+   ports:
+    - 8088:8088
+   container_name: voca-backend
+   restart: always
+   environment:
+    SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/voca-api?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    SPRING_DATASOURCE_USERNAME: local
+    SPRING_DATASOURCE_PASSWORD: localpassword
+    spring.profiles.active: local
+   depends_on:
+    - mysql
+   networks:
+    - voca
 ~~~
 
 여기서 시간이 걸렸던 포인트는 3가지였다.
 
 1. SPRING_DATASOURCE_URL의 입력 정보 - 현재 MySql 컨테이너를 이용해 구동하고 있으므로 도커 컨테이너에게 localhost가 아닌 MySql 컨테이너의 정보를 넘겨주어야 한다.
 
-좀 더 자세히 알아보면, 다음과 같이 사용자 요청이 3306포트로 들어오면 실행 중인 컴퓨터는 3306포트를 가진 도커 컨테이너와 연결한다. 즉, localhost를 넘겨주게 되면 이는 application의 localhost를 의미하게 되고 application 컨테이너와 MySql 컨테이너는 서로 다른 컨테이너이므로 연결되지 않는다.
+좀 더 자세히 알아보면, 다음과 같이 사용자 요청이 3306포트로 들어오면 실행 중인 컴퓨터는 3306포트를 가진 도커 컨테이너와 연결한다. 즉, localhost를 넘겨주게 되면 이는 voca-backend의 localhost를 의미하게 되고 voca-backend 컨테이너와 MySql 컨테이너는 서로 다른 컨테이너이므로 연결되지 않는다.
 
 <p>
 <img src="./images/computer_docker.png" width="500" /> <br>
@@ -95,7 +96,7 @@ services:
  `spring.profiles.active: local`
 
 
-3. depends_on 설정 : depends_on은 특정 컨테이너 다음에 실행되어야 할 때(위와 같이 MySQL서버가 올라간 뒤에 프로젝트를 배포해야할 때) 사용한다. depends_on 에 사용할 서비스의 이름을 명시해주면 mysql 컨테이너가 올라간 뒤에 application 서비스가 올라간다.
+3. depends_on 설정 : depends_on은 특정 컨테이너 다음에 실행되어야 할 때(위와 같이 MySQL서버가 올라간 뒤에 프로젝트를 배포해야할 때) 사용한다. depends_on 에 사용할 서비스의 이름을 명시해주면 mysql 컨테이너가 올라간 뒤에 voca-backend 서비스가 올라간다.
 
 
 
