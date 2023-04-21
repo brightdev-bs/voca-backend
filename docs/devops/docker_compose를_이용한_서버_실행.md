@@ -81,6 +81,13 @@ services:
     - voca
 ~~~
 
+빌드 이미지 생성을 위한 dockerfile도 같은 경로에 저장해준다.
+~~~dockerfile
+FROM openjdk:11
+COPY build/libs/voca-be-0.0.1-SNAPSHOT.jar app.jar
+ENTRYPOINT ["java", "-jar", "/app.jar"]
+~~~
+
 여기서 시간이 걸렸던 포인트는 3가지였다.
 
 1. SPRING_DATASOURCE_URL의 입력 정보 - 현재 MySql 컨테이너를 이용해 구동하고 있으므로 도커 컨테이너에게 localhost가 아닌 MySql 컨테이너의 정보를 넘겨주어야 한다.
