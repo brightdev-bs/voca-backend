@@ -5,6 +5,10 @@ services:
     build:
       context: ../voca-front
       dockerfile: Dockerfile
+#       local 실행시 밑에는 주석 처리 하고 쓰기 !
+      args:
+        - VUE_APP_ADDRESS=http://voca-world.com
+        - VUE_APP_ADDRESS_API=http://voca-world.com/api
     ports:
       - 80:80
     restart: always
@@ -17,6 +21,8 @@ services:
     image: mysql:8.0.30
     ports:
       - "3306:3306"
+    volumes:
+      - ./db/:/var/lib/mysql
     environment:
       - MYSQL_DATABASE=voca-api
       - MYSQL_USER=local
