@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -15,6 +16,7 @@ import vanille.vocabe.entity.User;
 import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.fixture.WordFixture;
 import vanille.vocabe.global.constants.ErrorCode;
+import vanille.vocabe.global.util.JwtTokenUtils;
 import vanille.vocabe.repository.UserRepository;
 
 import javax.transaction.Transactional;
@@ -30,6 +32,8 @@ import static vanille.vocabe.constants.TestConstants.BEARER_TOKEN;
 @AutoConfigureMockMvc
 @SpringBootTest
 class BearerAuthInterceptorTest {
+
+    private String key = "voca-backend-secretkey-application-yml-local";
 
     @Autowired
     private MockMvc mockMvc;
@@ -73,13 +77,40 @@ class BearerAuthInterceptorTest {
                 .andExpect(jsonPath("statusCode").value(ErrorCode.NOT_FOUND_TOKEN.getHttpStatus().toString()));
     }
 
+    @DisplayName("[실패] 토큰이 만료되었을 때")
+    @Test
+    void authInterceptorFailWithExpiredToken() throws Exception {
+        User user = UserFixture.getVerifiedUser("kim");
+        userRepository.save(user);
+
+        final String token;
+        try {
+            token = JwtTokenUtils.generateAccessToken("kim", 1000L, key);
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        mockMvc.perform(post("/api/v1/words")
+                        .header(HttpHeaders.AUTHORIZATION, token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(WordFixture.get(user)))
+                )
+                .andExpect(jsonPath("statusCode").value(ErrorCode.EXPIRED_TOKEN.getHttpStatus().toString()))
+                .andDo(print());
+    }
+
     @DisplayName("[실패] 토큰 유효하지 않을 때")
     @Test
     void authInterceptorFailWithInvalidToken() throws Exception {
+        User user = UserFixture.getVerifiedUser("kim");
+        userRepository.save(user);
         mockMvc.perform(post("/api/v1/words")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + "wrongtoken.dwfwdf.wdfxcv")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(WordFixture.get(user)))
                 )
-                .andExpect(jsonPath("statusCode").value(ErrorCode.NOT_FOUND_TOKEN.getHttpStatus().toString()));
+                .andExpect(jsonPath("statusCode").value(ErrorCode.INVALID_TOKEN.getHttpStatus().toString()))
+                .andDo(print());
     }
 
 

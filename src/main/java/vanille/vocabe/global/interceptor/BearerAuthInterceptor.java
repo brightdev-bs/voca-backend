@@ -1,5 +1,9 @@
 package vanille.vocabe.global.interceptor;
 
+import antlr.TokenStreamException;
+import antlr.TokenStreamIOException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.io.DecodingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,11 +55,11 @@ public class BearerAuthInterceptor implements HandlerInterceptor {
             String username = JwtTokenUtils.getUsername(token, secretKey);
             userDetails = userService.findUserByUsername(username);
 
-            if (!JwtTokenUtils.validate(token, userDetails.getUsername(), secretKey)) {
-                log.error("Token is not valid {}", token);
-                throw new ExpiredTokenException(ErrorCode.EXPIRED_TOKEN);
-            }
+            JwtTokenUtils.validate(token, userDetails.getUsername(), secretKey);
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredTokenException(ErrorCode.EXPIRED_TOKEN);
         } catch (Exception e) {
+            log.error("Error : " + e.getMessage() + ", Cause : " + e.getCause());
             throw new InvalidHeaderException(ErrorCode.INVALID_TOKEN);
         }
 
