@@ -286,5 +286,6 @@ gradle-app.setting
 
 
 application-prod.yml
+db
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij+all,intellij+iml,intellij,java,gradle
