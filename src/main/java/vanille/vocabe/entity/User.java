@@ -100,4 +100,8 @@ public class User {
         this.createdAt = LocalDateTime.now();
     }
 
+    public void setCreatedAtForTest(LocalDateTime localDateTime) {
+        this.createdAt = localDateTime;
+    }
+
 }

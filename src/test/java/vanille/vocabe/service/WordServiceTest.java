@@ -15,12 +15,15 @@ import vanille.vocabe.entity.Word;
 import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.fixture.VocabularyFixture;
 import vanille.vocabe.fixture.WordFixture;
+import vanille.vocabe.payload.UserDTO;
 import vanille.vocabe.payload.WordDTO;
+import vanille.vocabe.repository.UserRepository;
 import vanille.vocabe.repository.VocabularyRepository;
 import vanille.vocabe.repository.WordQuerydslRepository;
 import vanille.vocabe.repository.WordRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +36,8 @@ import static org.mockito.Mockito.when;
 class WordServiceTest {
     @Mock
     private WordRepository wordRepository;
+    @Mock
+    private WordQuerydslRepository wordQuerydslRepository;
     @Mock
     private VocabularyRepository vocabularyRepository;
 
@@ -104,6 +109,23 @@ class WordServiceTest {
         wordService.changeCheck(2L);
         Assertions.assertFalse(word2.isChecked());
         Assertions.assertEquals("망고", word2.getDefinition());
+    }
+
+    @DisplayName("공부한 날짜 기록을 가져온다.")
+    @Test
+    void getStudyRecords() {
+        User user = UserFixture.getVerifiedUser();
+        user.setCreatedAtForTest(LocalDateTime.of(2023, 01, 01, 00, 00));
+        LocalDateTime now = LocalDateTime.now();
+        List<String> dates = List.of("01/01/2023", "01/02/2023", "02/02/2023", "03/01/2023", "04/01/2023");
+        given(wordQuerydslRepository.findByUserAndCreatedAtBetweenAndGroupBy(
+                user,
+                user.getCreatedAt(),
+                LocalDateTime.of(now.getYear(), now.getMonth(), now.toLocalDate().lengthOfMonth(), 23, 59, 59))
+        ).willReturn(dates);
+
+        UserDTO.UserDetailWithStudyRecords priorStudyRecords = wordService.findPriorStudyRecords(user);
+        Assertions.assertEquals(5, priorStudyRecords.getDates().size());
     }
 
 
