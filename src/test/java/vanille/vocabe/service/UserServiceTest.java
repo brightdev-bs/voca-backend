@@ -7,7 +7,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import vanille.vocabe.entity.User;
@@ -57,7 +56,7 @@ class UserServiceTest {
         userService.saveUser(userDto);
 
         then(userRepository).should().save(any(User.class));
-        then(emailService).should().sendConfirmEmail(anyString());
+        then(emailService).should().sendSignUpConfirmEmail(anyString());
     }
 
     @DisplayName("[성공] 2. 가입 시도 여러번했지만, 인증은 안 한 경우")
@@ -74,7 +73,7 @@ class UserServiceTest {
                 .build();
         userService.saveUser(userDto);
 
-        then(emailService).should().sendConfirmEmail(anyString());
+        then(emailService).should().sendSignUpConfirmEmail(anyString());
         Assertions.assertEquals("changedPassword", user.getPassword());
         Assertions.assertEquals("changeName", user.getUsername());
     }

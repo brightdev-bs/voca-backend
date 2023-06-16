@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService{
 
         userRepository.save(user);
 
-        emailService.sendConfirmEmail(form.getEmail());
+        emailService.sendSignUpConfirmEmail(form.getEmail());
         return user;
     }
 

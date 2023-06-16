@@ -2,7 +2,6 @@ package vanille.vocabe.service.email;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,14 +17,10 @@ import java.util.UUID;
 @Service
 public class EmailTokenServiceImpl implements EmailTokenService {
 
-    @Value("${front-server}")
-    private String FRONT_SERVER;
-    private final EmailSender emailSender;
     private final EmailTokenRepository emailTokenRepository;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
-    public UUID createEmailToken(String email) {
+    public EmailToken createEmailToken(String email) {
         Assert.notNull(email, "받는 이메일은 필수입니다.");
 
         Optional<EmailToken> byEmail = emailTokenRepository.findByEmail(email);
@@ -39,13 +34,7 @@ public class EmailTokenServiceImpl implements EmailTokenService {
             emailTokenRepository.save(emailToken);
         }
 
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(email);
-        mailMessage.setSubject("회원가입 이메일 인증 메일");
-        mailMessage.setText(FRONT_SERVER + "/email?token=" + emailToken.getToken());
-        emailSender.sendEmail(mailMessage);
-
-        return emailToken.getToken();
+        return emailToken;
     }
 
     @Override

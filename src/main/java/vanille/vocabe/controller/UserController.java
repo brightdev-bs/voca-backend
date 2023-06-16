@@ -43,7 +43,7 @@ public class UserController {
 
     @PostMapping("/v1/email")
     public ApiResponse sendEmail(@RequestBody @Valid UserDTO.LoginForm request) {
-        emailService.sendConfirmEmail(request.getEmail());
+        emailService.sendSignUpConfirmEmail(request.getEmail());
         return ApiResponse.of(HttpStatus.OK.toString(), request.getEmail());
     }
 
