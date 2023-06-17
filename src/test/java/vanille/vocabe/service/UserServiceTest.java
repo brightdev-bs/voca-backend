@@ -9,7 +9,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import vanille.vocabe.entity.EmailToken;
 import vanille.vocabe.entity.User;
+import vanille.vocabe.fixture.EmailTokenFixture;
 import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.global.config.TestConfig;
 import vanille.vocabe.global.exception.DuplicatedEntityException;
@@ -19,13 +21,18 @@ import vanille.vocabe.global.exception.UnverifiedException;
 import vanille.vocabe.payload.UserDTO;
 import vanille.vocabe.repository.UserRepository;
 import vanille.vocabe.service.email.EmailServiceImpl;
+import vanille.vocabe.service.email.EmailTokenService;
+import vanille.vocabe.service.email.EmailTokenServiceImpl;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.anyString;
+import static vanille.vocabe.constants.TestConstants.TEST_EMAIL;
 
 @Import(TestConfig.class)
 @ExtendWith(MockitoExtension.class)
@@ -35,6 +42,8 @@ class UserServiceTest {
     private UserRepository userRepository;
     @Mock
     private EmailServiceImpl emailService;
+    @Mock
+    private EmailTokenServiceImpl emailTokenService;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -74,8 +83,8 @@ class UserServiceTest {
         userService.saveUser(userDto);
 
         then(emailService).should().sendSignUpConfirmEmail(anyString());
-        Assertions.assertEquals("changedPassword", user.getPassword());
-        Assertions.assertEquals("changeName", user.getUsername());
+        assertEquals("changedPassword", user.getPassword());
+        assertEquals("changeName", user.getUsername());
     }
 
     @DisplayName("[실패] 회원가입 - 이메일 중복")
@@ -121,9 +130,9 @@ class UserServiceTest {
                 .build();
 
         User loginUser = userService.login(loginForm);
-        Assertions.assertEquals(user.getEmail(), loginUser.getEmail());
-        Assertions.assertEquals(user.getPassword(), loginUser.getPassword());
-        Assertions.assertEquals(user.getUsername(), loginUser.getUsername());
+        assertEquals(user.getEmail(), loginUser.getEmail());
+        assertEquals(user.getPassword(), loginUser.getPassword());
+        assertEquals(user.getUsername(), loginUser.getUsername());
     }
 
     @DisplayName("[실패] 로그인 - 존재하지 않는 이메일")
@@ -165,5 +174,64 @@ class UserServiceTest {
         Assertions.assertThrows(InvalidPasswordException.class, () -> userService.login(loginForm));
     }
 
+    @DisplayName("[성공] 이메일 - 사용자 찾기")
+    @Test
+    void findUserByEmail() {
+        given(userRepository.findByEmail(UserFixture.email)).willReturn(Optional.of(UserFixture.getVerifiedUser()));
+        User user = userService.findUserByEmail(UserFixture.email);
+        assertEquals(UserFixture.email, user.getEmail());
+    }
+
+    @DisplayName("[성공] 패스워드 변경")
+    @Test
+    void changePassword() {
+        String newPassword = "mango1234";
+        UserDTO.PasswordForm form = UserDTO.PasswordForm.builder()
+                .password(newPassword)
+                .password2(newPassword)
+                .token("temporary value")
+                .build();
+
+        EmailToken emailToken = EmailTokenFixture.createEmailToken();
+        User user = UserFixture.getVerifiedUser(TEST_EMAIL);
+        given(emailTokenService.findByToken(any(String.class))).willReturn(Optional.of(emailToken));
+        given(emailTokenService.validateToken(emailToken)).willReturn(true);
+        given(userRepository.findByEmail(any(String.class))).willReturn(Optional.of(user));
+
+        assertTrue(userService.changeUserPassword(form));
+        assertEquals(newPassword, user.getPassword());
+    }
+
+    @DisplayName("[실패] 패스워드 변경 - 패스워드 불일치")
+    @Test
+    void changePasswordFailByDifferentPassword() {
+        UserDTO.PasswordForm form = UserDTO.PasswordForm.builder()
+                .password("password1")
+                .password2("notSamePassword")
+                .token("temporary value")
+                .build();
+
+        EmailToken emailToken = EmailTokenFixture.createEmailToken();
+        given(emailTokenService.findByToken(any(String.class))).willReturn(Optional.of(emailToken));
+        assertFalse(userService.changeUserPassword(form));
+    }
+
+    @DisplayName("[실패] 패스워드 변경 - 토큰 만료")
+    @Test
+    void changePasswordFailByExpiredToken() {
+        UserDTO.PasswordForm form = UserDTO.PasswordForm.builder()
+                .password("password1")
+                .password2("password1")
+                .token("expired date token")
+                .build();
+
+        EmailToken emailToken = EmailTokenFixture.createExpiredDateEmailToken();
+        given(emailTokenService.findByToken(any(String.class))).willReturn(Optional.of(emailToken));
+        assertFalse(userService.changeUserPassword(form));
+
+        emailToken = EmailTokenFixture.createEmailToken();
+        given(emailTokenService.findByToken(any(String.class))).willReturn(Optional.of(emailToken));
+        assertFalse(userService.changeUserPassword(form));
+    }
 
 }

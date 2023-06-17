@@ -11,4 +11,8 @@ public interface UserService {
     User login(UserDTO.LoginForm form);
 
     User findUserByUsername(String username);
+
+    User findUserByEmail(String email);
+
+    boolean changeUserPassword(UserDTO.PasswordForm form);
 }

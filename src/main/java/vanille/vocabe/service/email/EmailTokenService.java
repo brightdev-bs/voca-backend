@@ -10,4 +10,6 @@ public interface EmailTokenService {
     Optional<EmailToken> findByToken(String emailTokenId);
 
     Optional<EmailToken> findByEmail(String email);
+
+    boolean validateToken(EmailToken emailToken);
 }

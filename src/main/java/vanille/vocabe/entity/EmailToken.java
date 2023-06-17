@@ -41,6 +41,7 @@ public class EmailToken {
     public void refreshEmailToken() {
         this.token = UUID.randomUUID();
         this.expirationDate = LocalDateTime.now().plusMinutes(EMAIL_TOKEN_EXPIRATION_TIME);
+        this.expired = false;
     }
 
     public static EmailToken createFixtureForTest(String email, LocalDateTime time) {
