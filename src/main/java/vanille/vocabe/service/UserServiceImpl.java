@@ -92,6 +92,7 @@ public class UserServiceImpl implements UserService{
         return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
     }
 
+    @Transactional
     @Override
     public boolean changeUserPassword(UserDTO.PasswordForm form) {
         EmailToken emailToken = emailTokenService.findByToken(form.getToken())
@@ -105,6 +106,8 @@ public class UserServiceImpl implements UserService{
                 user.changePassword(form.getPassword());
                 userRepository.save(user);
                 return true;
+            } else {
+                throw new InvalidPasswordException(ErrorCode.INVALID_PASSWORD);
             }
         }
 

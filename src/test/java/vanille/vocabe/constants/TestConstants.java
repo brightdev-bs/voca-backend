@@ -6,7 +6,7 @@ public class TestConstants {
 
     public static final String BEARER_TOKEN = getBearerToken();
 
-    public static final String TEST_EMAIL = "brightbs.it@naver.com";
+    public static final String TEST_EMAIL = "vanille@gmail.com";
 
     private static String getBearerToken() {
         return generateAccessToken("test", 2592000000L, "voca-backend-secretkey-application-yml-local");

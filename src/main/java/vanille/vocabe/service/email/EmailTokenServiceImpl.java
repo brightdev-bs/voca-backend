@@ -54,7 +54,7 @@ public class EmailTokenServiceImpl implements EmailTokenService {
 
     @Override
     public boolean validateToken(EmailToken emailToken) {
-        if(!emailToken.getExpirationDate().isBefore(LocalDateTime.now()) || emailToken.isExpired()) {
+        if(emailToken.getExpirationDate().isBefore(LocalDateTime.now()) || emailToken.isExpired()) {
             throw new InvalidVerificationCodeException(ErrorCode.EXPIRED_TOKEN);
         }
         return true;
