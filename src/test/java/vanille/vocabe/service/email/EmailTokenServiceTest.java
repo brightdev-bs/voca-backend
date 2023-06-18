@@ -19,8 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class EmailTokenServiceTest {
@@ -74,7 +73,7 @@ class EmailTokenServiceTest {
     void generateSecondEmailToken() {
         String email = "vanille@gmail.com";
         LocalDateTime now = LocalDateTime.now();
-        EmailToken emailToken = EmailToken.createFixtureForTest(email, now);
+        EmailToken emailToken = EmailTokenFixture.createEmailToken();
         UUID tokenId = emailToken.getToken();
 
         given(emailTokenRepository.findByEmail(email)).willReturn(Optional.of(emailToken));
@@ -83,6 +82,18 @@ class EmailTokenServiceTest {
         assertNotEquals(emailToken.getExpirationDate(), now);
         assertNotEquals(emailToken.getToken(), tokenId);
         assertFalse(emailToken.isExpired());
+    }
+
+    @DisplayName("[성공] 이메일 토큰 사용 후 만료 플래그 변경")
+    @Test
+    void changeSetExpiredFlag() {
+        EmailToken emailToken = mock(EmailToken.class);
+        given(emailToken.getExpirationDate()).willReturn(LocalDateTime.now().plusMinutes(5L));
+        given(emailToken.isExpired()).willReturn(false);
+
+        emailTokenService.validateToken(emailToken);
+
+        then(emailToken).should().setExpired(true);
     }
 
 

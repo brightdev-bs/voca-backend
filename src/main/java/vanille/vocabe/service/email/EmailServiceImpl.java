@@ -79,7 +79,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendPasswordFindEmail(String email) {
         EmailToken emailToken = emailTokenService.createEmailToken(email);
-        sendEmail(emailToken, PASSWORD_FIND_SUBJECT, "/password/options?token=" + emailToken.getToken());
+        sendEmail(emailToken, PASSWORD_FIND_SUBJECT, "/password/options?token=");
     }
 
     private static boolean verifyUser(Optional<User> findUser) {

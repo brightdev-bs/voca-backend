@@ -3,6 +3,7 @@ package vanille.vocabe.service.email;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import vanille.vocabe.entity.EmailToken;
 import vanille.vocabe.global.constants.ErrorCode;
@@ -15,12 +16,14 @@ import java.util.UUID;
 
 
 @Slf4j
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
 public class EmailTokenServiceImpl implements EmailTokenService {
 
     private final EmailTokenRepository emailTokenRepository;
 
+    @Transactional
     @Override
     public EmailToken createEmailToken(String email) {
         Assert.notNull(email, "받는 이메일은 필수입니다.");
@@ -52,11 +55,13 @@ public class EmailTokenServiceImpl implements EmailTokenService {
         return emailTokenRepository.findByEmail(email);
     }
 
+    @Transactional
     @Override
     public boolean validateToken(EmailToken emailToken) {
         if(emailToken.getExpirationDate().isBefore(LocalDateTime.now()) || emailToken.isExpired()) {
             throw new InvalidVerificationCodeException(ErrorCode.EXPIRED_TOKEN);
         }
+        emailToken.setExpired(true);
         return true;
     }
 }

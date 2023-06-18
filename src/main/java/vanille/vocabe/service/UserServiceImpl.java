@@ -1,6 +1,5 @@
 package vanille.vocabe.service;
 
-import io.jsonwebtoken.lang.Assert;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,7 +36,7 @@ public class UserServiceImpl implements UserService{
 
         User user = userRepository.findByEmail(form.getEmail()).orElseGet(() -> null);
 
-        String encodedPassword = passwordEncoder.encode(form.getPassword());
+        String encodedPassword = encodePassword(form.getPassword());
         form.setPassword(encodedPassword);
 
         if(user != null) {
@@ -57,6 +56,10 @@ public class UserServiceImpl implements UserService{
 
         emailService.sendSignUpConfirmEmail(form.getEmail());
         return user;
+    }
+
+    private String encodePassword(String password) {
+        return passwordEncoder.encode(password);
     }
 
     private void checkIfNameIsDuplicated(UserDTO.SignForm form) {
@@ -103,7 +106,7 @@ public class UserServiceImpl implements UserService{
             if(form.getPassword().equals(form.getPassword2())) {
                 User user = userRepository.findByEmail(emailToken.getEmail())
                         .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
-                user.changePassword(form.getPassword());
+                user.changePassword(encodePassword(form.getPassword()));
                 userRepository.save(user);
                 return true;
             } else {
