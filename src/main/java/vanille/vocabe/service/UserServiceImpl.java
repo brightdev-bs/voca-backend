@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vanille.vocabe.entity.EmailToken;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.global.exception.DuplicatedEntityException;
@@ -14,6 +15,7 @@ import vanille.vocabe.global.exception.UnverifiedException;
 import vanille.vocabe.payload.UserDTO;
 import vanille.vocabe.repository.UserRepository;
 import vanille.vocabe.service.email.EmailService;
+import vanille.vocabe.service.email.EmailTokenService;
 
 import java.util.Optional;
 
@@ -26,6 +28,7 @@ public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
+    private final EmailTokenService emailTokenService;
 
     @Transactional
     @Override
@@ -33,7 +36,7 @@ public class UserServiceImpl implements UserService{
 
         User user = userRepository.findByEmail(form.getEmail()).orElseGet(() -> null);
 
-        String encodedPassword = passwordEncoder.encode(form.getPassword());
+        String encodedPassword = encodePassword(form.getPassword());
         form.setPassword(encodedPassword);
 
         if(user != null) {
@@ -51,8 +54,12 @@ public class UserServiceImpl implements UserService{
 
         userRepository.save(user);
 
-        emailService.sendConfirmEmail(form.getEmail());
+        emailService.sendSignUpConfirmEmail(form.getEmail());
         return user;
+    }
+
+    private String encodePassword(String password) {
+        return passwordEncoder.encode(password);
     }
 
     private void checkIfNameIsDuplicated(UserDTO.SignForm form) {
@@ -81,6 +88,33 @@ public class UserServiceImpl implements UserService{
     @Override
     public User findUserByUsername(String username) {
         return userRepository.findByUsernameAndVerifiedTrue(username).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
+    }
+
+    @Override
+    public User findUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
+    }
+
+    @Transactional
+    @Override
+    public boolean changeUserPassword(UserDTO.PasswordForm form) {
+        EmailToken emailToken = emailTokenService.findByToken(form.getToken())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_TOKEN));
+
+        if (emailTokenService.validateToken(emailToken)) {
+
+            if(form.getPassword().equals(form.getPassword2())) {
+                User user = userRepository.findByEmail(emailToken.getEmail())
+                        .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
+                user.changePassword(encodePassword(form.getPassword()));
+                userRepository.save(user);
+                return true;
+            } else {
+                throw new InvalidPasswordException(ErrorCode.INVALID_PASSWORD);
+            }
+        }
+
+        return false;
     }
 
 

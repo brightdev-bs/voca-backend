@@ -1,51 +1,47 @@
 package vanille.vocabe.service.email;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import vanille.vocabe.entity.EmailToken;
+import vanille.vocabe.global.constants.ErrorCode;
+import vanille.vocabe.global.exception.InvalidVerificationCodeException;
 import vanille.vocabe.repository.EmailTokenRepository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
 
+@Slf4j
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
 public class EmailTokenServiceImpl implements EmailTokenService {
 
-    @Value("${front-server}")
-    private String FRONT_SERVER;
-    private final EmailSender emailSender;
     private final EmailTokenRepository emailTokenRepository;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     @Override
-    public UUID createEmailToken(String email) {
+    public EmailToken createEmailToken(String email) {
         Assert.notNull(email, "받는 이메일은 필수입니다.");
 
         Optional<EmailToken> byEmail = emailTokenRepository.findByEmail(email);
+
         EmailToken emailToken;
         if(byEmail.isPresent()) {
+            log.debug("{}는 존재하는 이메일로 토큰을 갱신합니다.", byEmail.get().getEmail());
             emailToken = byEmail.get();
             emailToken.refreshEmailToken();
-            emailToken.setExpired(false);
         } else {
             emailToken = EmailToken.createEmailToken(email);
-            emailTokenRepository.save(emailToken);
         }
 
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(email);
-        mailMessage.setSubject("회원가입 이메일 인증 메일");
-        mailMessage.setText(FRONT_SERVER + "/email?token=" + emailToken.getToken());
-        emailSender.sendEmail(mailMessage);
+        emailTokenRepository.save(emailToken);
 
-        return emailToken.getToken();
+        return emailToken;
     }
 
     @Override
@@ -57,5 +53,15 @@ public class EmailTokenServiceImpl implements EmailTokenService {
     @Override
     public Optional<EmailToken> findByEmail(String email) {
         return emailTokenRepository.findByEmail(email);
+    }
+
+    @Transactional
+    @Override
+    public boolean validateToken(EmailToken emailToken) {
+        if(emailToken.getExpirationDate().isBefore(LocalDateTime.now()) || emailToken.isExpired()) {
+            throw new InvalidVerificationCodeException(ErrorCode.EXPIRED_TOKEN);
+        }
+        emailToken.setExpired(true);
+        return true;
     }
 }

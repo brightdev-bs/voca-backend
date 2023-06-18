@@ -1,8 +1,9 @@
 package vanille.vocabe.service.email;
 
 public interface EmailService {
-    void sendConfirmEmail(String email);
+    void sendSignUpConfirmEmail(String email);
 
-    boolean verifyEmail(String token) throws Exception;
+    boolean verifyEmail(String token);
 
+    void sendPasswordFindEmail(String email);
 }

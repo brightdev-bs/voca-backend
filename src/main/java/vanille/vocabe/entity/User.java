@@ -82,6 +82,10 @@ public class User {
         this.password = password;
     }
 
+    public void changePassword(String password) {
+        this.password = password;
+    }
+
     public void setVerified() {
         this.verified = true;
     }

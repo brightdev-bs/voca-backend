@@ -5,16 +5,17 @@ import vanille.vocabe.payload.UserDTO;
 
 public class UserFixture {
 
+    public static final String email = "vanille@gmail.com";
     public static User getVerifiedUser() {
-        return User.of("test", "vanille@gmail.com", "{bcrypt}1kdasdfwcv", true);
+        return User.of("test", email, "{bcrypt}1kdasdfwcv", true);
     }
 
     public static User getVerifiedUser(String username) {
-        return User.of(username, "vanille@gmail.com", "{bcrypt}1kdasdfwcv", true);
+        return User.of(username, email, "{bcrypt}1kdasdfwcv", true);
     }
 
     public static User getUnverifiedUser() {
 
-        return User.of("test", "vanille@gmail.com", "1kdasdfwcv");
+        return User.of("test", email, "1kdasdfwcv");
     }
 }

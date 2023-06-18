@@ -83,4 +83,23 @@ public class UserDTO {
             return new UserDetailWithStudyRecords(user, list, vocabularyList);
         }
     }
+
+    @Data
+    public static class PasswordForm {
+        @Size(min = 8)
+        String password;
+        @Size(min = 8)
+        String password2;
+        @NotBlank
+        String token;
+
+        public PasswordForm() {}
+
+        @Builder
+        public PasswordForm(String password, String password2, String token) {
+            this.password = password;
+            this.password2 = password2;
+            this.token = token;
+        }
+    }
 }

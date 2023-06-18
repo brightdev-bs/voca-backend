@@ -1,5 +1,6 @@
 package vanille.vocabe.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.*;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
@@ -17,6 +19,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import vanille.vocabe.entity.EmailToken;
 import vanille.vocabe.entity.User;
+import vanille.vocabe.fixture.EmailTokenFixture;
 import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.global.config.OpenEntityManagerConfig;
 import vanille.vocabe.global.config.SecurityConfig;
@@ -29,14 +32,18 @@ import vanille.vocabe.service.UserService;
 import vanille.vocabe.service.email.EmailService;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static vanille.vocabe.constants.TestConstants.TEST_EMAIL;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @Transactional
@@ -132,7 +139,7 @@ class UserControllerTest {
 
     }
 
-    @DisplayName("[실패] 확인 메일 유효시간이 지났을 때 - 유효하지 않은 이메일인 경우")
+    @DisplayName("[실패] 확인 메일 유효시간이 지났을 때 - 회원가입하지 않은 이메일인 경우")
     @Test
     void expiredVerificationEmailFailWithInvalidEmail() throws Exception {
         EmailToken emailToken = EmailToken.createEmailToken("test@naver.com");
@@ -145,7 +152,7 @@ class UserControllerTest {
                 .andDo(print());
     }
 
-    @DisplayName("[실패] 확인 메일 유효시간이 지났을 때 - 유효한 이메일인 경우")
+    @DisplayName("[실패] 확인 메일 유효시간이 지났을 때 - 회원가입한 이메일인 경우")
     @Test
     void expiredVerificationEmail() throws Exception {
         User user = UserFixture.getUnverifiedUser();
@@ -226,6 +233,87 @@ class UserControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath("statusCode").value(ErrorCode.UNVERIFIED_USER.getHttpStatus().toString()))
                 .andExpect(jsonPath("data").value(ErrorCode.UNVERIFIED_USER.getMessage()));
+    }
+
+    @DisplayName("[성공] 비밀번호 찾기")
+    @Test
+    void findPassword() throws Exception {
+        String email = UserFixture.email;
+        User user = UserFixture.getVerifiedUser();
+        userRepository.save(user);
+
+        mockMvc.perform(get("/api/v1/password?email=" + email))
+                .andDo(print())
+                .andExpect(jsonPath("statusCode").value(HttpStatus.OK.toString()))
+                .andExpect(jsonPath("data").value(email));
+    }
+
+    @DisplayName("[성공] 비밀번호 변경")
+    @Test
+    void changePassword() throws Exception {
+        User user = UserFixture.getVerifiedUser();
+        userRepository.save(user);
+
+        EmailToken emailToken = EmailTokenFixture.createEmailToken();
+        emailTokenRepository.save(emailToken);
+
+        String password = "mango!1234";
+        UserDTO.PasswordForm request = UserDTO.PasswordForm.builder()
+                .password(password)
+                .password2(password)
+                .token(emailToken.getToken().toString())
+                .build();
+
+        mockMvc.perform(post("/api/v1/password")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(jsonPath("statusCode").value(HttpStatus.OK.toString()))
+                .andExpect(jsonPath("data").value(true));
+    }
+
+    @DisplayName("[실패] 비밀번호 변경 - 비밀번호 서로 다름")
+    @Test
+    void changePasswordFailByDifferentPassword() throws Exception {
+        EmailToken emailToken = EmailTokenFixture.createEmailToken();
+        emailTokenRepository.save(emailToken);
+
+        UserDTO.PasswordForm request = UserDTO.PasswordForm.builder()
+                .password("password1234")
+                .password2("wrongpassword")
+                .token(emailToken.getToken().toString())
+                .build();
+
+        mockMvc.perform(post("/api/v1/password")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(jsonPath("statusCode").value(HttpStatus.BAD_REQUEST.toString()))
+                .andExpect(jsonPath("data").value(ErrorCode.INVALID_PASSWORD.getMessage()));
+    }
+
+    @DisplayName("[실패] 비밀번호 변경 - 토큰 만료")
+    @Test
+    void changePasswordFailByExpiredToken() throws Exception {
+        EmailToken emailToken = EmailTokenFixture.createExpiredDateEmailToken();
+        emailTokenRepository.save(emailToken);
+
+        String password = "samePassword123";
+        UserDTO.PasswordForm request = UserDTO.PasswordForm.builder()
+                .password(password)
+                .password2(password)
+                .token(emailToken.getToken().toString())
+                .build();
+
+        mockMvc.perform(post("/api/v1/password")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(jsonPath("statusCode").value(HttpStatus.BAD_REQUEST.toString()))
+                .andExpect(jsonPath("data").value(ErrorCode.EXPIRED_TOKEN.getMessage()));
     }
 
 }
