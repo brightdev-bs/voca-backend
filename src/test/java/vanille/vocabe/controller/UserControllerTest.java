@@ -125,7 +125,6 @@ class UserControllerTest {
     @Test
     void setVerificationStatusAsVerified() throws Exception {
         EmailToken emailToken = EmailToken.createEmailToken("vanille@gmail.com");
-        emailToken.plusExpirationTimeForTest(3L);
         emailTokenRepository.save(emailToken);
 
         User user = UserFixture.getUnverifiedUser();
@@ -136,7 +135,6 @@ class UserControllerTest {
 
         assertTrue(emailToken.isExpired());
         assertTrue(user.isVerified());
-
     }
 
     @DisplayName("[실패] 확인 메일 유효시간이 지났을 때 - 회원가입하지 않은 이메일인 경우")
@@ -202,7 +200,7 @@ class UserControllerTest {
 
         UserDTO.LoginForm request = UserDTO.LoginForm.builder()
                 .email("vanille@gmail.com")
-                .password("wrongpassword")
+                .password("{bcrypt}wrong password")
                 .build();
 
         mockMvc.perform(post("/api/v1/login")

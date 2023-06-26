@@ -75,10 +75,8 @@ public class UserController {
 
     @PostMapping("/v1/password")
     public ApiResponse changePassword(@RequestBody @Valid PasswordForm form) {
-        if(userService.changeUserPassword(form)) {
-            return ApiResponse.of(HttpStatus.OK.toString(), true);
-        }
-        return ApiResponse.of(HttpStatus.INTERNAL_SERVER_ERROR.toString(), false);
+        userService.changeUserPassword(form);
+        return ApiResponse.of(HttpStatus.OK.toString(), true);
     }
 
 

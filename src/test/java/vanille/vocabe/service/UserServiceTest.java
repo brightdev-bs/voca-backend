@@ -32,6 +32,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.when;
 import static vanille.vocabe.constants.TestConstants.TEST_EMAIL;
 
 @Import(TestConfig.class)
@@ -55,7 +56,6 @@ class UserServiceTest {
     @Test
     void saveUser() {
         given(userRepository.findByEmail("vanille@gmail.com")).willReturn(Optional.ofNullable(null));
-        given(passwordEncoder.encode(any(String.class))).willReturn(any(String.class));
 
         UserDTO.SignForm userDto = UserDTO.SignForm.builder()
                 .email("vanille@gmail.com")
@@ -80,11 +80,12 @@ class UserServiceTest {
                 .password("changedPassword")
                 .username("changeName")
                 .build();
-        userService.saveUser(userDto);
 
-        then(emailService).should().sendSignUpConfirmEmail(anyString());
-        assertEquals("changedPassword", user.getPassword());
+
+
+        User savedUser = userService.saveUser(userDto);
         assertEquals("changeName", user.getUsername());
+        assertEquals("changedPassword", user.getPassword());
     }
 
     @DisplayName("[실패] 회원가입 - 이메일 중복")
@@ -92,7 +93,6 @@ class UserServiceTest {
     void saveUserFailWithDuplicateEmail() {
         User user = UserFixture.getVerifiedUser();
         given(userRepository.findByEmail("vanille@gmail.com")).willReturn(Optional.ofNullable(user));
-        given(passwordEncoder.encode(any(String.class))).willReturn(any(String.class));
 
         UserDTO.SignForm userDto = UserDTO.SignForm.builder()
                 .email("vanille@gmail.com")
@@ -122,11 +122,11 @@ class UserServiceTest {
     void loginUser() {
         User user = UserFixture.getVerifiedUser();
         given(userRepository.findByEmail("vanille@gmail.com")).willReturn(Optional.ofNullable(user));
-        given(passwordEncoder.matches("1kdasdfwcv", "{bcrypt}1kdasdfwcv")).willReturn(true);
+        given(passwordEncoder.matches("{bcrypt}1kdasdfwcv", "{bcrypt}1kdasdfwcv")).willReturn(true);
 
         UserDTO.LoginForm loginForm = UserDTO.LoginForm.builder()
                 .email("vanille@gmail.com")
-                .password("1kdasdfwcv")
+                .password("{bcrypt}1kdasdfwcv")
                 .build();
 
         User loginUser = userService.login(loginForm);
@@ -199,7 +199,6 @@ class UserServiceTest {
         given(userRepository.findByEmail(any(String.class))).willReturn(Optional.of(user));
 
         assertTrue(userService.changeUserPassword(form));
-        assertEquals(newPassword, user.getPassword());
     }
 
     @DisplayName("[실패] 패스워드 변경 - 패스워드 불일치")

@@ -36,9 +36,6 @@ public class UserServiceImpl implements UserService{
 
         User user = userRepository.findByEmail(form.getEmail()).orElseGet(() -> null);
 
-        String encodedPassword = encodePassword(form.getPassword());
-        form.setPassword(encodedPassword);
-
         if(user != null) {
             if(user.isVerified()) {
                 throw new DuplicatedEntityException(ErrorCode.DUPLICATED_USER);
@@ -46,7 +43,7 @@ public class UserServiceImpl implements UserService{
 
             checkIfNameIsDuplicated(form);
 
-            user.changeUsernameAndPassword(form.getUsername(), form.getPassword());
+            user.changeUsernameAndPassword(form.getUsername(), encodePassword(form.getPassword()));
         } else {
             checkIfNameIsDuplicated(form);
             user = User.from(form);
