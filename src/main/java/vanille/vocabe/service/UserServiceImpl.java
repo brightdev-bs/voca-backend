@@ -35,6 +35,7 @@ public class UserServiceImpl implements UserService{
     public User saveUser(UserDTO.SignForm form) {
 
         User user = userRepository.findByEmail(form.getEmail()).orElseGet(() -> null);
+        form.setPassword(encodePassword(form.getPassword()));
 
         if(user != null) {
             if(user.isVerified()) {
@@ -43,7 +44,7 @@ public class UserServiceImpl implements UserService{
 
             checkIfNameIsDuplicated(form);
 
-            user.changeUsernameAndPassword(form.getUsername(), encodePassword(form.getPassword()));
+            user.changeUsernameAndPassword(form.getUsername(), form.getPassword());
         } else {
             checkIfNameIsDuplicated(form);
             user = User.from(form);

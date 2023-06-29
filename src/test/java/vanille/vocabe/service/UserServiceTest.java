@@ -65,6 +65,7 @@ class UserServiceTest {
         userService.saveUser(userDto);
 
         then(userRepository).should().save(any(User.class));
+        then(passwordEncoder).should().encode(any(String.class));
         then(emailService).should().sendSignUpConfirmEmail(anyString());
     }
 
