@@ -15,4 +15,7 @@ public interface CommunityService {
 
     @Transactional
     void applyToCommunity(Long userId, Long communityId);
+
+    @Transactional
+    void expelUser(ExpelleeForm form);
 }

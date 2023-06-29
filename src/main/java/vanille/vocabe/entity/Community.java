@@ -14,7 +14,7 @@ import java.util.List;
 @ToString(callSuper = true)
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Community {
+public class Community extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

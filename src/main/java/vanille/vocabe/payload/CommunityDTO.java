@@ -25,4 +25,13 @@ public class CommunityDTO {
                     .build();
         }
     }
+
+
+    @Data
+    @Builder
+    public static class ExpelleeForm {
+        private Long requestId;
+        private Long expelleeId;
+        private Long communityId;
+    }
 }

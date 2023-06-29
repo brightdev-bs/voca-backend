@@ -1,6 +1,7 @@
 package vanille.vocabe.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vanille.vocabe.entity.Applicant;
@@ -9,14 +10,17 @@ import vanille.vocabe.entity.CommunityUser;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.global.exception.DuplicatedEntityException;
+import vanille.vocabe.global.exception.InvalidVerificationCodeException;
 import vanille.vocabe.global.exception.NotFoundException;
-import vanille.vocabe.payload.CommunityDTO;
 import vanille.vocabe.repository.ApplicantRepository;
 import vanille.vocabe.repository.CommunityRepository;
 import vanille.vocabe.repository.CommunityUserRepository;
 import vanille.vocabe.repository.UserRepository;
 
+import javax.security.sasl.AuthenticationException;
 import java.util.List;
+
+import static vanille.vocabe.payload.CommunityDTO.*;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -32,7 +36,7 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Transactional
     @Override
-    public Community saveCommunity(CommunityDTO.CommunityForm form) {
+    public Community saveCommunity(CommunityForm form) {
 
         Community community = communityRepository.save(form.toEntity());
         CommunityUser communityUser = CommunityUser.builder()
@@ -63,5 +67,25 @@ public class CommunityServiceImpl implements CommunityService {
                 .accepted(false)
                 .build();
         applicantRepository.save(applicant);
+    }
+
+    @Transactional
+    @Override
+    public void expelUser(ExpelleeForm form) {
+        Community community = communityRepository.findById(form.getCommunityId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_COMMUNITY));
+
+        if(!isMaster(form, community))
+            throw new InvalidVerificationCodeException(ErrorCode.NO_AUTHORITY);
+
+        User expelle = userRepository.findById(form.getExpelleeId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
+        CommunityUser communityUser = communityUserRepository.findCommunityUserByUserAndCommunity(community.getId(), expelle.getId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
+
+        communityUserRepository.delete(communityUser);
+    }
+
+    private boolean isMaster(ExpelleeForm form, Community community) {
+        return form.getRequestId().equals(community.getCreatedBy());
     }
 }

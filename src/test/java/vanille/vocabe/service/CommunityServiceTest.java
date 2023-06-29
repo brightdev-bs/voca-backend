@@ -14,6 +14,10 @@ import vanille.vocabe.entity.CommunityUser;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.global.config.TestConfig;
 import vanille.vocabe.global.exception.DuplicatedEntityException;
+import vanille.vocabe.global.exception.InvalidVerificationCodeException;
+import vanille.vocabe.global.exception.NotFoundException;
+import vanille.vocabe.global.exception.UnverifiedException;
+import vanille.vocabe.payload.CommunityDTO;
 import vanille.vocabe.repository.ApplicantRepository;
 import vanille.vocabe.repository.CommunityRepository;
 import vanille.vocabe.repository.CommunityUserRepository;
@@ -22,11 +26,12 @@ import vanille.vocabe.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static vanille.vocabe.payload.CommunityDTO.*;
 import static vanille.vocabe.payload.CommunityDTO.CommunityForm;
 
 @Import(TestConfig.class)
@@ -90,7 +95,53 @@ class CommunityServiceTest {
         given(cu.getCommunity().getId()).willReturn(2L);
         given(community.getCommunityUsers()).willReturn(cuList);
 
-        Assertions.assertThrows(DuplicatedEntityException.class ,() -> communityService.applyToCommunity(1L, 2L));
+        assertThrows(DuplicatedEntityException.class ,() -> communityService.applyToCommunity(1L, 2L));
+    }
+
+    @DisplayName("방장은 회원을 추방할 수 있다.")
+    @Test
+    void expelCommunityUser() {
+        final long MASTER_KEY = 1L;
+        Community community = mock(Community.class);
+        User user = mock(User.class);
+        ExpelleeForm form = mock(ExpelleeForm.class);
+        CommunityUser communityUser = mock(CommunityUser.class);
+        given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
+        given(form.getRequestId()).willReturn(MASTER_KEY);
+        given(community.getCreatedBy()).willReturn(MASTER_KEY);
+        given(userRepository.findById(any(Long.class))).willReturn(Optional.of(user));
+        given(communityUserRepository.findCommunityUserByUserAndCommunity(any(Long.class), any(Long.class))).willReturn(Optional.of(communityUser));
+
+        communityService.expelUser(form);
+        then(communityUserRepository).should().delete(any(CommunityUser.class));
+    }
+
+    @DisplayName("[실패] 방장이 아닌 회원은 추방 권한이 없다")
+    @Test
+    void expelCommunityUserFail() {
+        Community community = mock(Community.class);
+        ExpelleeForm form = mock(ExpelleeForm.class);
+        given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
+        given(form.getRequestId()).willReturn(1L);
+        given(community.getCreatedBy()).willReturn(2L);
+
+        assertThrows(InvalidVerificationCodeException.class, () -> communityService.expelUser(form));
+    }
+
+    @DisplayName("[실패] 해당 커뮤니티 회원이 아닌 경우")
+    @Test
+    void expelCommunityFailByNotFound() {
+        final long MASTER_KEY = 1L;
+        Community community = mock(Community.class);
+        User user = mock(User.class);
+        ExpelleeForm form = mock(ExpelleeForm.class);
+        given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
+        given(form.getRequestId()).willReturn(MASTER_KEY);
+        given(community.getCreatedBy()).willReturn(MASTER_KEY);
+        given(userRepository.findById(any(Long.class))).willReturn(Optional.of(user));
+        given(communityUserRepository.findCommunityUserByUserAndCommunity(any(Long.class), any(Long.class))).willReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> communityService.expelUser(form));
     }
 
 }

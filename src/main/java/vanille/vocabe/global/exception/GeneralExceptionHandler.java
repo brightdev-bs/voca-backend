@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import vanille.vocabe.global.response.common.ApiResponse;
 
+import javax.security.sasl.AuthenticationException;
+
 @Slf4j
 @RestControllerAdvice
 public class GeneralExceptionHandler {
@@ -130,4 +132,5 @@ public class GeneralExceptionHandler {
         ApiResponse errorResponse = ApiResponse.of(HttpStatus.INTERNAL_SERVER_ERROR.toString(), e.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
+
 }
