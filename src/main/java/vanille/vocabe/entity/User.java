@@ -46,7 +46,11 @@ public class User {
 
     @ToString.Exclude
     @OneToMany(mappedBy = "user")
-    private final List<UserVocabulary> vocabularies = new ArrayList<>();
+    private List<UserVocabulary> vocabularies = new ArrayList<>();
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "user")
+    private List<CommunityUser> communities = new ArrayList<>();
 
     protected User() {}
 
