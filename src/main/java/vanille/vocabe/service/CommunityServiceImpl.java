@@ -1,7 +1,6 @@
 package vanille.vocabe.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vanille.vocabe.entity.Applicant;
@@ -17,7 +16,6 @@ import vanille.vocabe.repository.CommunityRepository;
 import vanille.vocabe.repository.CommunityUserRepository;
 import vanille.vocabe.repository.UserRepository;
 
-import javax.security.sasl.AuthenticationException;
 import java.util.List;
 
 import static vanille.vocabe.payload.CommunityDTO.*;
@@ -87,5 +85,10 @@ public class CommunityServiceImpl implements CommunityService {
 
     private boolean isMaster(ExpelleeForm form, Community community) {
         return form.getRequestId().equals(community.getCreatedBy());
+    }
+
+    @Override
+    public List<Community> getCommunities(String name) {
+        return communityRepository.findCommunitiesByNameContaining(name);
     }
 }

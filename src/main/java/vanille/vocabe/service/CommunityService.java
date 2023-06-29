@@ -6,6 +6,8 @@ import vanille.vocabe.entity.User;
 import vanille.vocabe.payload.CommunityDTO;
 import vanille.vocabe.payload.UserDTO;
 
+import java.util.List;
+
 import static vanille.vocabe.payload.CommunityDTO.*;
 
 public interface CommunityService {
@@ -18,4 +20,6 @@ public interface CommunityService {
 
     @Transactional
     void expelUser(ExpelleeForm form);
+
+    List<Community> getCommunities(String name);
 }
