@@ -12,4 +12,7 @@ public interface CommunityService {
 
     @Transactional
     Community saveCommunity(CommunityForm form);
+
+    @Transactional
+    void applyToCommunity(Long userId, Long communityId);
 }

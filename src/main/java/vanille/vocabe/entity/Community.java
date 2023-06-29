@@ -25,17 +25,17 @@ public class Community {
     private boolean open;
     @ToString.Exclude
     @OneToMany(mappedBy = "community")
-    private List<CommunityUser> communityUser = new ArrayList<>();
+    private List<CommunityUser> communityUsers = new ArrayList<>();
 
     protected Community() {}
 
     @Builder
-    public Community(Long id, String name, String description, int totalMember, boolean open, List<CommunityUser> communityUser) {
+    public Community(Long id, String name, String description, int totalMember, boolean open, List<CommunityUser> communityUsers) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.totalMember = totalMember;
         this.open = open;
-        this.communityUser = communityUser;
+        this.communityUsers = communityUsers;
     }
 }

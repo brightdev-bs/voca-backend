@@ -1,5 +1,6 @@
 package vanille.vocabe.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -27,5 +28,16 @@ public class CommunityUser {
 
     public Community getCommunity() {
         return community;
+    }
+
+
+    protected CommunityUser() {
+    }
+
+    @Builder
+    public CommunityUser(Long id, User user, Community community) {
+        this.id = id;
+        this.user = user;
+        this.community = community;
     }
 }
