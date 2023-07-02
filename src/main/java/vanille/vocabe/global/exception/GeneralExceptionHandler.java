@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import vanille.vocabe.global.response.common.ApiResponse;
 
+import javax.mail.AuthenticationFailedException;
 import javax.security.sasl.AuthenticationException;
 
 @Slf4j
@@ -121,6 +122,13 @@ public class GeneralExceptionHandler {
         ApiResponse errorResponse = ApiResponse.of(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
                 .body(errorResponse);
+    }
+
+    @ExceptionHandler(value = {AuthenticationFailedException.class} )
+    protected ResponseEntity<ApiResponse> authenticationFailedExpcetion(Exception e) {
+        log.error("AuthenticationFailed", e);
+        ApiResponse errorResponse = ApiResponse.of(HttpStatus.INTERNAL_SERVER_ERROR.toString(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
     /**
