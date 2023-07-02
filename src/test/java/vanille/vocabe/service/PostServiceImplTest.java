@@ -89,4 +89,15 @@ class PostServiceImplTest {
         assertThrows(AuthenticationFailedException.class, () -> postService.createPost(form, 1L));
     }
 
+    @DisplayName("포스트 리스트 조회")
+    @Test
+    void getPosts() {
+        Community community = mock(Community.class);
+        List<Post> posts = List.of(mock(Post.class), mock(Post.class), mock(Post.class), mock(Post.class));
+        given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
+        given(community.getPosts()).willReturn(posts);
+
+        assertEquals(4, postService.getPosts(any(Long.class)).size());
+    }
+
 }
