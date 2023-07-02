@@ -127,8 +127,8 @@ public class GeneralExceptionHandler {
     @ExceptionHandler(value = {AuthenticationFailedException.class} )
     protected ResponseEntity<ApiResponse> authenticationFailedExpcetion(Exception e) {
         log.error("AuthenticationFailed", e);
-        ApiResponse errorResponse = ApiResponse.of(HttpStatus.INTERNAL_SERVER_ERROR.toString(), e.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        ApiResponse errorResponse = ApiResponse.of(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     /**

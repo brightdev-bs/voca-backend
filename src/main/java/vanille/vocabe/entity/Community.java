@@ -40,7 +40,7 @@ public class Community extends BaseEntity {
         this.description = description;
         this.totalMember = totalMember;
         this.open = open;
-        this.communityUsers = communityUsers;
-        this.posts = posts;
+        this.communityUsers = communityUsers == null ? new ArrayList<>() : communityUsers;
+        this.posts = posts == null ? new ArrayList<>() : posts;
     }
 }
