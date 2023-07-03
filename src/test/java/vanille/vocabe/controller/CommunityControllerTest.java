@@ -75,7 +75,7 @@ class CommunityControllerTest {
                 .total(10)
                 .build();
 
-        mockMvc.perform(post("/api/v1/community")
+        mockMvc.perform(post("/api/v1/community/form")
                         .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
                         .content(objectMapper.writeValueAsString(form))
                         .contentType(MediaType.APPLICATION_JSON)

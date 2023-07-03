@@ -62,10 +62,12 @@ class CommunityServiceTest {
     void createCommunity() throws AuthenticationFailedException {
         CommunityUser communityUser = mock(CommunityUser.class);
         Community community = mock(Community.class);
+        CommunityForm form = CommunityForm.builder()
+                .user(mock(User.class))
+                .build();
         given(communityUserRepository.save(any(CommunityUser.class))).willReturn(communityUser);
         given(communityRepository.save(any(Community.class))).willReturn(community);
 
-        CommunityForm form = CommunityForm.builder().build();
         communityService.saveCommunity(form);
 
         then(communityRepository).should().save(any(Community.class));
