@@ -1,15 +1,23 @@
 package vanille.vocabe.payload;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import vanille.vocabe.entity.Community;
 import vanille.vocabe.entity.User;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 public class CommunityDTO {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class CommunityForm {
+        @NotBlank
         private String name;
         private String description;
         private boolean open;
