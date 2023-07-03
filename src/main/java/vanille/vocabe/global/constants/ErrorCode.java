@@ -15,6 +15,7 @@ public enum ErrorCode {
     NOT_FOUND_TOKEN(HttpStatus.BAD_REQUEST, "토큰이 없습니다."),
     NOT_FOUND_VOCABULARY(HttpStatus.BAD_REQUEST, "단어장이 없습니다."),
     NOT_FOUND_COMMUNITY(HttpStatus.BAD_REQUEST, "Doesn't exist community"),
+    NOT_FOUND_POST(HttpStatus.BAD_REQUEST, "Doesn't exist post"),
 
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "잘못된 인증 코드입니다."),
