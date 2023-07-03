@@ -40,7 +40,6 @@ public class PostServiceImpl implements PostService {
             Post post = Post.builder()
                     .community(community)
                     .content(form.getContent())
-                    .relatedPost(form.getRelatedPostId())
                     .build();
             postRepository.save(post);
         } else {

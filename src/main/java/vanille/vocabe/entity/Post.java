@@ -6,6 +6,7 @@ import lombok.ToString;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.util.List;
 
 
 @Getter
@@ -18,17 +19,21 @@ public class Post extends BaseEntity {
     private Long id;
 
     private String content;
-    private Long relatedPost;
 
     @ManyToOne
     @JoinColumn(name = "community_id")
     private Community community;
 
+    @OneToMany(mappedBy = "post")
+    private List<Comment> comments;
+
+    public Post() {}
+
     @Builder
-    public Post(Long id, String content, Long relatedPost, Community community) {
+    public Post(Long id, String content, Community community, List<Comment> comments) {
         this.id = id;
         this.content = content;
-        this.relatedPost = relatedPost;
         this.community = community;
+        this.comments = comments;
     }
 }

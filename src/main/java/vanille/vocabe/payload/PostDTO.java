@@ -33,7 +33,6 @@ public class PostDTO {
             return PostDetail.builder()
                     .id(post.getId())
                     .content(post.getContent())
-                    .relatedPost(post.getRelatedPost())
                     .build();
         }
     }
