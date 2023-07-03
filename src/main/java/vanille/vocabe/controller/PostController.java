@@ -24,7 +24,7 @@ import static vanille.vocabe.payload.PostDTO.*;
 public class PostController {
     private final PostService postService;
 
-    @GetMapping("/posts/{communityId}")
+    @GetMapping("/{communityId}/posts")
     public ApiResponse getPosts(@PathVariable Long communityId) {
         List<Post> posts = postService.getPosts(communityId);
 

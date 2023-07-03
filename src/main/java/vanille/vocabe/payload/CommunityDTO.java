@@ -8,7 +8,6 @@ import vanille.vocabe.entity.Community;
 import vanille.vocabe.entity.User;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 public class CommunityDTO {
 
@@ -20,18 +19,47 @@ public class CommunityDTO {
         @NotBlank
         private String name;
         private String description;
-        private boolean open;
-        private int totalNumber;
+        private boolean isPublic;
+        private int total;
         private User user;
 
         public Community toEntity() {
             return Community.builder()
                     .name(this.getName())
                     .description(this.getDescription())
-                    .open(this.isOpen())
-                    .totalMember(this.getTotalNumber())
+                    .open(this.isPublic())
+                    .totalMember(this.getTotal())
                     .build();
         }
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Response {
+        private Long id;
+        private String name;
+        private String description;
+        private boolean open;
+        private String totalNumber;
+        private Long createdBy;
+        private String createdAt;
+
+        public static Response from(Community c) {
+            int joinedMember = c.getCommunityUsers().size();
+            return Response.builder()
+                    .id(c.getId())
+                    .name(c.getName())
+                    .description(c.getDescription())
+                    .open(c.isOpen())
+                    .totalNumber(joinedMember + " / " + c.getTotalMember())
+                    .createdBy(c.getCreatedBy())
+                    .createdAt(c.getCreatedAt().toString())
+                    .build();
+        }
+
+
     }
 
 

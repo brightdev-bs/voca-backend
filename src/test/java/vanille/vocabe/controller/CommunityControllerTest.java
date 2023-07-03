@@ -1,12 +1,8 @@
 package vanille.vocabe.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpHeaders;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,18 +14,15 @@ import org.springframework.web.context.WebApplicationContext;
 import vanille.vocabe.entity.Community;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.fixture.UserFixture;
-import vanille.vocabe.global.constants.ErrorCode;
-import vanille.vocabe.payload.CommunityDTO;
-import vanille.vocabe.payload.PostDTO;
 import vanille.vocabe.repository.CommunityRepository;
 import vanille.vocabe.repository.CommunityUserRepository;
-import vanille.vocabe.repository.PostRepository;
 import vanille.vocabe.repository.UserRepository;
 import vanille.vocabe.service.CommunityService;
 
 import javax.transaction.Transactional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -78,8 +71,8 @@ class CommunityControllerTest {
         CommunityForm form = CommunityForm.builder()
                 .name("test community")
                 .description("test")
-                .open(true)
-                .totalNumber(10)
+                .isPublic(true)
+                .total(10)
                 .build();
 
         mockMvc.perform(post("/api/v1/community")
@@ -88,5 +81,39 @@ class CommunityControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                 ).andDo(print())
                 .andExpect(jsonPath("statusCode").value(HttpStatus.CREATED.toString()));
+    }
+
+    @DisplayName("커뮤니티 디폴트 조회 - 10개 ")
+    @Test
+    void getCommunities() {
+        setData();
+        List<Response> communities = communityService.getCommunities();
+        Assertions.assertEquals(10, communities.size());
+    }
+
+    private void setData() {
+        Community community = Community.builder().name("sdfsdfsdf").build();
+        Community community2 = Community.builder().name("sdfsdfsdf").build();
+        Community community3 = Community.builder().name("sdfsdfsdf").build();
+        Community community4 = Community.builder().name("sdfsdfsdf").build();
+        Community community5 = Community.builder().name("sdfsdfsdf").build();
+        Community community6 = Community.builder().name("sdfsdfsdf").build();
+        Community community7 = Community.builder().name("sdfsdfsdf").build();
+        Community community8 = Community.builder().name("sdfsdfsdf").build();
+        Community community9 = Community.builder().name("sdfsdfsdf").build();
+        Community community10 = Community.builder().name("sdfsdfsdf").build();
+        Community community11 = Community.builder().name("sdfsdfsdf").build();
+
+        communityRepository.save(community);
+        communityRepository.save(community2);
+        communityRepository.save(community3);
+        communityRepository.save(community4);
+        communityRepository.save(community5);
+        communityRepository.save(community6);
+        communityRepository.save(community7);
+        communityRepository.save(community8);
+        communityRepository.save(community9);
+        communityRepository.save(community10);
+        communityRepository.save(community11);
     }
 }

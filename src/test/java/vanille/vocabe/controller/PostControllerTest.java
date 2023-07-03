@@ -84,7 +84,7 @@ class PostControllerTest {
         community.getPosts().add(createPost(community));
         community.getPosts().add(createPost(community));
 
-        mockMvc.perform(get("/api/v1/posts/" + community.getId()))
+        mockMvc.perform(get("/api/v1/" + community.getId() + "/posts"))
                 .andDo(print())
                 .andExpect(jsonPath("statusCode").value(HttpStatus.CREATED.toString()));
     }

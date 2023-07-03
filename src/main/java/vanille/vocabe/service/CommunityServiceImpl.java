@@ -1,12 +1,15 @@
 package vanille.vocabe.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vanille.vocabe.entity.Applicant;
 import vanille.vocabe.entity.Community;
 import vanille.vocabe.entity.CommunityUser;
 import vanille.vocabe.entity.User;
+import vanille.vocabe.global.constants.Constants;
 import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.global.exception.DuplicatedEntityException;
 import vanille.vocabe.global.exception.InvalidVerificationCodeException;
@@ -16,7 +19,9 @@ import vanille.vocabe.repository.CommunityRepository;
 import vanille.vocabe.repository.CommunityUserRepository;
 import vanille.vocabe.repository.UserRepository;
 
+import javax.mail.AuthenticationFailedException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static vanille.vocabe.payload.CommunityDTO.*;
 
@@ -34,8 +39,8 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Transactional
     @Override
-    public Community saveCommunity(CommunityForm form) {
-
+    public Community saveCommunity(CommunityForm form) throws AuthenticationFailedException {
+        if(form.getUser() == null) throw new AuthenticationFailedException(ErrorCode.NO_AUTHORITY.toString());
         Community community = communityRepository.save(form.toEntity());
         CommunityUser communityUser = CommunityUser.builder()
                 .user(form.getUser())
@@ -85,6 +90,13 @@ public class CommunityServiceImpl implements CommunityService {
 
     private boolean isMaster(ExpelleeForm form, Community community) {
         return form.getRequestId().equals(community.getCreatedBy());
+    }
+
+    @Override
+    public List<Response> getCommunities() {
+        PageRequest pageable = PageRequest.of(0, Constants.DEFAULT_SIZE);
+        Page<Community> communities = communityRepository.findAll(pageable);
+        return communities.stream().map(Response::from).collect(Collectors.toList());
     }
 
     @Override

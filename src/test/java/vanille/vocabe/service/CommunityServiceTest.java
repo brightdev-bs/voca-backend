@@ -8,11 +8,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import vanille.vocabe.entity.Applicant;
 import vanille.vocabe.entity.Community;
 import vanille.vocabe.entity.CommunityUser;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.global.config.TestConfig;
+import vanille.vocabe.global.constants.Constants;
 import vanille.vocabe.global.exception.DuplicatedEntityException;
 import vanille.vocabe.global.exception.InvalidVerificationCodeException;
 import vanille.vocabe.global.exception.NotFoundException;
@@ -23,6 +26,7 @@ import vanille.vocabe.repository.CommunityRepository;
 import vanille.vocabe.repository.CommunityUserRepository;
 import vanille.vocabe.repository.UserRepository;
 
+import javax.mail.AuthenticationFailedException;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,7 +59,7 @@ class CommunityServiceTest {
 
     @DisplayName("커뮤니티 생성하기")
     @Test
-    void createCommunity() {
+    void createCommunity() throws AuthenticationFailedException {
         CommunityUser communityUser = mock(CommunityUser.class);
         Community community = mock(Community.class);
         given(communityUserRepository.save(any(CommunityUser.class))).willReturn(communityUser);
@@ -143,5 +147,8 @@ class CommunityServiceTest {
 
         assertThrows(NotFoundException.class, () -> communityService.expelUser(form));
     }
+
+    // "커뮤니티 리스트 디폴트 조회 - 10개 조회"
+    // -> 통합 테스트로 진행
 
 }
