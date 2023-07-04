@@ -12,6 +12,7 @@ import vanille.vocabe.global.response.common.ApiResponse;
 import vanille.vocabe.service.PostService;
 
 import javax.mail.AuthenticationFailedException;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,20 +25,17 @@ import static vanille.vocabe.payload.PostDTO.*;
 public class PostController {
     private final PostService postService;
 
-    @GetMapping("/{communityId}/posts")
+    @GetMapping("community/{communityId}")
     public ApiResponse getPosts(@PathVariable Long communityId) {
-        List<Post> posts = postService.getPosts(communityId);
+        List<PostDetail> posts = postService.getPosts(communityId);
 
-        return ApiResponse.of(HttpStatus.CREATED.toString(),
-                posts.stream().map(p -> PostDetail.from(p)).collect(Collectors.toList())
-        );
+        return ApiResponse.of(HttpStatus.OK.toString(), posts);
     }
 
     @PostMapping("community/{communityId}/posts")
-    public ApiResponse createPost(@PathVariable final Long communityId, @RequestBody PostForm form, @AuthenticationPrincipal User user) throws AuthenticationFailedException {
+    public ApiResponse createPost(@PathVariable final Long communityId, @RequestBody @Valid PostForm form, @AuthenticationPrincipal User user) throws AuthenticationFailedException {
         form.setCommunityId(communityId);
         Long id = user.getId();
-        log.info("user = {}", user);
         postService.createPost(form, id);
         return ApiResponse.of(HttpStatus.CREATED.toString(), Constants.CREATED);
     }

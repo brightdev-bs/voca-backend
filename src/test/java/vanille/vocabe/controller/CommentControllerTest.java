@@ -80,7 +80,7 @@ class CommentControllerTest {
         postRepository.save(post);
 
         CommentDTO.CommentForm form = CommentDTO.CommentForm.builder()
-                .content("test comment")
+                .commentContent("test comment")
                 .build();
         mockMvc.perform(post("/api/v1/posts/" + post.getId() + "/comments")
                         .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)

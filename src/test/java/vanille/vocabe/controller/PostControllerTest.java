@@ -80,13 +80,21 @@ class PostControllerTest {
                 .name("test community")
                 .build();
         communityRepository.save(community);
-        community.getPosts().add(createPost(community));
-        community.getPosts().add(createPost(community));
-        community.getPosts().add(createPost(community));
 
-        mockMvc.perform(get("/api/v1/" + community.getId() + "/posts"))
+        Post post = createPost(community);
+        Post post2 = createPost(community);
+        Post post3 = createPost(community);
+        postRepository.save(post);
+        postRepository.save(post2);
+        postRepository.save(post3);
+
+        community.getPosts().add(post);
+        community.getPosts().add(post2);
+        community.getPosts().add(post3);
+
+        mockMvc.perform(get("/api/v1/community/" + community.getId()))
                 .andDo(print())
-                .andExpect(jsonPath("statusCode").value(HttpStatus.CREATED.toString()));
+                .andExpect(jsonPath("statusCode").value(HttpStatus.OK.toString()));
     }
 
     @DisplayName("포스트 생성")
@@ -109,7 +117,7 @@ class PostControllerTest {
 
         PostDTO.PostForm form = PostDTO.PostForm.builder()
                 .communityId(community.getId())
-                .content("testsfsdfsfsdfsdsdfds")
+                .postContent("testsfsdfsfsdfsdsdfds")
                 .build();
 
         mockMvc.perform(post("/api/v1/community/" + community.getId() + "/posts")
@@ -132,7 +140,7 @@ class PostControllerTest {
 
         PostDTO.PostForm form = PostDTO.PostForm.builder()
                 .communityId(community.getId())
-                .content("testsfsdfsfsdfsdsdfds")
+                .postContent("testsfsdfsfsdfsdsdfds")
                 .build();
 
         mockMvc.perform(post("/api/v1/community/" + community.getId() + "/posts")
@@ -147,10 +155,12 @@ class PostControllerTest {
 
 
     private Post createPost(Community community) {
-        return Post.builder()
+        Post post = Post.builder()
                 .community(community)
                 .content("테스트 포스트")
                 .build();
+        post.setCreatedByForTest(1L);
+        return post;
     }
 
 }

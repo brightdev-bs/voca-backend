@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.Import;
 import vanille.vocabe.entity.Comment;
 import vanille.vocabe.entity.Post;
+import vanille.vocabe.entity.User;
 import vanille.vocabe.global.config.TestConfig;
 import vanille.vocabe.payload.CommentDTO;
 import vanille.vocabe.payload.CommentDTO.CommentForm;
@@ -40,7 +41,7 @@ class CommentServiceImplTest {
     void createComment() {
         given(postRepository.findById(any(Long.class))).willReturn(Optional.of(mock(Post.class)));
 
-        commentService.createComment(mock(CommentForm.class));
+        commentService.createComment(mock(CommentForm.class), mock(User.class));
 
         then(commentRepository).should().save(any(Comment.class));
     }

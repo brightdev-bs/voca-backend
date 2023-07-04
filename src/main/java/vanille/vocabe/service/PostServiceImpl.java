@@ -14,6 +14,7 @@ import vanille.vocabe.repository.PostRepository;
 import vanille.vocabe.repository.UserRepository;
 
 import javax.mail.AuthenticationFailedException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static vanille.vocabe.payload.PostDTO.*;
@@ -29,6 +30,7 @@ public class PostServiceImpl implements PostService {
     private final UserRepository userRepository;
 
 
+    @Transactional
     @Override
     public void createPost(PostForm form, final Long userId) throws AuthenticationFailedException {
         Long communityId = form.getCommunityId();
@@ -39,7 +41,7 @@ public class PostServiceImpl implements PostService {
         if(isCommunityMember(user, communityUsers)) {
             Post post = Post.builder()
                     .community(community)
-                    .content(form.getContent())
+                    .content(form.getPostContent())
                     .build();
             postRepository.save(post);
         } else {
@@ -56,8 +58,17 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> getPosts(Long communityId) {
+    public List<PostDetail> getPosts(Long communityId) {
         Community community = communityRepository.findById(communityId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_COMMUNITY));
-        return community.getPosts();
+        List<Post> posts = community.getPosts();
+
+        // Todo : 쿼리가 N + 1개 나갈 것임
+        List<PostDetail> response = new ArrayList<>();
+        for(Post p : posts) {
+            Long writerId = p.getCreatedBy();
+            User user = userRepository.findById(writerId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
+            response.add(PostDetail.from(p, user.getUsername()));
+        }
+        return response;
     }
 }

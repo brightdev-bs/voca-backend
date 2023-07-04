@@ -25,9 +25,9 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/posts/{id}/comments")
-    public ApiResponse createComment(@PathVariable Long id, @RequestBody CommentForm form) {
+    public ApiResponse createComment(@PathVariable Long id, @RequestBody CommentForm form, @AuthenticationPrincipal User user) {
         form.setPostId(id);
-        commentService.createComment(form);
+        commentService.createComment(form, user);
         return ApiResponse.of(HttpStatus.CREATED.toString(), Constants.CREATED);
     }
 

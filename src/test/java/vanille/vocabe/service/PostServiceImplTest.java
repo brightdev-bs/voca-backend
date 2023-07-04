@@ -56,7 +56,7 @@ class PostServiceImplTest {
                 .build();
         PostForm form = PostForm.builder()
                 .communityId(1L)
-                .content("Adfsfsdff")
+                .postContent("Adfsfsdff")
                 .build();
 
         given(userRepository.findById(any(Long.class))).willReturn(Optional.of(user));
@@ -78,7 +78,7 @@ class PostServiceImplTest {
                 .build();
         PostForm form = PostForm.builder()
                 .communityId(1L)
-                .content("Adfsfsdff")
+                .postContent("Adfsfsdff")
                 .build();
 
         given(userRepository.findById(any(Long.class))).willReturn(Optional.of(mock(User.class)));
@@ -96,6 +96,7 @@ class PostServiceImplTest {
         List<Post> posts = List.of(mock(Post.class), mock(Post.class), mock(Post.class), mock(Post.class));
         given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
         given(community.getPosts()).willReturn(posts);
+        given(userRepository.findById(any(Long.class))).willReturn(Optional.of(mock(User.class)));
 
         assertEquals(4, postService.getPosts(any(Long.class)).size());
     }
