@@ -22,6 +22,7 @@ public class Comment extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "post_id")
     @JsonIgnore
+    @ToString.Exclude
     private Post post;
     private String writer;
 
