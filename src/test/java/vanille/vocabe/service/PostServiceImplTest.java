@@ -9,14 +9,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.Import;
-import vanille.vocabe.entity.Community;
-import vanille.vocabe.entity.CommunityUser;
-import vanille.vocabe.entity.Post;
-import vanille.vocabe.entity.User;
+import vanille.vocabe.entity.*;
 import vanille.vocabe.global.config.TestConfig;
 import vanille.vocabe.payload.PostDTO;
 import vanille.vocabe.repository.CommunityRepository;
 import vanille.vocabe.repository.PostRepository;
+import vanille.vocabe.repository.TopicRepository;
 import vanille.vocabe.repository.UserRepository;
 
 import javax.mail.AuthenticationFailedException;
@@ -41,6 +39,8 @@ class PostServiceImplTest {
     UserRepository userRepository;
     @Mock
     CommunityRepository communityRepository;
+    @Mock
+    TopicRepository topicRepository;
 
     @InjectMocks
     PostServiceImpl postService;
@@ -93,12 +93,14 @@ class PostServiceImplTest {
     @Test
     void getPosts() {
         Community community = mock(Community.class);
+        Topic topic = mock(Topic.class);
         List<Post> posts = List.of(mock(Post.class), mock(Post.class), mock(Post.class), mock(Post.class));
         given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
-//        given(community.getPosts()).willReturn(posts);
+        given(topic.getPosts()).willReturn(posts);
+        given(topicRepository.findById(any(Long.class))).willReturn(Optional.of(topic));
         given(userRepository.findById(any(Long.class))).willReturn(Optional.of(mock(User.class)));
 
-        assertEquals(4, postService.getPosts(any(Long.class)).size());
+        assertEquals(4, postService.getPosts(community.getId(), topic.getId()).size());
     }
 
 }

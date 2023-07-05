@@ -27,7 +27,7 @@ public class PostController {
 
     @GetMapping("community/{communityId}/topics/{topicId}")
     public ApiResponse getPosts(@PathVariable Long communityId, @PathVariable Long topicId) {
-        List<PostDetail> posts = postService.getPosts(communityId);
+        List<PostDetail> posts = postService.getPosts(communityId, topicId);
 
         return ApiResponse.of(HttpStatus.OK.toString(), posts);
     }

@@ -27,6 +27,7 @@ public class Topic extends BaseEntity {
     @JoinColumn(name = "community_id")
     private Community community;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "community")
     private List<Post> posts = new ArrayList<>();
 
@@ -41,7 +42,7 @@ public class Topic extends BaseEntity {
         this.id = id;
         this.content = content;
         this.community = community;
-        this.posts = posts;
+        this.posts = posts == null ? new ArrayList<>() : posts;
     }
 
 

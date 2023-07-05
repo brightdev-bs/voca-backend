@@ -12,11 +12,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,9 +29,13 @@ import vanille.vocabe.fixture.TopicFixture;
 import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.payload.PostDTO;
+import vanille.vocabe.payload.TopicDTO;
 import vanille.vocabe.repository.*;
 
 import javax.transaction.Transactional;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -37,6 +44,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static vanille.vocabe.constants.TestConstants.BEARER_TOKEN;
+import static vanille.vocabe.payload.PostDTO.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @Transactional
@@ -92,13 +100,10 @@ class PostControllerTest {
         postRepository.save(post2);
         postRepository.save(post3);
 
-//        community.getPosts().add(post);
-//        community.getPosts().add(post2);
-//        community.getPosts().add(post3);
-
-        mockMvc.perform(get("/api/v1/community/" + community.getId() + "/topic"))
+        mockMvc.perform(get("/api/v1/community/" + community.getId() + "/topics/" + topic.getId()))
                 .andDo(print())
-                .andExpect(jsonPath("statusCode").value(HttpStatus.OK.toString()));
+                .andExpect(jsonPath("statusCode").value(HttpStatus.OK.toString()))
+                .andExpect(jsonPath("data").isArray());
     }
 
     @DisplayName("포스트 생성")
@@ -119,7 +124,7 @@ class PostControllerTest {
         community.getCommunityUsers().add(communityUser);
         user.getCommunities().add(communityUser);
 
-        PostDTO.PostForm form = PostDTO.PostForm.builder()
+        PostForm form = PostForm.builder()
                 .communityId(community.getId())
                 .postContent("testsfsdfsfsdfsdsdfds")
                 .build();
@@ -142,7 +147,7 @@ class PostControllerTest {
                 .build();
         communityRepository.save(community);
 
-        PostDTO.PostForm form = PostDTO.PostForm.builder()
+        PostForm form = PostForm.builder()
                 .communityId(community.getId())
                 .postContent("testsfsdfsfsdfsdsdfds")
                 .build();
@@ -165,6 +170,7 @@ class PostControllerTest {
                 .topic(topic)
                 .build();
         post.setCreatedByForTest(1L);
+        topic.getPosts().add(post);
         return post;
     }
 

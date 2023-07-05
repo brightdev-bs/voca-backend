@@ -43,7 +43,7 @@ public class Post extends BaseEntity {
         this.id = id;
         this.content = content;
         this.community = community;
-        this.comments = comments;
+        this.comments = comments == null ? new ArrayList<>() : comments;
         this.topic = topic;
     }
 }
