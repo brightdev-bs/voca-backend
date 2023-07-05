@@ -60,15 +60,15 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<PostDetail> getPosts(Long communityId) {
         Community community = communityRepository.findById(communityId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_COMMUNITY));
-        List<Post> posts = community.getPosts();
+//        List<Post> posts = community.getPosts();
 
         // Todo : 쿼리가 N + 1개 나갈 것임
         List<PostDetail> response = new ArrayList<>();
-        for(Post p : posts) {
-            Long writerId = p.getCreatedBy();
-            User user = userRepository.findById(writerId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
-            response.add(PostDetail.from(p, user.getUsername()));
-        }
+//        for(Post p : posts) {
+//            Long writerId = p.getCreatedBy();
+//            User user = userRepository.findById(writerId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
+//            response.add(PostDetail.from(p, user.getUsername()));
+//        }
         return response;
     }
 }

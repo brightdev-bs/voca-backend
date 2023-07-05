@@ -14,7 +14,7 @@ import java.util.List;
 @ToString(callSuper = true)
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Topic {
+public class Topic extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,7 +23,7 @@ public class Topic {
     private String content;
 
     @NotNull
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "community_id")
     private Community community;
 

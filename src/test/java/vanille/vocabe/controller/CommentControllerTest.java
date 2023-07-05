@@ -16,14 +16,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import vanille.vocabe.entity.Community;
 import vanille.vocabe.entity.Post;
+import vanille.vocabe.entity.Topic;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.global.constants.Constants;
 import vanille.vocabe.payload.CommentDTO;
-import vanille.vocabe.repository.CommentRepository;
-import vanille.vocabe.repository.CommunityRepository;
-import vanille.vocabe.repository.PostRepository;
-import vanille.vocabe.repository.UserRepository;
+import vanille.vocabe.repository.*;
 import vanille.vocabe.service.CommentService;
 
 import javax.transaction.Transactional;
@@ -38,6 +36,10 @@ import static vanille.vocabe.constants.TestConstants.BEARER_TOKEN;
 @AutoConfigureMockMvc
 @SpringBootTest
 class CommentControllerTest {
+
+    @Autowired
+    TopicRepository topicRepository;
+
     @Autowired
     CommunityRepository communityRepository;
 
@@ -74,8 +76,15 @@ class CommentControllerTest {
                 .build();
         communityRepository.save(community);
 
+        Topic topic = Topic.builder()
+                .content("test")
+                .community(community)
+                .build();
+        topicRepository.save(topic);
+
         Post post = Post.builder()
                 .community(community)
+                .topic(topic)
                 .build();
         postRepository.save(post);
 

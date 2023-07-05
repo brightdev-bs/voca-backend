@@ -10,6 +10,9 @@ import static vanille.vocabe.payload.CommunityDTO.*;
 
 public interface CommunityService {
 
+
+    CommunityDetail getCommunityDetails(Long communityId);
+
     @Transactional
     Community saveCommunity(CommunityForm form) throws AuthenticationFailedException;
 
@@ -19,7 +22,7 @@ public interface CommunityService {
     @Transactional
     void expelUser(ExpelleeForm form);
 
-    List<Response> getCommunities();
+    List<HomeResponse> getCommunities();
 
     List<Community> getCommunities(String name);
 }

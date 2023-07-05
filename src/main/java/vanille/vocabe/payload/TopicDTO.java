@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import vanille.vocabe.entity.Community;
+import vanille.vocabe.entity.Topic;
 
 import javax.validation.constraints.NotNull;
 
@@ -17,5 +18,23 @@ public class TopicDTO {
     public static class TopicForm {
         String content;
         Long communityId;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TopicDetail {
+        String content;
+        String createdAt;
+        Long createdBy;
+
+        public static TopicDetail from(Topic topic) {
+            return TopicDetail.builder()
+                    .content(topic.getContent())
+                    .createdAt(topic.getCreatedAt() == null ? null : topic.getCreatedAt().toString())
+                    .createdBy(topic.getCreatedBy())
+                    .build();
+        }
     }
 }

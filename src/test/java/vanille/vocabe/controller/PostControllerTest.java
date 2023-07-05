@@ -21,10 +21,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.context.WebApplicationContext;
-import vanille.vocabe.entity.Community;
-import vanille.vocabe.entity.CommunityUser;
-import vanille.vocabe.entity.Post;
-import vanille.vocabe.entity.User;
+import vanille.vocabe.entity.*;
+import vanille.vocabe.fixture.TopicFixture;
 import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.payload.PostDTO;
@@ -48,6 +46,9 @@ class PostControllerTest {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private TopicRepository topicRepository;
 
     @Autowired
     private CommunityRepository communityRepository;
@@ -81,18 +82,21 @@ class PostControllerTest {
                 .build();
         communityRepository.save(community);
 
-        Post post = createPost(community);
-        Post post2 = createPost(community);
-        Post post3 = createPost(community);
+        Topic topic = TopicFixture.getTopicFixture(community);
+        topicRepository.save(topic);
+
+        Post post = createPost(community, topic);
+        Post post2 = createPost(community, topic);
+        Post post3 = createPost(community, topic);
         postRepository.save(post);
         postRepository.save(post2);
         postRepository.save(post3);
 
-        community.getPosts().add(post);
-        community.getPosts().add(post2);
-        community.getPosts().add(post3);
+//        community.getPosts().add(post);
+//        community.getPosts().add(post2);
+//        community.getPosts().add(post3);
 
-        mockMvc.perform(get("/api/v1/community/" + community.getId()))
+        mockMvc.perform(get("/api/v1/community/" + community.getId() + "/topic"))
                 .andDo(print())
                 .andExpect(jsonPath("statusCode").value(HttpStatus.OK.toString()));
     }
@@ -154,10 +158,11 @@ class PostControllerTest {
 
 
 
-    private Post createPost(Community community) {
+    private Post createPost(Community community, Topic topic) {
         Post post = Post.builder()
                 .community(community)
                 .content("테스트 포스트")
+                .topic(topic)
                 .build();
         post.setCreatedByForTest(1L);
         return post;

@@ -12,10 +12,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import vanille.vocabe.entity.Community;
+import vanille.vocabe.entity.Topic;
 import vanille.vocabe.entity.User;
+import vanille.vocabe.fixture.CommunityFixture;
+import vanille.vocabe.fixture.TopicFixture;
 import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.repository.CommunityRepository;
 import vanille.vocabe.repository.CommunityUserRepository;
+import vanille.vocabe.repository.TopicRepository;
 import vanille.vocabe.repository.UserRepository;
 import vanille.vocabe.service.CommunityService;
 
@@ -23,6 +27,7 @@ import javax.transaction.Transactional;
 
 import java.util.List;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -40,6 +45,9 @@ class CommunityControllerTest {
 
     @Autowired
     private CommunityUserRepository communityUserRepository;
+
+    @Autowired
+    private TopicRepository topicRepository;
 
     @Autowired
     private CommunityService communityService;
@@ -83,11 +91,30 @@ class CommunityControllerTest {
                 .andExpect(jsonPath("statusCode").value(HttpStatus.CREATED.toString()));
     }
 
+    @DisplayName("커뮤니티 메인 페이지 조회")
+    @Test
+    void getCommunityDetails() throws Exception {
+        User user = UserFixture.getVerifiedUser();
+        userRepository.save(user);
+
+        Community community = CommunityFixture.getCommunityFixture();
+        communityRepository.save(community);
+
+        Topic topic = TopicFixture.getTopicFixture(community);
+        Topic topic2 = TopicFixture.getTopicFixture(community);
+        topicRepository.save(topic);
+        topicRepository.save(topic2);
+
+        mockMvc.perform(get("/api/v1/community/" + community.getId()))
+                .andDo(print())
+                .andExpect(jsonPath("statusCode").value(HttpStatus.OK.toString()));
+    }
+
     @DisplayName("커뮤니티 디폴트 조회 - 10개 ")
     @Test
     void getCommunities() {
         setData();
-        List<Response> communities = communityService.getCommunities();
+        List<HomeResponse> communities = communityService.getCommunities();
         Assertions.assertEquals(10, communities.size());
     }
 

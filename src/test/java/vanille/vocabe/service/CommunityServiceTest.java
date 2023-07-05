@@ -10,10 +10,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import vanille.vocabe.entity.Applicant;
-import vanille.vocabe.entity.Community;
-import vanille.vocabe.entity.CommunityUser;
-import vanille.vocabe.entity.User;
+import vanille.vocabe.entity.*;
+import vanille.vocabe.fixture.CommunityFixture;
 import vanille.vocabe.global.config.TestConfig;
 import vanille.vocabe.global.constants.Constants;
 import vanille.vocabe.global.exception.DuplicatedEntityException;
@@ -21,10 +19,7 @@ import vanille.vocabe.global.exception.InvalidVerificationCodeException;
 import vanille.vocabe.global.exception.NotFoundException;
 import vanille.vocabe.global.exception.UnverifiedException;
 import vanille.vocabe.payload.CommunityDTO;
-import vanille.vocabe.repository.ApplicantRepository;
-import vanille.vocabe.repository.CommunityRepository;
-import vanille.vocabe.repository.CommunityUserRepository;
-import vanille.vocabe.repository.UserRepository;
+import vanille.vocabe.repository.*;
 
 import javax.mail.AuthenticationFailedException;
 import java.util.List;
@@ -50,12 +45,25 @@ class CommunityServiceTest {
 
     @Mock
     CommunityUserRepository communityUserRepository;
+    @Mock
+    TopicRepository topicRepository;
 
     @Mock
     ApplicantRepository applicantRepository;
 
     @InjectMocks
     CommunityServiceImpl communityService;
+
+    @DisplayName("커뮤니티 메인 페이지 조회")
+    @Test
+    void getCommunityMain() {
+        Community community = CommunityFixture.getCommunityFixture();
+        community.getTopics().add(mock(Topic.class));
+        given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
+        CommunityDetail communityDetails = communityService.getCommunityDetails(1L);
+        assertEquals(community.getId(), communityDetails.getId());
+        assertEquals(community.getTopics().size(), communityDetails.getTopics().size());
+    }
 
     @DisplayName("커뮤니티 생성하기")
     @Test

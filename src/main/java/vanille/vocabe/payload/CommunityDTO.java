@@ -5,9 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import vanille.vocabe.entity.Community;
+import vanille.vocabe.entity.CommunityUser;
+import vanille.vocabe.entity.Topic;
 import vanille.vocabe.entity.User;
 
 import javax.validation.constraints.NotBlank;
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static vanille.vocabe.payload.TopicDTO.*;
 
 public class CommunityDTO {
 
@@ -37,7 +45,7 @@ public class CommunityDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Response {
+    public static class HomeResponse {
         private Long id;
         private String name;
         private String description;
@@ -46,9 +54,9 @@ public class CommunityDTO {
         private Long createdBy;
         private String createdAt;
 
-        public static Response from(Community c) {
+        public static HomeResponse from(Community c) {
             int joinedMember = c.getCommunityUsers().size();
-            return Response.builder()
+            return HomeResponse.builder()
                     .id(c.getId())
                     .name(c.getName())
                     .description(c.getDescription())
@@ -58,7 +66,35 @@ public class CommunityDTO {
                     .createdAt(c.getCreatedAt().toString())
                     .build();
         }
+    }
 
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CommunityDetail {
+        private Long id;
+        private String name;
+        private String description;
+        private boolean open;
+        private int totalMember;
+        private Long createdBy;
+        private List<CommunityUser> joinedMembers = new ArrayList<>();
+        private List<TopicDetail> topics;
+
+        public static CommunityDetail from(Community c) {
+            List<TopicDetail> topicDetails = c.getTopics().stream().map(t -> TopicDetail.from(t)).collect(Collectors.toList());
+            return CommunityDetail.builder()
+                    .id(c.getId())
+                    .name(c.getName())
+                    .description(c.getDescription())
+                    .open(c.isOpen())
+                    .joinedMembers(c.getCommunityUsers())
+                    .totalMember(c.getTotalMember())
+                    .topics(topicDetails)
+                    .createdBy(c.getCreatedBy())
+                    .build();
+        }
 
     }
 
