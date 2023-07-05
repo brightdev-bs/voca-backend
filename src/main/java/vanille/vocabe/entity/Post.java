@@ -17,12 +17,11 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 public class Post extends BaseEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String content;
 
-    @NotNull
     @ManyToOne
     @JoinColumn(name = "community_id")
     private Community community;

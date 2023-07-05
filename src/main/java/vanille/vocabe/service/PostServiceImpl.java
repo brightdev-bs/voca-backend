@@ -34,6 +34,7 @@ public class PostServiceImpl implements PostService {
     public void createPost(PostForm form, final Long userId) throws AuthenticationFailedException {
         Long communityId = form.getCommunityId();
         Community community = communityRepository.findById(communityId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_COMMUNITY));
+        Topic topic = topicRepository.findById(form.getTopicId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_TOPIC));
 
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
         List<CommunityUser> communityUsers = community.getCommunityUsers();
@@ -41,6 +42,7 @@ public class PostServiceImpl implements PostService {
             Post post = Post.builder()
                     .community(community)
                     .content(form.getPostContent())
+                    .topic(topic)
                     .build();
             postRepository.save(post);
         } else {

@@ -25,16 +25,19 @@ public class TopicDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class TopicDetail {
+        Long id;
         String content;
         String createdAt;
         Long createdBy;
 
         public static TopicDetail from(Topic topic) {
             return TopicDetail.builder()
+                    .id(topic.getId())
                     .content(topic.getContent())
-                    .createdAt(topic.getCreatedAt() == null ? null : topic.getCreatedAt().toString())
+                    .createdAt(topic.getCreatedAt() == null ? null : topic.getCreatedAt().toString().substring(0, 10))
                     .createdBy(topic.getCreatedBy())
                     .build();
         }
+
     }
 }

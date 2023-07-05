@@ -79,17 +79,18 @@ public class CommunityDTO {
         private boolean open;
         private int totalMember;
         private Long createdBy;
-        private List<CommunityUser> joinedMembers = new ArrayList<>();
+        private List<Long> joinedMembers = new ArrayList<>();
         private List<TopicDetail> topics;
 
         public static CommunityDetail from(Community c) {
             List<TopicDetail> topicDetails = c.getTopics().stream().map(t -> TopicDetail.from(t)).collect(Collectors.toList());
+            List<Long> joinedUsers = c.getCommunityUsers().stream().map(CommunityUser::getId).collect(Collectors.toList());
             return CommunityDetail.builder()
                     .id(c.getId())
                     .name(c.getName())
                     .description(c.getDescription())
                     .open(c.isOpen())
-                    .joinedMembers(c.getCommunityUsers())
+                    .joinedMembers(joinedUsers)
                     .totalMember(c.getTotalMember())
                     .topics(topicDetails)
                     .createdBy(c.getCreatedBy())

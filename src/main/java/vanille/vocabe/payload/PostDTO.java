@@ -9,6 +9,7 @@ import vanille.vocabe.entity.Post;
 import vanille.vocabe.payload.CommentDTO.CommentDetail;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,8 @@ public class PostDTO {
     @AllArgsConstructor
     public static class PostForm {
         Long communityId;
+        @NotNull
+        Long topicId;
         @NotBlank
         String postContent;
     }
