@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Import;
 import vanille.vocabe.entity.Community;
 import vanille.vocabe.entity.Topic;
 import vanille.vocabe.global.config.JpaConfig;
+import vanille.vocabe.global.constants.ErrorCode;
+import vanille.vocabe.global.exception.NotFoundException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,7 +43,7 @@ class TopicRepositoryTest {
         Topic topic = Topic.builder().community(community).build();
         topicRepository.save(topic);
 
-        Topic topicByCommunityId = topicRepository.findByCommunity_Id(community.getId());
+        Topic topicByCommunityId = topicRepository.findByCommunity_Id(community.getId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_TOPIC));
         assertEquals(community.getId(), topicByCommunityId.getCommunity().getId());
     }
 }
