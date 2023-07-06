@@ -1,6 +1,5 @@
 package vanille.vocabe.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.*;
@@ -21,7 +20,6 @@ import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.repository.*;
 import vanille.vocabe.service.CommunityService;
 
-import javax.persistence.JoinColumn;
 import javax.transaction.Transactional;
 
 import java.util.List;
@@ -224,7 +222,7 @@ class CommunityControllerTest {
                         .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
                 ).andDo(print())
                 .andExpect(jsonPath("statusCode").value(HttpStatus.BAD_REQUEST.toString()))
-                .andExpect(jsonPath("data").value(ErrorCode.FORBIDDEN_REQUEST.getMessage()));
+                .andExpect(jsonPath("data").value(ErrorCode.REJECTED_REQUEST.getMessage()));
     }
 
 

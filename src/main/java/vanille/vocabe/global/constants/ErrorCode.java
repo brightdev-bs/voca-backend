@@ -6,16 +6,16 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
 
-    DUPLICATED_USER(HttpStatus.BAD_REQUEST, "이미 가입한 사용자입니다."),
+    DUPLICATED_USER(HttpStatus.BAD_REQUEST, "It's is already sign-up"),
     DUPLICATED_REQUEST(HttpStatus.BAD_REQUEST, "It's already requested"),
-    DUPLICATED_USERNAME(HttpStatus.BAD_REQUEST, "이미 사용중인 이름입니다."),
-    FORBIDDEN_REQUEST(HttpStatus.BAD_REQUEST, "거절당한 요청입니다."),
+    DUPLICATED_USERNAME(HttpStatus.BAD_REQUEST, "It's already being used name"),
+    REJECTED_REQUEST(HttpStatus.BAD_REQUEST, "You've been already rejected in this community"),
 
-    NOT_FOUND_EMAIL_TOKEN(HttpStatus.BAD_REQUEST, "인증 코드가 없습니다."),
-    NOT_FOUND_USER(HttpStatus.BAD_REQUEST, "사용자를 찾을 수 없습니다."),
-    NOT_FOUND_WORD(HttpStatus.BAD_REQUEST, "단어를 찾을 수 없습니다."),
-    NOT_FOUND_TOKEN(HttpStatus.BAD_REQUEST, "토큰이 없습니다."),
-    NOT_FOUND_VOCABULARY(HttpStatus.BAD_REQUEST, "단어장이 없습니다."),
+    NOT_FOUND_EMAIL_TOKEN(HttpStatus.BAD_REQUEST, "There is no verfication code"),
+    NOT_FOUND_USER(HttpStatus.BAD_REQUEST, "We couldn't find the user"),
+    NOT_FOUND_WORD(HttpStatus.BAD_REQUEST, "We couldn't find the word"),
+    NOT_FOUND_TOKEN(HttpStatus.BAD_REQUEST, "There is no token"),
+    NOT_FOUND_VOCABULARY(HttpStatus.BAD_REQUEST, "There is no vocabulary"),
     NOT_FOUND_COMMUNITY(HttpStatus.BAD_REQUEST, "Doesn't exist community"),
     NOT_FOUND_POST(HttpStatus.BAD_REQUEST, "Doesn't exist post"),
     NOT_FOUND_TOPIC(HttpStatus.BAD_REQUEST, "Doesn't exist topic"),
@@ -23,14 +23,14 @@ public enum ErrorCode {
 
 
 
-    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
-    INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "잘못된 인증 코드입니다."),
-    INVALID_TOKEN(HttpStatus.BAD_REQUEST, "잘못된 헤더 토큰입니다."),
-    EXPIRED_TOKEN(HttpStatus.BAD_REQUEST, "만료된 토큰입니다."),
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "Password isn't correct"),
+    INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "Wrong verification code"),
+    INVALID_TOKEN(HttpStatus.BAD_REQUEST, "Wrong header token"),
+    EXPIRED_TOKEN(HttpStatus.BAD_REQUEST, "Expired token"),
 
-    UNVERIFIED_USER(HttpStatus.BAD_REQUEST, "인증되지 않은 사용자입니다."),
+    UNVERIFIED_USER(HttpStatus.BAD_REQUEST, "This account need to be certificated. Check ur email"),
 
-    NO_AUTHORITY(HttpStatus.BAD_REQUEST, "권한이 없습니다."),
+    NO_AUTHORITY(HttpStatus.BAD_REQUEST, "You don't have the authority"),
     ;
 
     private HttpStatus httpStatus;

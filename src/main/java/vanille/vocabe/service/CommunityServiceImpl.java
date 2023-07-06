@@ -62,7 +62,7 @@ public class CommunityServiceImpl implements CommunityService {
         if(byApplicant.isPresent()) {
             Applicant applicant = byApplicant.get();
             if(applicant.isChecked() && !applicant.isAccepted())
-                throw new DuplicatedEntityException(ErrorCode.FORBIDDEN_REQUEST);
+                throw new DuplicatedEntityException(ErrorCode.REJECTED_REQUEST);
             if(!applicant.isChecked()) {
                 throw new DuplicatedEntityException(ErrorCode.DUPLICATED_REQUEST);
             }
