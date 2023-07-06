@@ -25,15 +25,33 @@ class CommunityRepositoryTest {
     @DisplayName("커뮤니티 생성")
     @Test
     void createCommunity() {
-        Community community = Community.builder()
-                .name("test community")
-                .description("community creating test")
-                .open(true)
-                .build();
+        Community community = createCommunity("test community");
         Community save = communityRepository.save(community);
-        assertEquals( community.getName(), save.getName());
+        assertEquals(community.getName(), save.getName());
         assertEquals(community.getDescription(), save.getDescription());
         assertEquals(community.isOpen(), save.isOpen());
     }
 
+    @DisplayName("커뮤니티 검색")
+    @Test
+    void searchCommunity() {
+        Community community = createCommunity("community1");
+        Community community2 = createCommunity("comm2");
+        Community community3 = createCommunity("commun3");
+        communityRepository.save(community);
+        communityRepository.save(community2);
+        communityRepository.save(community3);
+
+        assertEquals(3, communityRepository.findCommunitiesByNameContaining("com").size());
+        assertEquals(1, communityRepository.findCommunitiesByNameContaining("comm2").size());
+    }
+
+
+    Community createCommunity(String name) {
+        return Community.builder()
+                .name(name)
+                .description("community creating test")
+                .open(true)
+                .build();
+    }
 }

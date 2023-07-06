@@ -14,7 +14,7 @@ import java.util.List;
 @ToString(callSuper = true)
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Community {
+public class Community extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -25,17 +25,26 @@ public class Community {
     private boolean open;
     @ToString.Exclude
     @OneToMany(mappedBy = "community")
-    private List<CommunityUser> communityUser = new ArrayList<>();
+    private List<CommunityUser> communityUsers = new ArrayList<>();
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "community")
+    private List<Topic> topics = new ArrayList<>();
 
     protected Community() {}
 
     @Builder
-    public Community(Long id, String name, String description, int totalMember, boolean open, List<CommunityUser> communityUser) {
+    public Community(Long id, String name, String description, int totalMember, boolean open, List<CommunityUser> communityUsers, List<Topic> topics) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.totalMember = totalMember;
         this.open = open;
-        this.communityUser = communityUser;
+        this.communityUsers = communityUsers == null ? new ArrayList<>() : communityUsers;
+        this.topics = topics == null ? new ArrayList<>() : topics;
+    }
+
+    public void addCommunityUser(CommunityUser cu) {
+        this.getCommunityUsers().add(cu);
     }
 }
