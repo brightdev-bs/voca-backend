@@ -31,5 +31,7 @@ public interface CommunityService {
     List<Community> getCommunities(String name);
 
 
+    List<ApplicantDTO.ApplicantResponse> getApplicants(Long id);
+
     void responseForApplicant(ApplicantDTO.ApplicantDetail form);
 }

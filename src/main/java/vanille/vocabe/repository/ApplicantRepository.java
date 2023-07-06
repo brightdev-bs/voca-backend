@@ -5,8 +5,10 @@ import vanille.vocabe.entity.Applicant;
 import vanille.vocabe.entity.Community;
 import vanille.vocabe.entity.User;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ApplicantRepository extends JpaRepository<Applicant, Long> {
+    List<Applicant> findApplicantByCommunity(Community community);
     Optional<Applicant> findApplicantByUserAndCommunity(User user, Community community);
 }

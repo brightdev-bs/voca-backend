@@ -1,6 +1,7 @@
 package vanille.vocabe.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import vanille.vocabe.fixture.TopicFixture;
 import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.global.constants.Constants;
 import vanille.vocabe.global.constants.ErrorCode;
+import vanille.vocabe.payload.ApplicantDTO;
 import vanille.vocabe.repository.*;
 import vanille.vocabe.service.CommunityService;
 
@@ -24,11 +26,13 @@ import javax.transaction.Transactional;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static vanille.vocabe.constants.TestConstants.BEARER_TOKEN;
+import static vanille.vocabe.payload.ApplicantDTO.*;
 import static vanille.vocabe.payload.CommunityDTO.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -223,6 +227,40 @@ class CommunityControllerTest {
                 ).andDo(print())
                 .andExpect(jsonPath("statusCode").value(HttpStatus.BAD_REQUEST.toString()))
                 .andExpect(jsonPath("data").value(ErrorCode.REJECTED_REQUEST.getMessage()));
+    }
+
+    @DisplayName("커뮤니티 신청자 조회")
+    @Test
+    void getApplicants() throws Exception {
+        User user = UserFixture.getVerifiedUser();
+        User user2 = UserFixture.getVerifiedUser("wdfw");
+        userRepository.save(user);
+        userRepository.save(user2);
+
+        Community community = CommunityFixture.getCommunityFixture();
+        communityRepository.save(community);
+
+        Applicant applicant = getApplicant(user, community);
+        Applicant applicant2 = getApplicant(user2, community);
+        applicantRepository.save(applicant);
+        applicantRepository.save(applicant2);
+
+        List<ApplicantResponse> list = List.of(ApplicantResponse.from(applicant), ApplicantResponse.from(applicant2));
+
+        mockMvc.perform(get("/api/v1/community/" + community.getId() + "/members")
+                        .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                )
+                .andDo(print())
+                .andExpect(jsonPath("statusCode").value(HttpStatus.OK.toString()))
+                .andExpect(jsonPath("$.data", hasSize(2)));
+    }
+
+    private Applicant getApplicant(User user, Community community) {
+        return Applicant.builder()
+                .motive("test")
+                .user(user)
+                .community(community)
+                .build();
     }
 
 

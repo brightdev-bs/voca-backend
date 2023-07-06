@@ -290,4 +290,19 @@ class CommunityServiceTest {
 
         assertThrows(IllegalStateException.class, () -> communityService.responseForApplicant(form));
     }
+
+    @DisplayName("커뮤니티 신청자 조회")
+    @Test
+    void getAllApplicantForCommunity() {
+        Community community = mock(Community.class);
+        Applicant applicant = Applicant.builder()
+                .motive("test")
+                .community(community)
+                .user(UserFixture.getVerifiedUser())
+                .build();
+        given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
+        given(applicantRepository.findApplicantByCommunity(community)).willReturn(List.of(applicant));
+
+        assertEquals(1, communityService.getApplicants(community.getId()).size());
+    }
 }

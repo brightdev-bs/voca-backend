@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.global.constants.Constants;
 import vanille.vocabe.global.response.common.ApiResponse;
-import vanille.vocabe.payload.ApplicantDTO;
 import vanille.vocabe.service.CommunityService;
 
 import javax.mail.AuthenticationFailedException;
@@ -44,6 +43,12 @@ public class CommunityController {
         form.setUser(user);
         communityService.saveCommunity(form);
         return ApiResponse.of(HttpStatus.CREATED.toString(), Constants.CREATED);
+    }
+
+    @GetMapping("/community/{id}/members")
+    public ApiResponse getCommunityJoinRequest(@PathVariable Long id) {
+        List<ApplicantResponse> response = communityService.getApplicants(id);
+        return ApiResponse.of(HttpStatus.OK.toString(), response);
     }
 
     @PostMapping("/community/{id}/members")
