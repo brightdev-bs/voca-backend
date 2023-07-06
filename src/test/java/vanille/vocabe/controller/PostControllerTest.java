@@ -121,11 +121,18 @@ class PostControllerTest {
                 .community(community)
                 .build();
         communityUserRepository.save(communityUser);
+
+        Topic topic = Topic.builder()
+                .content("test")
+                .community(community)
+                .build();
+        topicRepository.save(topic);
         community.getCommunityUsers().add(communityUser);
         user.getCommunities().add(communityUser);
 
         PostForm form = PostForm.builder()
                 .communityId(community.getId())
+                .topicId(topic.getId())
                 .postContent("testsfsdfsfsdfsdsdfds")
                 .build();
 
@@ -146,9 +153,15 @@ class PostControllerTest {
                 .name("test")
                 .build();
         communityRepository.save(community);
+        Topic topic = Topic.builder()
+                .content("sdfsfdwfwf")
+                .community(community)
+                .build();
+        topicRepository.save(topic);
 
         PostForm form = PostForm.builder()
                 .communityId(community.getId())
+                .topicId(topic.getId())
                 .postContent("testsfsdfsfsdfsdsdfds")
                 .build();
 

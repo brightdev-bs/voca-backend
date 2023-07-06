@@ -16,10 +16,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import vanille.vocabe.entity.Community;
+import vanille.vocabe.entity.User;
 import vanille.vocabe.fixture.CommunityFixture;
+import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.global.constants.Constants;
 import vanille.vocabe.payload.TopicDTO;
 import vanille.vocabe.repository.CommunityRepository;
+import vanille.vocabe.repository.UserRepository;
 import vanille.vocabe.service.TopicService;
 
 import javax.transaction.Transactional;
@@ -38,6 +41,8 @@ import static vanille.vocabe.constants.TestConstants.BEARER_TOKEN;
 class TopicControllerTest {
     @Autowired
     private CommunityRepository communityRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private TopicService topicService;
@@ -61,6 +66,9 @@ class TopicControllerTest {
     @DisplayName("Topic 엔티티 생성")
     @Test
     void createTopic() throws Exception {
+        User user = UserFixture.getVerifiedUser();
+        userRepository.save(user);
+
         Community community = CommunityFixture.getCommunityFixture();
         communityRepository.save(community);
 

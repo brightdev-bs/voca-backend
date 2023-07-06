@@ -54,14 +54,18 @@ class PostServiceImplTest {
                 .community(community)
                 .user(user)
                 .build();
+        Topic topic = mock(Topic.class);
+
         PostForm form = PostForm.builder()
-                .communityId(1L)
+                .communityId(community.getId())
+                .topicId(topic.getId())
                 .postContent("Adfsfsdff")
                 .build();
 
         given(userRepository.findById(any(Long.class))).willReturn(Optional.of(user));
         given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
         given(community.getCommunityUsers()).willReturn(List.of(communityUser));
+        given(topicRepository.findById(any(Long.class))).willReturn(Optional.of(topic));
 
         postService.createPost(form, any(Long.class));
         then(postRepository).should().save(any(Post.class));
@@ -76,13 +80,16 @@ class PostServiceImplTest {
                 .community(community)
                 .user(user)
                 .build();
+        Topic topic = mock(Topic.class);
         PostForm form = PostForm.builder()
                 .communityId(1L)
+                .topicId(topic.getId())
                 .postContent("Adfsfsdff")
                 .build();
 
-        given(userRepository.findById(any(Long.class))).willReturn(Optional.of(mock(User.class)));
         given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
+        given(userRepository.findById(any(Long.class))).willReturn(Optional.of(mock(User.class)));
+        given(topicRepository.findById(any(Long.class))).willReturn(Optional.of(topic));
         given(community.getCommunityUsers()).willReturn(List.of(communityUser));
         given(communityUser.getUser().getId()).willReturn(2L);
 
