@@ -17,6 +17,9 @@ public interface CommunityService {
     Community saveCommunity(CommunityForm form) throws AuthenticationFailedException;
 
     @Transactional
+    void joinRequest(JoinForm form);
+
+    @Transactional
     void applyToCommunity(Long userId, Long communityId);
 
     @Transactional

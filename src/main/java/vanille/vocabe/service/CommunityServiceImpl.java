@@ -15,6 +15,7 @@ import vanille.vocabe.repository.*;
 
 import javax.mail.AuthenticationFailedException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static vanille.vocabe.payload.CommunityDTO.*;
@@ -27,7 +28,6 @@ public class CommunityServiceImpl implements CommunityService {
     private final UserRepository userRepository;
 
     private final CommunityRepository communityRepository;
-    private final TopicRepository topicRepository;
 
     private final CommunityUserRepository communityUserRepository;
     private final ApplicantRepository applicantRepository;
@@ -49,6 +49,25 @@ public class CommunityServiceImpl implements CommunityService {
                 .build();
         communityUserRepository.save(communityUser);
         return community;
+    }
+
+    @Transactional
+    @Override
+    public void joinRequest(JoinForm form) {
+        Community community = communityRepository.findById(form.getCommunityId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_COMMUNITY));
+        User user = form.getUser();
+        long count = community.getCommunityUsers().stream()
+                .filter(cu -> cu.getUser().getId().equals(user.getId())).count();
+        if(count == 1) {
+            Applicant applicant = Applicant.builder()
+                    .user(form.getUser())
+                    .community(community)
+                    .motive(form.getContent())
+                    .build();
+            applicantRepository.save(applicant);
+        } else {
+            throw new IllegalStateException(ErrorCode.NO_AUTHORITY.toString());
+        }
     }
 
     @Transactional

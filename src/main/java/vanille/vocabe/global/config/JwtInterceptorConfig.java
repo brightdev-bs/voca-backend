@@ -27,6 +27,7 @@ public class JwtInterceptorConfig implements WebMvcConfigurer {
                 .addPathPatterns("/api/v1/community/form")
                 .addPathPatterns("/api/v1/community/{id}/posts")
                 .addPathPatterns("/api/v1/posts/{id}/comments")
-                .addPathPatterns("/api/v1/community/{id}/topic");
+                .addPathPatterns("/api/v1/community/{id}/topic")
+                .addPathPatterns("/api/v1/community/{id}/members");
     }
 }

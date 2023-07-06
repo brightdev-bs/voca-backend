@@ -40,11 +40,13 @@ public class UserDTO {
     @Data
     @Builder
     public static class UserLoginResponse {
+        private Long id;
         private String username;
         private String token;
 
         public static UserLoginResponse from(User user, String token) {
             return UserLoginResponse.builder()
+                    .id(user.getId())
                     .username(user.getUsername())
                     .token(token)
                     .build();

@@ -43,4 +43,8 @@ public class Community extends BaseEntity {
         this.communityUsers = communityUsers == null ? new ArrayList<>() : communityUsers;
         this.topics = topics == null ? new ArrayList<>() : topics;
     }
+
+    public void addCommunityUser(CommunityUser cu) {
+        this.getCommunityUsers().add(cu);
+    }
 }

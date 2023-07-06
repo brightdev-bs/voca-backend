@@ -27,7 +27,7 @@ public class Applicant {
     private String Motive;
     private boolean accepted = false;
 
-    public Applicant() {}
+    protected Applicant() {}
 
     @Builder
     public Applicant(Long id, User user, Community community, String motive, boolean accepted) {

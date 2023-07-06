@@ -1,5 +1,6 @@
 package vanille.vocabe.payload;
 
+import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +10,7 @@ import vanille.vocabe.entity.CommunityUser;
 import vanille.vocabe.entity.Topic;
 import vanille.vocabe.entity.User;
 
+import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
 import java.sql.Array;
 import java.util.ArrayList;
@@ -105,6 +107,17 @@ public class CommunityDTO {
     public static class ExpelleeForm {
         private Long requestId;
         private Long expelleeId;
+        private Long communityId;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class JoinForm {
+        private User user;
+        @NotBlank
+        private String content;
         private Long communityId;
     }
 }

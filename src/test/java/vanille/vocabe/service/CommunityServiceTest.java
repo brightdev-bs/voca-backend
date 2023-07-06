@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import vanille.vocabe.entity.*;
 import vanille.vocabe.fixture.CommunityFixture;
+import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.global.config.TestConfig;
 import vanille.vocabe.global.constants.Constants;
 import vanille.vocabe.global.exception.DuplicatedEntityException;
@@ -158,7 +159,41 @@ class CommunityServiceTest {
         assertThrows(NotFoundException.class, () -> communityService.expelUser(form));
     }
 
-    // "커뮤니티 리스트 디폴트 조회 - 10개 조회"
-    // -> 통합 테스트로 진행
+    @DisplayName("커뮤니티 가입 신청")
+    @Test
+    void requestJoinCommunity() {
+        Community community = mock(Community.class);
+        JoinForm form = mock(JoinForm.class);
+        User user = mock(User.class);
+        CommunityUser communityUser = CommunityUser.builder()
+                .user(user)
+                .community(community)
+                .build();
+        given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
+        given(form.getUser()).willReturn(user);
+        given(community.getCommunityUsers()).willReturn(List.of(communityUser));
 
+        communityService.joinRequest(form);
+
+        then(applicantRepository).should().save(any(Applicant.class));
+    }
+
+
+    @DisplayName("[실패] 커뮤니티 가입 신청 - 커뮤니티 맴버가 아닌 경우")
+    @Test
+    void requestJoinCommunityFail() {
+        Community community = mock(Community.class);
+        JoinForm form = mock(JoinForm.class);
+        User user = UserFixture.getVerifiedUser();
+        User mockUser = mock(User.class);
+        CommunityUser communityUser = CommunityUser.builder()
+                .user(mockUser)
+                .community(community)
+                .build();
+        given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
+        given(form.getUser()).willReturn(user);
+        given(community.getCommunityUsers()).willReturn(List.of(communityUser));
+
+        assertThrows(IllegalStateException.class, () -> communityService.joinRequest(form));
+    }
 }

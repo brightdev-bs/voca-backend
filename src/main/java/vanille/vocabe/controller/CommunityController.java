@@ -43,4 +43,12 @@ public class CommunityController {
         communityService.saveCommunity(form);
         return ApiResponse.of(HttpStatus.CREATED.toString(), Constants.CREATED);
     }
+
+    @PostMapping("/community/{id}/members")
+    public ApiResponse communityJoinRequest(@PathVariable Long id, @RequestBody @Valid JoinForm form, @AuthenticationPrincipal final User user) {
+        form.setUser(user);
+        form.setCommunityId(id);
+        communityService.joinRequest(form);
+        return ApiResponse.of(HttpStatus.OK.toString(), Constants.SUCCESS);
+    }
 }

@@ -1,5 +1,6 @@
 package vanille.vocabe.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.*;
@@ -12,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import vanille.vocabe.entity.Community;
+import vanille.vocabe.entity.CommunityUser;
 import vanille.vocabe.entity.Topic;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.fixture.CommunityFixture;
@@ -23,6 +25,7 @@ import vanille.vocabe.repository.TopicRepository;
 import vanille.vocabe.repository.UserRepository;
 import vanille.vocabe.service.CommunityService;
 
+import javax.persistence.JoinColumn;
 import javax.transaction.Transactional;
 
 import java.util.List;
@@ -142,5 +145,34 @@ class CommunityControllerTest {
         communityRepository.save(community9);
         communityRepository.save(community10);
         communityRepository.save(community11);
+    }
+
+    @DisplayName("커뮤니티 가입 신청")
+    @Test
+    void requestJoinCommunity() throws Exception {
+        User user = UserFixture.getVerifiedUser();
+        userRepository.save(user);
+
+        Community community = Community.builder()
+                .name("test")
+                .build();
+        communityRepository.save(community);
+
+        CommunityUser cu = CommunityUser.builder()
+                .community(community)
+                .user(user)
+                .build();
+        communityUserRepository.save(cu);
+        community.addCommunityUser(cu);
+
+
+        JoinForm form = JoinForm.builder()
+                .content("teest content")
+                .build();
+        mockMvc.perform(post("/api/v1/community/" + community.getId() + "/members")
+                .content(objectMapper.writeValueAsString(form))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+        ).andDo(print());
     }
 }
