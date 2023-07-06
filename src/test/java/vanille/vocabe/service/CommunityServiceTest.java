@@ -14,7 +14,6 @@ import vanille.vocabe.global.config.TestConfig;
 import vanille.vocabe.global.exception.DuplicatedEntityException;
 import vanille.vocabe.global.exception.InvalidVerificationCodeException;
 import vanille.vocabe.global.exception.NotFoundException;
-import vanille.vocabe.payload.ApplicantDTO;
 import vanille.vocabe.repository.*;
 
 import javax.mail.AuthenticationFailedException;
@@ -301,7 +300,7 @@ class CommunityServiceTest {
                 .user(UserFixture.getVerifiedUser())
                 .build();
         given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
-        given(applicantRepository.findApplicantByCommunity(community)).willReturn(List.of(applicant));
+        given(applicantRepository.findApplicantByCommunityAndCheckedFalse(community)).willReturn(List.of(applicant));
 
         assertEquals(1, communityService.getApplicants(community.getId()).size());
     }

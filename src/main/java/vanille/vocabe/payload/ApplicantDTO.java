@@ -18,10 +18,8 @@ public class ApplicantDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ApplicantDetail {
-        @NotNull
         private Long applicantId;
         private Long communityId;
-        @NotBlank
         private boolean accept;
 
         private User user;

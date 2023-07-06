@@ -134,10 +134,11 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     public List<ApplicantResponse> getApplicants(Long id) {
         Community community = communityRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_COMMUNITY));
-        List<Applicant> applicants = applicantRepository.findApplicantByCommunity(community);
+        List<Applicant> applicants = applicantRepository.findApplicantByCommunityAndCheckedFalse(community);
         return applicants.stream().map(ApplicantResponse::from).collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public void responseForApplicant(ApplicantDetail form) {
         Applicant applicant = applicantRepository.findById(form.getApplicantId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_APPLICANT));

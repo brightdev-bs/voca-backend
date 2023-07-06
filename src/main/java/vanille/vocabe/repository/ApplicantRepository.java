@@ -9,6 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ApplicantRepository extends JpaRepository<Applicant, Long> {
-    List<Applicant> findApplicantByCommunity(Community community);
+    List<Applicant> findApplicantByCommunityAndCheckedFalse(Community community);
     Optional<Applicant> findApplicantByUserAndCommunity(User user, Community community);
 }
