@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static vanille.vocabe.payload.ApplicantDTO.*;
 import static vanille.vocabe.payload.CommunityDTO.*;
 
 @RequiredArgsConstructor
@@ -56,18 +57,24 @@ public class CommunityServiceImpl implements CommunityService {
     public void joinRequest(JoinForm form) {
         Community community = communityRepository.findById(form.getCommunityId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_COMMUNITY));
         User user = form.getUser();
-        long count = community.getCommunityUsers().stream()
-                .filter(cu -> cu.getUser().getId().equals(user.getId())).count();
-        if(count == 1) {
-            Applicant applicant = Applicant.builder()
-                    .user(form.getUser())
-                    .community(community)
-                    .motive(form.getContent())
-                    .build();
-            applicantRepository.save(applicant);
-        } else {
-            throw new IllegalStateException(ErrorCode.NO_AUTHORITY.toString());
+
+        Optional<Applicant> byApplicant = applicantRepository.findApplicantByUserAndCommunity(user, community);
+        if(byApplicant.isPresent()) {
+            Applicant applicant = byApplicant.get();
+            if(applicant.isChecked() && !applicant.isAccepted())
+                throw new DuplicatedEntityException(ErrorCode.FORBIDDEN_REQUEST);
+            if(!applicant.isChecked()) {
+                throw new DuplicatedEntityException(ErrorCode.DUPLICATED_REQUEST);
+            }
+            throw new DuplicatedEntityException(ErrorCode.DUPLICATED_USER);
         }
+
+        Applicant applicant = Applicant.builder()
+                .user(form.getUser())
+                .community(community)
+                .motive(form.getContent())
+                .build();
+        applicantRepository.save(applicant);
     }
 
     @Transactional
@@ -122,5 +129,27 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     public List<Community> getCommunities(String name) {
         return communityRepository.findCommunitiesByNameContaining(name);
+    }
+
+    @Override
+    public void responseForApplicant(ApplicantDetail form) {
+        Applicant applicant = applicantRepository.findById(form.getApplicantId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_APPLICANT));
+        Community community = communityRepository.findById(form.getCommunityId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_COMMUNITY));
+        User user = userRepository.findById(form.getUser().getId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
+        if(community.getCreatedBy().equals(user.getId())){
+            if(form.isAccept()) {
+                applicant.acceptMember();
+
+                CommunityUser communityUser = CommunityUser.builder()
+                        .user(applicant.getUser())
+                        .community(community)
+                        .build();
+                communityUserRepository.save(communityUser);
+            }
+            else
+                applicant.rejectMember();
+        } else {
+            throw new IllegalStateException(ErrorCode.NO_AUTHORITY.toString());
+        }
     }
 }

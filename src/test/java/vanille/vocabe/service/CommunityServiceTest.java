@@ -1,6 +1,5 @@
 package vanille.vocabe.service;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,18 +7,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import vanille.vocabe.entity.*;
 import vanille.vocabe.fixture.CommunityFixture;
 import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.global.config.TestConfig;
-import vanille.vocabe.global.constants.Constants;
 import vanille.vocabe.global.exception.DuplicatedEntityException;
 import vanille.vocabe.global.exception.InvalidVerificationCodeException;
 import vanille.vocabe.global.exception.NotFoundException;
-import vanille.vocabe.global.exception.UnverifiedException;
-import vanille.vocabe.payload.CommunityDTO;
+import vanille.vocabe.payload.ApplicantDTO;
 import vanille.vocabe.repository.*;
 
 import javax.mail.AuthenticationFailedException;
@@ -31,6 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static vanille.vocabe.payload.ApplicantDTO.*;
 import static vanille.vocabe.payload.CommunityDTO.*;
 import static vanille.vocabe.payload.CommunityDTO.CommunityForm;
 
@@ -96,6 +92,12 @@ class CommunityServiceTest {
         then(applicantRepository).should().save(any(Applicant.class));
     }
 
+    @DisplayName("커뮤니티 가입 신청 승인 대기 중 중복 신청")
+    @Test
+    void applyDuplicated() {
+
+    }
+
     @DisplayName("[실패] 커뮤니티 가입 신청 - 이미 가입한 회원")
     @Test
     void applyToCommunityFail() {
@@ -159,41 +161,133 @@ class CommunityServiceTest {
         assertThrows(NotFoundException.class, () -> communityService.expelUser(form));
     }
 
+    @DisplayName("[실패] 커뮤니티 가입 신청 - 이미 가입신청한 경우 ")
+    @Test
+    void joinCommunityFailByMultipleRequest() {
+        Community community = mock(Community.class);
+        JoinForm form = mock(JoinForm.class);
+        User user = mock(User.class);
+        Applicant applicant = Applicant.builder()
+                .community(community)
+                .user(user)
+                .motive("dfsfd")
+                .checked(false)
+                .accepted(false)
+                .build();
+        given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
+        given(form.getUser()).willReturn(user);
+        given(applicantRepository.findApplicantByUserAndCommunity(user, community)).willReturn(Optional.of(applicant));
+
+        assertThrows(DuplicatedEntityException.class, () -> communityService.joinRequest(form));
+    }
+
+    @DisplayName("[실패] 커뮤니티 가입 신청 - 거절 당한 경우 ")
+    @Test
+    void joinCommunityFailByRejected() {
+        Community community = mock(Community.class);
+        JoinForm form = mock(JoinForm.class);
+        User user = mock(User.class);
+        Applicant applicant = Applicant.builder()
+                .community(community)
+                .user(user)
+                .motive("dfsfd")
+                .checked(true)
+                .accepted(false)
+                .build();
+        given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
+        given(form.getUser()).willReturn(user);
+        given(applicantRepository.findApplicantByUserAndCommunity(user, community)).willReturn(Optional.of(applicant));
+
+        assertThrows(DuplicatedEntityException.class, () -> communityService.joinRequest(form));
+    }
+
+
     @DisplayName("커뮤니티 가입 신청")
     @Test
     void requestJoinCommunity() {
         Community community = mock(Community.class);
         JoinForm form = mock(JoinForm.class);
         User user = mock(User.class);
-        CommunityUser communityUser = CommunityUser.builder()
-                .user(user)
+        Applicant applicant = Applicant.builder()
                 .community(community)
+                .user(user)
+                .motive("dfsfd")
+                .checked(false)
+                .accepted(false)
                 .build();
         given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
         given(form.getUser()).willReturn(user);
-        given(community.getCommunityUsers()).willReturn(List.of(communityUser));
+        given(applicantRepository.findApplicantByUserAndCommunity(user, community)).willReturn(Optional.empty());
 
         communityService.joinRequest(form);
 
         then(applicantRepository).should().save(any(Applicant.class));
     }
 
-
-    @DisplayName("[실패] 커뮤니티 가입 신청 - 커뮤니티 맴버가 아닌 경우")
+    @DisplayName("커뮤니티 가입 승인")
     @Test
-    void requestJoinCommunityFail() {
+    void acceptRequest() {
+        Applicant applicant = mock(Applicant.class);
         Community community = mock(Community.class);
-        JoinForm form = mock(JoinForm.class);
-        User user = UserFixture.getVerifiedUser();
-        User mockUser = mock(User.class);
-        CommunityUser communityUser = CommunityUser.builder()
-                .user(mockUser)
-                .community(community)
+        User user = mock(User.class);
+        ApplicantDetail form = ApplicantDetail.builder()
+                .communityId(community.getId())
+                .user(user)
+                .applicantId(applicant.getId())
+                .accept(true)
                 .build();
+        given(applicantRepository.findById(any(Long.class))).willReturn(Optional.of(applicant));
         given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
-        given(form.getUser()).willReturn(user);
-        given(community.getCommunityUsers()).willReturn(List.of(communityUser));
+        given(userRepository.findById(any(Long.class))).willReturn(Optional.of(user));
+        given(user.getId()).willReturn(1L);
+        given(community.getCreatedBy()).willReturn(1L);
+        given(applicant.getUser()).willReturn(user);
 
-        assertThrows(IllegalStateException.class, () -> communityService.joinRequest(form));
+        communityService.responseForApplicant(form);
+
+        then(applicant).should().acceptMember();
+        then(communityUserRepository).should().save(any());
+    }
+
+    @DisplayName("커뮤니티 가입 거절")
+    @Test
+    void rejectRequest() {
+        Applicant applicant = mock(Applicant.class);
+        Community community = mock(Community.class);
+        User user = mock(User.class);
+        ApplicantDetail form = ApplicantDetail.builder()
+                .communityId(community.getId())
+                .user(user)
+                .applicantId(applicant.getId())
+                .accept(false)
+                .build();
+        given(applicantRepository.findById(any(Long.class))).willReturn(Optional.of(applicant));
+        given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
+        given(userRepository.findById(any(Long.class))).willReturn(Optional.of(user));
+
+        communityService.responseForApplicant(form);
+
+        then(applicant).should().rejectMember();
+    }
+
+    @DisplayName("커뮤니티 응답 실패 - 마스터 아님")
+    @Test
+    void cantProcessRequest() {
+        Applicant applicant = mock(Applicant.class);
+        Community community = mock(Community.class);
+        User user = mock(User.class);
+        ApplicantDetail form = ApplicantDetail.builder()
+                .communityId(community.getId())
+                .user(user)
+                .applicantId(applicant.getId())
+                .accept(true)
+                .build();
+        given(applicantRepository.findById(any(Long.class))).willReturn(Optional.of(applicant));
+        given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
+        given(userRepository.findById(any(Long.class))).willReturn(Optional.of(user));
+        given(user.getId()).willReturn(1L);
+        given(community.getCreatedBy()).willReturn(2L);
+
+        assertThrows(IllegalStateException.class, () -> communityService.responseForApplicant(form));
     }
 }

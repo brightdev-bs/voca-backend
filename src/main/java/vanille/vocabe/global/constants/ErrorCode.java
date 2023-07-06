@@ -7,7 +7,9 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     DUPLICATED_USER(HttpStatus.BAD_REQUEST, "이미 가입한 사용자입니다."),
+    DUPLICATED_REQUEST(HttpStatus.BAD_REQUEST, "It's already requested"),
     DUPLICATED_USERNAME(HttpStatus.BAD_REQUEST, "이미 사용중인 이름입니다."),
+    FORBIDDEN_REQUEST(HttpStatus.BAD_REQUEST, "거절당한 요청입니다."),
 
     NOT_FOUND_EMAIL_TOKEN(HttpStatus.BAD_REQUEST, "인증 코드가 없습니다."),
     NOT_FOUND_USER(HttpStatus.BAD_REQUEST, "사용자를 찾을 수 없습니다."),
@@ -17,6 +19,8 @@ public enum ErrorCode {
     NOT_FOUND_COMMUNITY(HttpStatus.BAD_REQUEST, "Doesn't exist community"),
     NOT_FOUND_POST(HttpStatus.BAD_REQUEST, "Doesn't exist post"),
     NOT_FOUND_TOPIC(HttpStatus.BAD_REQUEST, "Doesn't exist topic"),
+    NOT_FOUND_APPLICANT(HttpStatus.BAD_REQUEST, "Doesn't exist applicant"),
+
 
 
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),

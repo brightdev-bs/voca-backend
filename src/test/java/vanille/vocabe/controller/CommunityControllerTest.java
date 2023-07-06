@@ -12,17 +12,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import vanille.vocabe.entity.Community;
-import vanille.vocabe.entity.CommunityUser;
-import vanille.vocabe.entity.Topic;
-import vanille.vocabe.entity.User;
+import vanille.vocabe.entity.*;
 import vanille.vocabe.fixture.CommunityFixture;
 import vanille.vocabe.fixture.TopicFixture;
 import vanille.vocabe.fixture.UserFixture;
-import vanille.vocabe.repository.CommunityRepository;
-import vanille.vocabe.repository.CommunityUserRepository;
-import vanille.vocabe.repository.TopicRepository;
-import vanille.vocabe.repository.UserRepository;
+import vanille.vocabe.global.constants.Constants;
+import vanille.vocabe.global.constants.ErrorCode;
+import vanille.vocabe.repository.*;
 import vanille.vocabe.service.CommunityService;
 
 import javax.persistence.JoinColumn;
@@ -47,7 +43,7 @@ class CommunityControllerTest {
     private CommunityRepository communityRepository;
 
     @Autowired
-    private CommunityUserRepository communityUserRepository;
+    private ApplicantRepository applicantRepository;
 
     @Autowired
     private TopicRepository topicRepository;
@@ -158,21 +154,78 @@ class CommunityControllerTest {
                 .build();
         communityRepository.save(community);
 
-        CommunityUser cu = CommunityUser.builder()
-                .community(community)
-                .user(user)
+        JoinForm form = JoinForm.builder()
+                .content("teest content")
                 .build();
-        communityUserRepository.save(cu);
-        community.addCommunityUser(cu);
+        mockMvc.perform(post("/api/v1/community/" + community.getId() + "/members")
+                        .content(objectMapper.writeValueAsString(form))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                ).andDo(print())
+                .andExpect(jsonPath("statusCode").value(HttpStatus.OK.toString()))
+                .andExpect(jsonPath("data").value(Constants.SUCCESS));
+    }
+
+    @DisplayName("[실패] 커뮤니티 가입 신청 - 승인 대기중 다중 요청한 경우")
+    @Test
+    void joinCommunityFailByMultipleRequest() throws Exception {
+        User user = UserFixture.getVerifiedUser();
+        userRepository.save(user);
+
+        Community community = Community.builder()
+                .name("test")
+                .build();
+        communityRepository.save(community);
+
+        Applicant applicant = Applicant.builder()
+                .user(user)
+                .community(community)
+                .build();
+        applicantRepository.save(applicant);
 
 
         JoinForm form = JoinForm.builder()
                 .content("teest content")
                 .build();
         mockMvc.perform(post("/api/v1/community/" + community.getId() + "/members")
-                .content(objectMapper.writeValueAsString(form))
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
-        ).andDo(print());
+                        .content(objectMapper.writeValueAsString(form))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                ).andDo(print())
+                .andExpect(jsonPath("statusCode").value(HttpStatus.BAD_REQUEST.toString()))
+                .andExpect(jsonPath("data").value(ErrorCode.DUPLICATED_REQUEST.getMessage()));
     }
+
+    @DisplayName("[실패] 커뮤니티 가입 신청 - 이전에 거절당한 경우")
+    @Test
+    void joinCommunityFailByRejected() throws Exception {
+        User user = UserFixture.getVerifiedUser();
+        userRepository.save(user);
+
+        Community community = Community.builder()
+                .name("test")
+                .build();
+        communityRepository.save(community);
+
+        Applicant applicant = Applicant.builder()
+                .user(user)
+                .community(community)
+                .build();
+        applicant.setChecked(true);
+        applicantRepository.save(applicant);
+
+
+        JoinForm form = JoinForm.builder()
+                .content("teest content")
+                .build();
+        mockMvc.perform(post("/api/v1/community/" + community.getId() + "/members")
+                        .content(objectMapper.writeValueAsString(form))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                ).andDo(print())
+                .andExpect(jsonPath("statusCode").value(HttpStatus.BAD_REQUEST.toString()))
+                .andExpect(jsonPath("data").value(ErrorCode.FORBIDDEN_REQUEST.getMessage()));
+    }
+
+
 }

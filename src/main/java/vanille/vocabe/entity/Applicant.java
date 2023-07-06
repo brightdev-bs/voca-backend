@@ -26,15 +26,31 @@ public class Applicant {
 
     private String Motive;
     private boolean accepted = false;
+    private boolean checked = false;
 
     protected Applicant() {}
 
     @Builder
-    public Applicant(Long id, User user, Community community, String motive, boolean accepted) {
+    public Applicant(Long id, User user, Community community, String motive, boolean accepted, boolean checked) {
         this.id = id;
         this.user = user;
         this.community = community;
         Motive = motive;
         this.accepted = false;
+        this.checked = false;
+    }
+
+    public void acceptMember() {
+        this.accepted = true;
+        this.checked = true;
+    }
+
+    public void rejectMember() {
+        this.accepted = false;
+        this.checked = true;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
     }
 }

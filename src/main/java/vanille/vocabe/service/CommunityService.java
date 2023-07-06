@@ -2,6 +2,7 @@ package vanille.vocabe.service;
 
 import org.springframework.transaction.annotation.Transactional;
 import vanille.vocabe.entity.Community;
+import vanille.vocabe.payload.ApplicantDTO;
 
 import javax.mail.AuthenticationFailedException;
 import java.util.List;
@@ -28,4 +29,7 @@ public interface CommunityService {
     List<HomeResponse> getCommunities();
 
     List<Community> getCommunities(String name);
+
+
+    void responseForApplicant(ApplicantDTO.ApplicantDetail form);
 }
