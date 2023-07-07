@@ -86,7 +86,7 @@ public class CommunityDTO {
 
         public static CommunityDetail from(Community c) {
             List<TopicDetail> topicDetails = c.getTopics().stream().map(t -> TopicDetail.from(t)).collect(Collectors.toList());
-            List<Long> joinedUsers = c.getCommunityUsers().stream().map(CommunityUser::getId).collect(Collectors.toList());
+            List<Long> joinedUsers = c.getCommunityUsers().stream().map(cu -> cu.getUser().getId()).collect(Collectors.toList());
             return CommunityDetail.builder()
                     .id(c.getId())
                     .name(c.getName())
