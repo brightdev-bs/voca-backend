@@ -1,6 +1,7 @@
 package vanille.vocabe.service.email;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
@@ -25,8 +26,8 @@ public class EmailServiceImpl implements EmailService {
     private final EmailTokenService emailTokenService;
     private final UserRepository userRepository;
     private final EmailSender emailSender;
-    private final String SIGN_UP_MAIL_SUBJECT = "회원가입 이메일 인증";
-    private final String PASSWORD_FIND_SUBJECT = "패스워드 찾기";
+    private final String SIGN_UP_MAIL_SUBJECT = "voca-world signup confirm";
+    private final String PASSWORD_FIND_SUBJECT = "Find password";
     @Value("${front-server}")
     public String FRONT_SERVER;
 
