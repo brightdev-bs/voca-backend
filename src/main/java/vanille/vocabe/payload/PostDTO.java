@@ -33,7 +33,6 @@ public class PostDTO {
     @AllArgsConstructor
     public static class PostDetail {
         private Long id;
-        private String topic;
         private String content;
         private List<CommentDetail> comments;
         private String writer;
@@ -45,7 +44,6 @@ public class PostDTO {
                     .id(post.getId())
                     .content(post.getContent())
                     .comments(comments)
-                    .topic(post.getTopic().getContent())
                     .writer(username)
                     .build();
         }

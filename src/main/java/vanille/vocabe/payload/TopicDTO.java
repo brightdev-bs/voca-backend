@@ -8,6 +8,9 @@ import vanille.vocabe.entity.Community;
 import vanille.vocabe.entity.Topic;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
+
+import static vanille.vocabe.payload.PostDTO.*;
 
 public class TopicDTO {
 
@@ -36,6 +39,25 @@ public class TopicDTO {
                     .content(topic.getContent())
                     .createdAt(topic.getCreatedAt() == null ? null : topic.getCreatedAt().toString().substring(0, 10))
                     .createdBy(topic.getCreatedBy())
+                    .build();
+        }
+
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TopicMain {
+        private Long topicId;
+        private String topic;
+        private List<PostDetail> posts;
+
+        public static TopicMain from(Topic topic, List<PostDetail> posts) {
+            return TopicMain.builder()
+                    .topicId(topic.getId())
+                    .topic(topic.getContent())
+                    .posts(posts)
                     .build();
         }
 

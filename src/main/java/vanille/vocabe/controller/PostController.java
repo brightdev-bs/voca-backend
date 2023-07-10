@@ -25,13 +25,6 @@ import static vanille.vocabe.payload.PostDTO.*;
 public class PostController {
     private final PostService postService;
 
-    @GetMapping("community/{communityId}/topics/{topicId}")
-    public ApiResponse getPosts(@PathVariable Long communityId, @PathVariable Long topicId) {
-        List<PostDetail> posts = postService.getPosts(communityId, topicId);
-
-        return ApiResponse.of(HttpStatus.OK.toString(), posts);
-    }
-
     @PostMapping("community/{communityId}/posts")
     public ApiResponse createPost(@PathVariable final Long communityId, @RequestBody @Valid PostForm form, @AuthenticationPrincipal User user) throws AuthenticationFailedException {
         form.setCommunityId(communityId);
