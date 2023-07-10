@@ -38,8 +38,7 @@ jwt:
   token.expired-time-ms: 2592000000   # 30 days
 
 server.port: 8088
-
-front-server: http://localhost:8089
+front-server: http://localhost
 
 
 #---

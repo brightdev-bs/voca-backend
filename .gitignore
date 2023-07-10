@@ -288,4 +288,8 @@ gradle-app.setting
 application-prod.yml
 db
 
+docker-compose-prod.yml
+Dockerfile-prod
+
+
 # End of https://www.toptal.com/developers/gitignore/api/intellij+all,intellij+iml,intellij,java,gradle
