@@ -56,7 +56,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public boolean verifyEmail(String tokenId) {
         if(!StringUtils.hasText(tokenId)) {
-            throw new InvalidVerificationCodeException(ErrorCode.INVALID_VERIFICATION_CODE);
+            throw new InvalidVerificationCodeException(ErrorCode.NOT_FOUND_EMAIL_TOKEN);
         }
 
         EmailToken emailToken = emailTokenService
