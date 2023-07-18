@@ -10,5 +10,5 @@ public interface PostService {
     void createPost(PostDTO.PostForm form, Long userId) throws AuthenticationFailedException;
 
 
-    List<PostDTO.PostDetail> getPosts(Long communityId, Long topicId);
+    List<PostDTO.PostDetail> getPosts(Long communityId);
 }

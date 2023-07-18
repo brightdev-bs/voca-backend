@@ -29,19 +29,19 @@ public class Community extends BaseEntity {
 
     @ToString.Exclude
     @OneToMany(mappedBy = "community")
-    private List<Topic> topics = new ArrayList<>();
+    private List<Post> posts = new ArrayList<>();
 
     protected Community() {}
 
     @Builder
-    public Community(Long id, String name, String description, int totalMember, boolean open, List<CommunityUser> communityUsers, List<Topic> topics) {
+    public Community(Long id, String name, String description, int totalMember, boolean open, List<CommunityUser> communityUsers, List<Post> posts) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.totalMember = totalMember;
         this.open = open;
         this.communityUsers = communityUsers == null ? new ArrayList<>() : communityUsers;
-        this.topics = topics == null ? new ArrayList<>() : topics;
+        this.posts = posts == null ? new ArrayList<>() : posts;
     }
 
     public void addCommunityUser(CommunityUser cu) {

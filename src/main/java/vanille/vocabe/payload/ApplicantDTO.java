@@ -38,7 +38,6 @@ public class ApplicantDTO {
             return ApplicantResponse.builder()
                     .id(applicant.getId())
                     .name(applicant.getUser().getUsername())
-                    .content(applicant.getMotive())
                     .build();
         }
     }

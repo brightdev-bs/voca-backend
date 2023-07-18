@@ -45,29 +45,9 @@ public class CommunityController {
         return ApiResponse.of(HttpStatus.CREATED.toString(), Constants.CREATED);
     }
 
-    @GetMapping("/community/{id}/members")
-    public ApiResponse getCommunityJoinRequest(@PathVariable Long id) {
-        List<ApplicantResponse> response = communityService.getApplicants(id);
-        return ApiResponse.of(HttpStatus.OK.toString(), response);
-    }
-
     @PostMapping("/community/{id}/members")
-    public ApiResponse communityJoinRequest(@PathVariable Long id, @RequestBody @Valid JoinForm form, @AuthenticationPrincipal final User user) {
-        form.setUser(user);
-        form.setCommunityId(id);
-        communityService.joinRequest(form);
-        return ApiResponse.of(HttpStatus.OK.toString(), Constants.SUCCESS);
-    }
-
-    @PostMapping("/community/{communityId}/members/{applicantId}")
-    public ApiResponse responseForJoinRequest(@PathVariable Long communityId,
-                                              @PathVariable Long applicantId,
-                                              @RequestBody @Valid ApplicantDetail form,
-                                              @AuthenticationPrincipal final User user) {
-        form.setCommunityId(communityId);
-        form.setApplicantId(applicantId);
-        form.setUser(user);
-        communityService.responseForApplicant(form);
+    public ApiResponse communityJoinRequest(@PathVariable Long id, @AuthenticationPrincipal final User user) {
+        communityService.joinRequest(id, user);
         return ApiResponse.of(HttpStatus.OK.toString(), Constants.SUCCESS);
     }
 }

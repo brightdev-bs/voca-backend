@@ -1,23 +1,18 @@
 package vanille.vocabe.payload;
 
-import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import vanille.vocabe.entity.Community;
-import vanille.vocabe.entity.CommunityUser;
-import vanille.vocabe.entity.Topic;
 import vanille.vocabe.entity.User;
 
-import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static vanille.vocabe.payload.TopicDTO.*;
+import static vanille.vocabe.payload.PostDTO.PostDetail;
 
 public class CommunityDTO {
 
@@ -81,12 +76,13 @@ public class CommunityDTO {
         private boolean open;
         private int totalMember;
         private Long createdBy;
+        private List<PostDetail> posts = new ArrayList<>();
         private List<Long> joinedMembers = new ArrayList<>();
-        private List<TopicDetail> topics;
 
         public static CommunityDetail from(Community c) {
-            List<TopicDetail> topicDetails = c.getTopics().stream().map(t -> TopicDetail.from(t)).collect(Collectors.toList());
             List<Long> joinedUsers = c.getCommunityUsers().stream().map(cu -> cu.getUser().getId()).collect(Collectors.toList());
+            List<PostDetail> posts = c.getPosts().stream().map(PostDetail::from).collect(Collectors.toList());
+
             return CommunityDetail.builder()
                     .id(c.getId())
                     .name(c.getName())
@@ -94,7 +90,7 @@ public class CommunityDTO {
                     .open(c.isOpen())
                     .joinedMembers(joinedUsers)
                     .totalMember(c.getTotalMember())
-                    .topics(topicDetails)
+                    .posts(posts)
                     .createdBy(c.getCreatedBy())
                     .build();
         }
@@ -116,7 +112,6 @@ public class CommunityDTO {
     @AllArgsConstructor
     public static class JoinForm {
         private User user;
-        @NotBlank
         private String content;
         private Long communityId;
     }

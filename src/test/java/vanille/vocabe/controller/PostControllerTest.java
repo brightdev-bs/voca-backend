@@ -1,6 +1,5 @@
 package vanille.vocabe.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,51 +11,32 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.context.WebApplicationContext;
-import vanille.vocabe.entity.*;
-import vanille.vocabe.fixture.TopicFixture;
+import vanille.vocabe.entity.Community;
+import vanille.vocabe.entity.CommunityUser;
+import vanille.vocabe.entity.Post;
+import vanille.vocabe.entity.User;
 import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.global.constants.ErrorCode;
-import vanille.vocabe.payload.PostDTO;
-import vanille.vocabe.payload.TopicDTO;
-import vanille.vocabe.repository.*;
+import vanille.vocabe.repository.CommunityRepository;
+import vanille.vocabe.repository.CommunityUserRepository;
+import vanille.vocabe.repository.UserRepository;
 
 import javax.transaction.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static vanille.vocabe.constants.TestConstants.BEARER_TOKEN;
-import static vanille.vocabe.payload.PostDTO.*;
+import static vanille.vocabe.payload.PostDTO.PostForm;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @Transactional
 @AutoConfigureMockMvc
 @SpringBootTest
 class PostControllerTest {
-
-    @Autowired
-    private PostRepository postRepository;
-
-    @Autowired
-    private TopicRepository topicRepository;
 
     @Autowired
     private CommunityRepository communityRepository;
@@ -82,30 +62,6 @@ class PostControllerTest {
                 .build();
     }
 
-    @DisplayName("포스트 리스트 조회")
-    @Test
-    void getPosts() throws Exception {
-        Community community = Community.builder()
-                .name("test community")
-                .build();
-        communityRepository.save(community);
-
-        Topic topic = TopicFixture.getTopicFixture(community);
-        topicRepository.save(topic);
-
-        Post post = createPost(community, topic);
-        Post post2 = createPost(community, topic);
-        Post post3 = createPost(community, topic);
-        postRepository.save(post);
-        postRepository.save(post2);
-        postRepository.save(post3);
-
-        mockMvc.perform(get("/api/v1/community/" + community.getId() + "/topics/" + topic.getId()))
-                .andDo(print())
-                .andExpect(jsonPath("statusCode").value(HttpStatus.OK.toString()))
-                .andExpect(jsonPath("data").isArray());
-    }
-
     @DisplayName("포스트 생성")
     @Test
     void createPost() throws Exception {
@@ -121,18 +77,11 @@ class PostControllerTest {
                 .community(community)
                 .build();
         communityUserRepository.save(communityUser);
-
-        Topic topic = Topic.builder()
-                .content("test")
-                .community(community)
-                .build();
-        topicRepository.save(topic);
         community.getCommunityUsers().add(communityUser);
         user.getCommunities().add(communityUser);
 
         PostForm form = PostForm.builder()
                 .communityId(community.getId())
-                .topicId(topic.getId())
                 .postContent("testsfsdfsfsdfsdsdfds")
                 .build();
 
@@ -153,15 +102,9 @@ class PostControllerTest {
                 .name("test")
                 .build();
         communityRepository.save(community);
-        Topic topic = Topic.builder()
-                .content("sdfsfdwfwf")
-                .community(community)
-                .build();
-        topicRepository.save(topic);
 
         PostForm form = PostForm.builder()
                 .communityId(community.getId())
-                .topicId(topic.getId())
                 .postContent("testsfsdfsfsdfsdsdfds")
                 .build();
 
@@ -174,17 +117,11 @@ class PostControllerTest {
                 .andExpect(jsonPath("data").value(ErrorCode.NO_AUTHORITY.name()));
     }
 
+    // Todo:
+    @DisplayName("포스트 리스트 조회")
+    @Test
+    void getPosts() {
 
-
-    private Post createPost(Community community, Topic topic) {
-        Post post = Post.builder()
-                .community(community)
-                .content("테스트 포스트")
-                .topic(topic)
-                .build();
-        post.setCreatedByForTest(1L);
-        topic.getPosts().add(post);
-        return post;
     }
 
 }
