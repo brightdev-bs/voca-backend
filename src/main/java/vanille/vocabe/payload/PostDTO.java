@@ -25,6 +25,7 @@ public class PostDTO {
         String postContent;
     }
 
+
     @Data
     @Builder
     @NoArgsConstructor

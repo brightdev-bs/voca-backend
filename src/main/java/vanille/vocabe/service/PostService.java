@@ -1,5 +1,6 @@
 package vanille.vocabe.service;
 
+import org.springframework.data.domain.Pageable;
 import vanille.vocabe.payload.PostDTO;
 
 import javax.mail.AuthenticationFailedException;
@@ -10,5 +11,5 @@ public interface PostService {
     void createPost(PostDTO.PostForm form, Long userId) throws AuthenticationFailedException;
 
 
-    List<PostDTO.PostDetail> getPosts(Long communityId);
+    List<PostDTO.PostDetail> getPosts(Long communityId, Pageable pageable);
 }

@@ -1,6 +1,7 @@
 package vanille.vocabe.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vanille.vocabe.entity.Community;
@@ -43,6 +44,7 @@ public class PostServiceImpl implements PostService {
             Post post = Post.builder()
                     .community(community)
                     .content(form.getPostContent())
+                    .writer(user.getUsername())
                     .build();
             postRepository.save(post);
         } else {
@@ -59,7 +61,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDetail> getPosts(Long communityId) {
+    public List<PostDetail> getPosts(Long communityId, Pageable pageable) {
         Community community = communityRepository.findById(communityId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_COMMUNITY));
         return community.getPosts().stream().map(PostDetail::from).collect(Collectors.toList());
     }

@@ -15,7 +15,6 @@ import javax.validation.Valid;
 
 import java.util.List;
 
-import static vanille.vocabe.payload.ApplicantDTO.*;
 import static vanille.vocabe.payload.CommunityDTO.*;
 
 @Slf4j
@@ -30,12 +29,6 @@ public class CommunityController {
     public ApiResponse getCommunities() {
         List<HomeResponse> communities = communityService.getCommunities();
         return ApiResponse.of(HttpStatus.OK.toString(), communities);
-    }
-
-    @GetMapping("/community/{id}")
-    public ApiResponse getCommunityDetail(@PathVariable Long id) {
-        CommunityDetail communityDetails = communityService.getCommunityDetails(id);
-        return ApiResponse.of(HttpStatus.OK.toString(), communityDetails);
     }
 
     @PostMapping("/community/form")

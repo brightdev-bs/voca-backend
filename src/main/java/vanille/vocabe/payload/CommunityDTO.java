@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import vanille.vocabe.entity.Community;
+import vanille.vocabe.entity.Post;
 import vanille.vocabe.entity.User;
 
 import javax.validation.constraints.NotBlank;
@@ -79,9 +80,8 @@ public class CommunityDTO {
         private List<PostDetail> posts = new ArrayList<>();
         private List<Long> joinedMembers = new ArrayList<>();
 
-        public static CommunityDetail from(Community c) {
+        public static CommunityDetail from(Community c, List<Post> posts) {
             List<Long> joinedUsers = c.getCommunityUsers().stream().map(cu -> cu.getUser().getId()).collect(Collectors.toList());
-            List<PostDetail> posts = c.getPosts().stream().map(PostDetail::from).collect(Collectors.toList());
 
             return CommunityDetail.builder()
                     .id(c.getId())
@@ -90,7 +90,7 @@ public class CommunityDTO {
                     .open(c.isOpen())
                     .joinedMembers(joinedUsers)
                     .totalMember(c.getTotalMember())
-                    .posts(posts)
+                    .posts(posts.stream().map(PostDetail::from).collect(Collectors.toList()))
                     .createdBy(c.getCreatedBy())
                     .build();
         }

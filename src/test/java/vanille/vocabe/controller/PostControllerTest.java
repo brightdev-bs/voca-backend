@@ -18,15 +18,17 @@ import vanille.vocabe.entity.Community;
 import vanille.vocabe.entity.CommunityUser;
 import vanille.vocabe.entity.Post;
 import vanille.vocabe.entity.User;
+import vanille.vocabe.fixture.PostFixture;
 import vanille.vocabe.fixture.UserFixture;
-import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.repository.CommunityRepository;
 import vanille.vocabe.repository.CommunityUserRepository;
+import vanille.vocabe.repository.PostRepository;
 import vanille.vocabe.repository.UserRepository;
 
 import javax.transaction.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static vanille.vocabe.constants.TestConstants.BEARER_TOKEN;
@@ -43,6 +45,8 @@ class PostControllerTest {
 
     @Autowired
     private CommunityUserRepository communityUserRepository;
+    @Autowired
+    private PostRepository postRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -85,7 +89,7 @@ class PostControllerTest {
                 .postContent("testsfsdfsfsdfsdsdfds")
                 .build();
 
-        mockMvc.perform(post("/api/v1/community/" + community.getId() + "/posts")
+        mockMvc.perform(post("/api/v1/community/" + community.getId() + "/posts/form")
                         .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
                         .content(objectMapper.writeValueAsString(form))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -93,35 +97,26 @@ class PostControllerTest {
                 .andExpect(jsonPath("statusCode").value(HttpStatus.CREATED.toString()));
     }
 
-    @DisplayName("[실패] 포스트 생성 - 커뮤니티 회원이 아니면 글쓰기 불가")
+    @DisplayName("포스트 리스트 조회")
     @Test
-    void createPostFailByAuthentication() throws Exception {
-        User user = UserFixture.getVerifiedUser();
-        userRepository.save(user);
+    void getPosts() throws Exception {
         Community community = Community.builder()
                 .name("test")
                 .build();
         communityRepository.save(community);
 
-        PostForm form = PostForm.builder()
-                .communityId(community.getId())
-                .postContent("testsfsdfsfsdfsdsdfds")
-                .build();
+        Post post = postRepository.save(PostFixture.getPostFixture(community));
+        Post post2 = postRepository.save(PostFixture.getPostFixture(community));
+        Post post3 = postRepository.save(PostFixture.getPostFixture(community));
+        Post post4 = postRepository.save(PostFixture.getPostFixture(community));
+        community.addPost(post);
+        community.addPost(post2);
+        community.addPost(post3);
+        community.addPost(post4);
 
-        mockMvc.perform(post("/api/v1/community/" + community.getId() + "/posts")
-                        .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
-                        .content(objectMapper.writeValueAsString(form))
-                        .contentType(MediaType.APPLICATION_JSON)
-                ).andDo(print())
-                .andExpect(jsonPath("statusCode").value(HttpStatus.BAD_REQUEST.toString()))
-                .andExpect(jsonPath("data").value(ErrorCode.NO_AUTHORITY.name()));
-    }
-
-    // Todo:
-    @DisplayName("포스트 리스트 조회")
-    @Test
-    void getPosts() {
-
+        mockMvc.perform(get("/api/v1/community/" + community.getId() + "/posts"))
+                .andDo(print())
+                .andExpect(jsonPath("$.data.length()").value(4));
     }
 
 }

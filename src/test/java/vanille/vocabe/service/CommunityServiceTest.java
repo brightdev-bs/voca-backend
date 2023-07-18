@@ -7,20 +7,23 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.Import;
-import vanille.vocabe.entity.*;
-import vanille.vocabe.fixture.CommunityFixture;
+import vanille.vocabe.entity.Applicant;
+import vanille.vocabe.entity.Community;
+import vanille.vocabe.entity.CommunityUser;
+import vanille.vocabe.entity.User;
 import vanille.vocabe.global.config.TestConfig;
-import vanille.vocabe.repository.*;
+import vanille.vocabe.repository.ApplicantRepository;
+import vanille.vocabe.repository.CommunityRepository;
+import vanille.vocabe.repository.CommunityUserRepository;
+import vanille.vocabe.repository.UserRepository;
 
 import javax.mail.AuthenticationFailedException;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static vanille.vocabe.payload.CommunityDTO.CommunityDetail;
 import static vanille.vocabe.payload.CommunityDTO.CommunityForm;
 
 @Import(TestConfig.class)
@@ -41,15 +44,6 @@ class CommunityServiceTest {
 
     @InjectMocks
     CommunityServiceImpl communityService;
-
-    @DisplayName("커뮤니티 메인 페이지 조회")
-    @Test
-    void getCommunityMain() {
-        Community community = CommunityFixture.getCommunityFixture();
-        given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
-        CommunityDetail communityDetails = communityService.getCommunityDetails(1L);
-        assertEquals(community.getId(), communityDetails.getId());
-    }
 
     @DisplayName("커뮤니티 생성하기")
     @Test

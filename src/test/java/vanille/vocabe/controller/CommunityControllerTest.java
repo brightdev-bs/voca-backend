@@ -82,20 +82,6 @@ class CommunityControllerTest {
                 .andExpect(jsonPath("statusCode").value(HttpStatus.CREATED.toString()));
     }
 
-    @DisplayName("커뮤니티 메인 페이지 조회")
-    @Test
-    void getCommunityDetails() throws Exception {
-        User user = UserFixture.getVerifiedUser();
-        userRepository.save(user);
-
-        Community community = CommunityFixture.getCommunityFixture();
-        communityRepository.save(community);
-
-        mockMvc.perform(get("/api/v1/community/" + community.getId()))
-                .andDo(print())
-                .andExpect(jsonPath("statusCode").value(HttpStatus.OK.toString()));
-    }
-
     @DisplayName("커뮤니티 디폴트 조회 - 10개 ")
     @Test
     void getCommunities() {

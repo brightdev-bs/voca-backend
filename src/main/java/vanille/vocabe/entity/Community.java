@@ -47,4 +47,8 @@ public class Community extends BaseEntity {
     public void addCommunityUser(CommunityUser cu) {
         this.getCommunityUsers().add(cu);
     }
+
+    public void addPost(Post post) {
+        this.getPosts().add(post);
+    }
 }

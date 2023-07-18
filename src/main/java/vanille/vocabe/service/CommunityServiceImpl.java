@@ -33,12 +33,6 @@ public class CommunityServiceImpl implements CommunityService {
     private final CommunityUserRepository communityUserRepository;
     private final ApplicantRepository applicantRepository;
 
-    @Override
-    public CommunityDetail getCommunityDetails(Long communityId) {
-        Community community = communityRepository.findById(communityId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_COMMUNITY));
-        return CommunityDetail.from(community);
-    }
-
     @Transactional
     @Override
     public Community saveCommunity(CommunityForm form) throws AuthenticationFailedException {

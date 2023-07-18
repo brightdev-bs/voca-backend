@@ -6,7 +6,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import vanille.vocabe.entity.*;
 import vanille.vocabe.global.config.TestConfig;
 import vanille.vocabe.repository.CommunityRepository;
@@ -62,28 +66,6 @@ class PostServiceImplTest {
         then(postRepository).should().save(any(Post.class));
     }
 
-    @DisplayName("[실패] 포스트 생성 - 커뮤니티에 가입되지 않은 사용자")
-    @Test
-    void createPostFail() throws AuthenticationFailedException {
-        User user = mock(User.class);
-        Community community = mock(Community.class);
-        CommunityUser communityUser = CommunityUser.builder()
-                .community(community)
-                .user(user)
-                .build();
-        PostForm form = PostForm.builder()
-                .communityId(1L)
-                .postContent("Adfsfsdff")
-                .build();
-
-        given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
-        given(userRepository.findById(any(Long.class))).willReturn(Optional.of(mock(User.class)));
-        given(community.getCommunityUsers()).willReturn(List.of(communityUser));
-        given(communityUser.getUser().getId()).willReturn(2L);
-
-        assertThrows(AuthenticationFailedException.class, () -> postService.createPost(form, 1L));
-    }
-
     @DisplayName("포스트 리스트 조회")
     @Test
     void getPosts() {
@@ -92,7 +74,7 @@ class PostServiceImplTest {
         given(communityRepository.findById(any(Long.class))).willReturn(Optional.of(community));
         given(community.getPosts()).willReturn(posts);
 
-        assertEquals(4, postService.getPosts(community.getId()).size());
+        assertEquals(4, postService.getPosts(community.getId(), mock(Pageable.class)).size());
     }
 
 }

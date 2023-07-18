@@ -8,7 +8,7 @@ public enum ErrorCode {
 
     DUPLICATED_USER(HttpStatus.BAD_REQUEST, "It's is already sign-up"),
     DUPLICATED_REQUEST(HttpStatus.BAD_REQUEST, "It's already requested"),
-    DUPLICATED_USERNAME(HttpStatus.BAD_REQUEST, "It's already being used name"),
+    DUPLICATED_USERNAME(HttpStatus.BAD_REQUEST, "It's already being used"),
     REJECTED_REQUEST(HttpStatus.BAD_REQUEST, "You've been already rejected in this community"),
 
     NOT_FOUND_EMAIL_TOKEN(HttpStatus.BAD_REQUEST, "There is no verfication code"),
