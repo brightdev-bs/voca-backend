@@ -53,13 +53,12 @@ public class CommunityDTO {
         private String createdAt;
 
         public static HomeResponse from(Community c) {
-            int joinedMember = c.getCommunityUsers().size();
             return HomeResponse.builder()
                     .id(c.getId())
                     .name(c.getName())
                     .description(c.getDescription())
                     .open(c.isOpen())
-                    .totalNumber(joinedMember + " / " + c.getTotalMember())
+                    .totalNumber(String.valueOf(c.getTotalMember()))
                     .createdBy(c.getCreatedBy())
                     .createdAt(c.getCreatedAt().toString())
                     .build();
