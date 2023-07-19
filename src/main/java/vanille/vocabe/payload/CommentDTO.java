@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import vanille.vocabe.entity.Comment;
 
+import javax.validation.constraints.NotBlank;
+
 public class CommentDTO {
 
     @Data
@@ -14,6 +16,7 @@ public class CommentDTO {
     @AllArgsConstructor
     public static class CommentForm {
         private Long postId;
+        @NotBlank
         private String commentContent;
     }
 

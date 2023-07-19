@@ -32,6 +32,10 @@ public class Post extends BaseEntity {
 
     public Post() {}
 
+    public void addComment(Comment comment) {
+        this.comments.add(comment);
+    }
+
     @Builder
     public Post(Long id, String content, String writer, Community community, List<Comment> comments) {
         this.id = id;

@@ -11,6 +11,9 @@ import vanille.vocabe.global.exception.NotFoundException;
 import vanille.vocabe.repository.CommentRepository;
 import vanille.vocabe.repository.PostRepository;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static vanille.vocabe.payload.CommentDTO.*;
 
 @RequiredArgsConstructor
@@ -33,6 +36,12 @@ public class CommentServiceImpl implements CommentService {
                 .build();
 
         commentRepository.save(comment);
+    }
+
+    @Override
+    public List<CommentDetail> getComments(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_POST));
+        return post.getComments().stream().map(CommentDetail::from).collect(Collectors.toList());
     }
 
 }
