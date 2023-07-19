@@ -21,6 +21,7 @@ public class Post extends BaseEntity {
     private Long id;
 
     private String content;
+    private String writer;
 
     @ManyToOne
     @JoinColumn(name = "community_id")
@@ -29,20 +30,18 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post")
     private List<Comment> comments = new ArrayList<>();
 
-    @NotNull
-    @ManyToOne
-    @JoinColumn(name = "topic_id")
-    private Topic topic;
-
-
     public Post() {}
 
+    public void addComment(Comment comment) {
+        this.comments.add(comment);
+    }
+
     @Builder
-    public Post(Long id, String content, Community community, List<Comment> comments, Topic topic) {
+    public Post(Long id, String content, String writer, Community community, List<Comment> comments) {
         this.id = id;
         this.content = content;
+        this.writer = writer;
         this.community = community;
         this.comments = comments == null ? new ArrayList<>() : comments;
-        this.topic = topic;
     }
 }

@@ -21,11 +21,10 @@ public class PostDTO {
     @AllArgsConstructor
     public static class PostForm {
         Long communityId;
-        @NotNull
-        Long topicId;
         @NotBlank
         String postContent;
     }
+
 
     @Data
     @Builder
@@ -37,14 +36,13 @@ public class PostDTO {
         private List<CommentDetail> comments;
         private String writer;
 
-
-        public static PostDetail from(Post post, String username) {
+        public static PostDetail from(Post post) {
             List<CommentDetail> comments = post.getComments().stream().map(PostDetail::getCommentDetail).collect(Collectors.toList());
             return PostDetail.builder()
                     .id(post.getId())
                     .content(post.getContent())
                     .comments(comments)
-                    .writer(username)
+                    .writer(post.getWriter())
                     .build();
         }
 

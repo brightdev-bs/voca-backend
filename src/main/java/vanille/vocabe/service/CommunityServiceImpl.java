@@ -33,12 +33,6 @@ public class CommunityServiceImpl implements CommunityService {
     private final CommunityUserRepository communityUserRepository;
     private final ApplicantRepository applicantRepository;
 
-    @Override
-    public CommunityDetail getCommunityDetails(Long communityId) {
-        Community community = communityRepository.findById(communityId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_COMMUNITY));
-        return CommunityDetail.from(community);
-    }
-
     @Transactional
     @Override
     public Community saveCommunity(CommunityForm form) throws AuthenticationFailedException {
@@ -54,25 +48,11 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Transactional
     @Override
-    public void joinRequest(JoinForm form) {
-        Community community = communityRepository.findById(form.getCommunityId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_COMMUNITY));
-        User user = form.getUser();
-
-        Optional<Applicant> byApplicant = applicantRepository.findApplicantByUserAndCommunity(user, community);
-        if(byApplicant.isPresent()) {
-            Applicant applicant = byApplicant.get();
-            if(applicant.isChecked() && !applicant.isAccepted())
-                throw new DuplicatedEntityException(ErrorCode.REJECTED_REQUEST);
-            if(!applicant.isChecked()) {
-                throw new DuplicatedEntityException(ErrorCode.DUPLICATED_REQUEST);
-            }
-            throw new DuplicatedEntityException(ErrorCode.DUPLICATED_USER);
-        }
-
+    public void joinRequest(Long communityId, User user) {
+        Community community = communityRepository.findById(communityId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_COMMUNITY));
         Applicant applicant = Applicant.builder()
-                .user(form.getUser())
+                .user(user)
                 .community(community)
-                .motive(form.getContent())
                 .build();
         applicantRepository.save(applicant);
     }
@@ -94,29 +74,8 @@ public class CommunityServiceImpl implements CommunityService {
         Applicant applicant = Applicant.builder()
                 .user(user)
                 .community(community)
-                .accepted(false)
                 .build();
         applicantRepository.save(applicant);
-    }
-
-    @Transactional
-    @Override
-    public void expelUser(ExpelleeForm form) {
-        Community community = communityRepository.findById(form.getCommunityId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_COMMUNITY));
-
-        if(!isMaster(form, community))
-            throw new InvalidVerificationCodeException(ErrorCode.NO_AUTHORITY);
-
-        User expelle = userRepository.findById(form.getExpelleeId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
-        CommunityUser communityUser = communityUserRepository.findCommunityUserByUserAndCommunity(community.getId(), expelle.getId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
-
-        communityUserRepository.delete(communityUser);
-    }
-
-    private boolean isMaster(ExpelleeForm form, Community community) {
-        return form.getRequestId().equals(community.getCreatedBy());
     }
 
     @Override
@@ -126,38 +85,4 @@ public class CommunityServiceImpl implements CommunityService {
         return communities.stream().map(HomeResponse::from).collect(Collectors.toList());
     }
 
-    @Override
-    public List<Community> getCommunities(String name) {
-        return communityRepository.findCommunitiesByNameContaining(name);
-    }
-
-    @Override
-    public List<ApplicantResponse> getApplicants(Long id) {
-        Community community = communityRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_COMMUNITY));
-        List<Applicant> applicants = applicantRepository.findApplicantByCommunityAndCheckedFalse(community);
-        return applicants.stream().map(ApplicantResponse::from).collect(Collectors.toList());
-    }
-
-    @Transactional
-    @Override
-    public void responseForApplicant(ApplicantDetail form) {
-        Applicant applicant = applicantRepository.findById(form.getApplicantId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_APPLICANT));
-        Community community = communityRepository.findById(form.getCommunityId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_COMMUNITY));
-        User user = userRepository.findById(form.getUser().getId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
-        if(community.getCreatedBy().equals(user.getId())){
-            if(form.isAccept()) {
-                applicant.acceptMember();
-
-                CommunityUser communityUser = CommunityUser.builder()
-                        .user(applicant.getUser())
-                        .community(community)
-                        .build();
-                communityUserRepository.save(communityUser);
-            }
-            else
-                applicant.rejectMember();
-        } else {
-            throw new IllegalStateException(ErrorCode.NO_AUTHORITY.toString());
-        }
-    }
 }

@@ -17,6 +17,6 @@ public class UserFixture {
 
     public static User getUnverifiedUser() {
 
-        return User.of("test", email, "{bcrypt}1kdasdfwcv");
+        return User.of("test", email, "{bcrypt}1kdasdfwcv", false);
     }
 }

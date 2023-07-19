@@ -169,8 +169,9 @@ class UserControllerTest {
     @Test
     void confirmVerificationFail() throws Exception {
         mockMvc.perform(get("/api/v1/email?token="))
-                .andExpect(jsonPath("statusCode").value(ErrorCode.INVALID_VERIFICATION_CODE.getHttpStatus().toString()))
-                .andExpect(jsonPath("data").value(ErrorCode.INVALID_VERIFICATION_CODE.getMessage()));
+                .andDo(print())
+                .andExpect(jsonPath("statusCode").value(ErrorCode.NOT_FOUND_EMAIL_TOKEN.getHttpStatus().toString()))
+                .andExpect(jsonPath("data").value(ErrorCode.NOT_FOUND_EMAIL_TOKEN.getMessage()));
     }
 
     @DisplayName("[성공] 로그인")

@@ -14,18 +14,22 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import vanille.vocabe.entity.Comment;
 import vanille.vocabe.entity.Community;
 import vanille.vocabe.entity.Post;
-import vanille.vocabe.entity.Topic;
 import vanille.vocabe.entity.User;
+import vanille.vocabe.fixture.CommentFixture;
 import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.global.constants.Constants;
+import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.payload.CommentDTO;
-import vanille.vocabe.repository.*;
-import vanille.vocabe.service.CommentService;
+import vanille.vocabe.repository.CommentRepository;
+import vanille.vocabe.repository.CommunityRepository;
+import vanille.vocabe.repository.PostRepository;
+import vanille.vocabe.repository.UserRepository;
 
 import javax.transaction.Transactional;
-
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -38,9 +42,6 @@ import static vanille.vocabe.constants.TestConstants.BEARER_TOKEN;
 class CommentControllerTest {
 
     @Autowired
-    TopicRepository topicRepository;
-
-    @Autowired
     CommunityRepository communityRepository;
 
     @Autowired
@@ -48,6 +49,9 @@ class CommentControllerTest {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    CommentRepository commentRepository;
 
     @Autowired
     private MockMvc mockMvc;
@@ -76,28 +80,75 @@ class CommentControllerTest {
                 .build();
         communityRepository.save(community);
 
-        Topic topic = Topic.builder()
-                .content("test")
-                .community(community)
-                .build();
-        topicRepository.save(topic);
-
         Post post = Post.builder()
                 .community(community)
-                .topic(topic)
                 .build();
         postRepository.save(post);
 
         CommentDTO.CommentForm form = CommentDTO.CommentForm.builder()
                 .commentContent("test comment")
                 .build();
-        mockMvc.perform(post("/api/v1/posts/" + post.getId() + "/comments")
+        mockMvc.perform(post("/api/v1/posts/" + post.getId() + "/comments/form")
                         .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
                         .content(objectMapper.writeValueAsString(form))
                         .contentType(MediaType.APPLICATION_JSON)
                 ).andDo(print())
                 .andExpect(jsonPath("statusCode").value(HttpStatus.CREATED.toString()))
                 .andExpect(jsonPath("data").value(Constants.CREATED));
+    }
+
+    @DisplayName("[실패] 댓글 생성 - 댓글이 빈 공백일 때, null일 떄")
+    @Test
+    void createCommentFail() throws Exception {
+        User verifiedUser = UserFixture.getVerifiedUser();
+        userRepository.save(verifiedUser);
+
+        Community community = Community.builder()
+                .name("test")
+                .build();
+        communityRepository.save(community);
+
+        Post post = Post.builder()
+                .community(community)
+                .build();
+        postRepository.save(post);
+
+        CommentDTO.CommentForm form = CommentDTO.CommentForm.builder()
+                .commentContent(" ")
+                .build();
+        mockMvc.perform(post("/api/v1/posts/" + post.getId() + "/comments/form")
+                        .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                        .content(objectMapper.writeValueAsString(form))
+                        .contentType(MediaType.APPLICATION_JSON)
+                ).andDo(print())
+                .andExpect(jsonPath("statusCode").value(HttpStatus.BAD_REQUEST.toString()));
+    }
+
+    @DisplayName("댓글 조회")
+    @Test
+    void getComments() throws Exception {
+        Community community = Community.builder()
+                .name("test")
+                .build();
+        communityRepository.save(community);
+
+        Post post = Post.builder()
+                .community(community)
+                .build();
+        postRepository.save(post);
+
+        Comment comment = CommentFixture.getCommentFixture(post);
+        Comment comment2 = CommentFixture.getCommentFixture(post);
+        commentRepository.save(comment);
+        commentRepository.save(comment2);
+        post.addComment(comment);
+        post.addComment(comment2);
+
+        mockMvc.perform(get("/api/v1/posts/" + post.getId() + "/comments"))
+                .andDo(print())
+                .andExpect(jsonPath("statusCode").value(HttpStatus.OK.toString()))
+                .andExpect(jsonPath("$.data.length()").value(2));
+
     }
 
 }
