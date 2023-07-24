@@ -44,7 +44,11 @@ jwt:
 server.port: 8088
 front-server: http://localhost:8089
 
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include=health,metrics:
 #---
 #
 #spring:
