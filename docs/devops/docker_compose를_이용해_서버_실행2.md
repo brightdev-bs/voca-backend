@@ -8,6 +8,7 @@ Vue 프로젝트는 `npm run build` 명령어를 통해 간단하게 빌드할 �
 
 이를 도커 파일로 작성해보자.
 1. dockerfile을 프론트 프로젝트 루트에 생성한다.
+
 ~~~dockerfile
 FROM node:latest as build-stage
 # 디렉토리 전환 명령어로 이후의 명령어는 모두 /app 경로를 기준으로 동작한다.

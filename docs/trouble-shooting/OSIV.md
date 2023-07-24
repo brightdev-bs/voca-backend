@@ -34,6 +34,3 @@ WordService
  - WordService : 핵심 비즈니스 로직
  - WordQueryService : 화면과 관련된 서비스 로직 (주로 읽기 전용 트랜잭션)
 
-
-## 실무
-
