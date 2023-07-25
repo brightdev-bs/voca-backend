@@ -3,6 +3,7 @@ package vanille.vocabe.entity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -20,6 +21,7 @@ public class Post extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 1000)
     private String content;
     private String writer;
 

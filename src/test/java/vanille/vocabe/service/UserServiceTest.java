@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import vanille.vocabe.entity.Community;
 import vanille.vocabe.entity.EmailToken;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.fixture.EmailTokenFixture;
@@ -19,6 +20,8 @@ import vanille.vocabe.global.exception.InvalidPasswordException;
 import vanille.vocabe.global.exception.NotFoundException;
 import vanille.vocabe.global.exception.UnverifiedException;
 import vanille.vocabe.payload.UserDTO;
+import vanille.vocabe.repository.CommunityRepository;
+import vanille.vocabe.repository.CommunityUserRepository;
 import vanille.vocabe.repository.UserRepository;
 import vanille.vocabe.service.email.EmailServiceImpl;
 import vanille.vocabe.service.email.EmailTokenService;
@@ -31,8 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static vanille.vocabe.constants.TestConstants.TEST_EMAIL;
 
 @Import(TestConfig.class)
@@ -47,6 +49,12 @@ class UserServiceTest {
     private EmailTokenServiceImpl emailTokenService;
 
     @Mock
+    private CommunityRepository communityRepository;
+
+    @Mock
+    private CommunityUserRepository communityUserRepository;
+
+    @Mock
     private PasswordEncoder passwordEncoder;
 
     @InjectMocks
@@ -56,6 +64,7 @@ class UserServiceTest {
     @Test
     void saveUser() {
         given(userRepository.findByEmail("vanille@gmail.com")).willReturn(Optional.ofNullable(null));
+        given(communityRepository.findById(any(Long.class))).willReturn(Optional.ofNullable(mock(Community.class)));
 
         UserDTO.SignForm userDto = UserDTO.SignForm.builder()
                 .email("vanille@gmail.com")
@@ -75,6 +84,7 @@ class UserServiceTest {
         User user = UserFixture.getUnverifiedUser();
         given(userRepository.findByEmail("vanille@gmail.com")).willReturn(Optional.ofNullable(user));
         given(passwordEncoder.encode(any(String.class))).willReturn("changedPassword");
+        given(communityRepository.findById(any(Long.class))).willReturn(Optional.ofNullable(mock(Community.class)));
 
         UserDTO.SignForm userDto = UserDTO.SignForm.builder()
                 .email("vanille@gmail.com")

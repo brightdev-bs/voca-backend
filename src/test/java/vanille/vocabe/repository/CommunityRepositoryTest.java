@@ -35,15 +35,15 @@ class CommunityRepositoryTest {
     @DisplayName("커뮤니티 검색")
     @Test
     void searchCommunity() {
-        Community community = createCommunity("community1");
-        Community community2 = createCommunity("comm2");
-        Community community3 = createCommunity("commun3");
+        Community community = createCommunity("test dummy");
+        Community community2 = createCommunity("test dummy 2");
+        Community community3 = createCommunity("test3");
         communityRepository.save(community);
         communityRepository.save(community2);
         communityRepository.save(community3);
 
-        assertEquals(3, communityRepository.findCommunitiesByNameContaining("com").size());
-        assertEquals(1, communityRepository.findCommunitiesByNameContaining("comm2").size());
+        assertEquals(3, communityRepository.findCommunitiesByNameContaining("test").size());
+        assertEquals(1, communityRepository.findCommunitiesByNameContaining("test dummy 2").size());
     }
 
 
