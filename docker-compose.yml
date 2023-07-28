@@ -27,7 +27,6 @@ services:
       - MYSQL_USER=local
       - MYSQL_PASSWORD=localpassword
       - MYSQL_ROOT_PASSWORD=vanille
-      - TZ=Asia/Seoul
     networks:
       - voca
   voca-backend:
@@ -39,7 +38,7 @@ services:
     container_name: voca-backend
     restart: always
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/voca-api?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/voca-api?characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: local
       SPRING_DATASOURCE_PASSWORD: localpassword
       spring.profiles.active: local
