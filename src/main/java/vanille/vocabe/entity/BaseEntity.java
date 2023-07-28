@@ -28,10 +28,6 @@ public class BaseEntity {
     @Column(updatable = false)
     private Long createdBy;
 
-    public void setCreatedAt(LocalDateTime date, long days) {
-        this.createdAt = date.minusDays(days);
-    }
-
     public void setCreatedByForTest(Long id) {
         this.createdBy = id;
     }
