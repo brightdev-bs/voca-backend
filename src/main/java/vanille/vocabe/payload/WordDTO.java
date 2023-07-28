@@ -13,9 +13,7 @@ public class WordDTO {
 
     @Data
     public static class Request {
-        @NotBlank
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        private String date;
+        private int offset;
         private User user;
     }
 

@@ -35,10 +35,10 @@ public class WordServiceImpl implements WordService {
     @Override
     public List<Word> findWordsWithDate(WordDTO.Request request) {
 
-        LocalDate now = DateFormatter.from(request.getDate()).toLocalDate();
+        LocalDateTime localDateTime = LocalDateTime.now();
 
-        LocalDateTime start = LocalDateTime.of(now, LocalTime.of(0, 0, 0));
-        LocalDateTime end = LocalDateTime.of(now, LocalTime.of(23, 59, 59));
+        LocalDateTime start = localDateTime.minusHours(request.getOffset());
+        LocalDateTime end = localDateTime.plusHours(request.getOffset());
 
         return wordRepository.findByUserAndCreatedAtBetween(request.getUser(), start, end);
     }

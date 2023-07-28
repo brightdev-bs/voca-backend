@@ -16,4 +16,9 @@ public class DateFormatter {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return LocalDateTime.parse(date, formatter);
     }
+
+    public static LocalDateTime LocalDateWithZeroTime(String date) {
+        LocalDateTime localDateTime = from(date);
+        return localDateTime.withHour(0).withMinute(0).withSecond(0);
+    }
 }

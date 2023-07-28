@@ -25,6 +25,7 @@ public class WordController {
     @GetMapping("/words")
     public ApiResponse getWords(@Valid WordDTO.Request request, @AuthenticationPrincipal User user) {
         request.setUser(user);
+        log.info("request = {}", request);
         List<Word> words = wordService.findWordsWithDate(request);
         return ApiResponse.of(HttpStatus.OK.toString(), WordDTO.WordsResponse.from(user, words));
     }

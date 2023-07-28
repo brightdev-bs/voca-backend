@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import vanille.vocabe.entity.User;
+import vanille.vocabe.entity.Word;
 import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.fixture.WordFixture;
 import vanille.vocabe.global.util.DateFormatter;
@@ -27,6 +28,7 @@ import javax.transaction.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -116,10 +118,12 @@ class WordControllerTest {
     @DisplayName("[성공] 단어 조회 (날짜 기준)")
     @Test
     void getWordsWithDate() throws Exception {
-        WordDTO.Request request = new WordDTO.Request();
-        request.setDate(LocalDateTime.now().toString());
 
-        mockMvc.perform(get("/api/v1/words?date=" + LocalDate.now() + " 00:00:00")
+        List<Word> all = wordRepository.findAll();
+        for(Word w : all) {
+            System.out.println(w.toString());
+        }
+        mockMvc.perform(get("/api/v1/words?offset=9")
                         .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
                 )
                 .andExpect(jsonPath("$.data.words", hasSize(3)))
