@@ -119,15 +119,15 @@ class WordControllerTest {
     @Test
     void getWordsWithDate() throws Exception {
 
-        List<Word> all = wordRepository.findAll();
-        for(Word w : all) {
-            System.out.println(w.toString());
+        for(Word word : wordRepository.findAll()) {
+            System.out.println(word);
         }
-        mockMvc.perform(get("/api/v1/words?offset=9")
+
+        mockMvc.perform(get("/api/v1/words?date="  + LocalDate.now() + " 00:00:00")
                         .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
                 )
-                .andExpect(jsonPath("$.data.words", hasSize(3)))
-                .andDo(print());
+                .andDo(print())
+                .andExpect(jsonPath("$.data.words", hasSize(3)));
     }
 
 }
