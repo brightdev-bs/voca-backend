@@ -13,7 +13,7 @@ public class WordDTO {
 
     @Data
     public static class Request {
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        @JsonFormat(pattern = "yyyy-MM-dd")
         private String date;
         private int offset;
         private User user;
@@ -73,5 +73,7 @@ public class WordDTO {
         private String note;
         private User user;
         private Long vocaId;
+        @JsonFormat(pattern = "yyyy-MM-dd")
+        private String date;
     }
 }

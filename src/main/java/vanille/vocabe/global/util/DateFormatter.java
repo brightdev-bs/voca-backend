@@ -13,7 +13,7 @@ import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 public class DateFormatter {
 
     public static LocalDateTime from(String date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         return LocalDateTime.parse(date, formatter);
     }
 

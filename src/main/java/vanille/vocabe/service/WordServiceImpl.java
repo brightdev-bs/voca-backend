@@ -34,19 +34,8 @@ public class WordServiceImpl implements WordService {
 
     @Override
     public List<Word> findWordsWithDate(WordDTO.Request request) {
-
-        LocalDateTime localDateTime = DateFormatter.LocalDateWithZeroTime(request.getDate());
-
-        LocalDateTime start, end;
-        if(request.getOffset() == 0) {
-            start = LocalDateTime.of(localDateTime.toLocalDate(), LocalTime.of(0, 0, 0));
-            end = LocalDateTime.of(localDateTime.toLocalDate(), LocalTime.of(23, 59, 59));
-        } else {
-            start = localDateTime.minusHours(request.getOffset());
-            end = localDateTime.plusHours(request.getOffset());
-        }
-
-        return wordRepository.findByUserAndCreatedAtBetween(request.getUser(), start, end);
+        LocalDate date = LocalDate.parse(request.getDate());
+        return wordRepository.findByUserAndCreatedAt(request.getUser(), date);
     }
 
     @Override
@@ -63,7 +52,7 @@ public class WordServiceImpl implements WordService {
             throw new IllegalAccessException(ErrorCode.NO_AUTHORITY.getMessage());
         }
 
-        Word word = Word.of(request.getWord(), request.getDefinition(), request.getNote(), user, vocabulary);
+        Word word = Word.of(request.getWord(), request.getDefinition(), request.getNote(), user, vocabulary, request.getDate());
         return wordRepository.save(word);
     }
 
@@ -81,8 +70,8 @@ public class WordServiceImpl implements WordService {
         LocalDateTime date = LocalDateTime.now();
         List<String> studiedDates = wordQuerydslRepository.findByUserAndCreatedAtBetweenAndGroupBy(
                 user,
-                LocalDateTime.of(joinDate.getYear(), joinDate.getMonth(), 1, 0, 0, 0),
-                LocalDateTime.of(date.getYear(), date.getMonth(), date.toLocalDate().lengthOfMonth(), 23, 59, 59)
+                LocalDate.of(joinDate.getYear(), joinDate.getMonth(), 1),
+                LocalDate.of(date.getYear(), date.getMonth(), date.toLocalDate().lengthOfMonth())
         );
 
         List<UserVocabulary> vocabularies = user.getVocabularies();

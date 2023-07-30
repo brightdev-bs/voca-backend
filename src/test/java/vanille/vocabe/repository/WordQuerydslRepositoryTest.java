@@ -15,6 +15,7 @@ import vanille.vocabe.global.config.JpaConfig;
 
 import javax.transaction.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -43,11 +44,11 @@ class WordQuerydslRepositoryTest {
         wordRepository.saveAndFlush(WordFixture.get(user));
         wordRepository.saveAndFlush(WordFixture.get(user));
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDate now = LocalDate.now();
 
         List<String> result = querydslRepository.findByUserAndCreatedAtBetweenAndGroupBy(user,
-                now.withDayOfMonth(1),
-                LocalDateTime.of(now.getYear(), now.getMonth(), now.toLocalDate().lengthOfMonth(), 23, 59, 59));
+                now,
+                LocalDate.of(now.getYear(), now.getMonth(), now.lengthOfMonth()));
 
         Assertions.assertEquals(1, result.size());
     }

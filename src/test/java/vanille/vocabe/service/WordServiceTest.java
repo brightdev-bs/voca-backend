@@ -22,6 +22,7 @@ import vanille.vocabe.repository.VocabularyRepository;
 import vanille.vocabe.repository.WordQuerydslRepository;
 import vanille.vocabe.repository.WordRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +64,7 @@ class WordServiceTest {
                 .definition("definition")
                 .user(user)
                 .vocaId(1L)
+                .date(LocalDate.now().toString())
                 .build();
 
         Word word = wordService.saveWord(request);
@@ -116,12 +118,12 @@ class WordServiceTest {
     void getStudyRecords() {
         User user = UserFixture.getVerifiedUser();
         user.setCreatedAtForTest(LocalDateTime.of(2023, 01, 01, 00, 00));
-        LocalDateTime now = LocalDateTime.now();
+        LocalDate now = LocalDate.now();
         List<String> dates = List.of("01/01/2023", "01/02/2023", "02/02/2023", "03/01/2023", "04/01/2023");
         given(wordQuerydslRepository.findByUserAndCreatedAtBetweenAndGroupBy(
                 user,
-                user.getCreatedAt(),
-                LocalDateTime.of(now.getYear(), now.getMonth(), now.toLocalDate().lengthOfMonth(), 23, 59, 59))
+                user.getCreatedAt().toLocalDate(),
+                LocalDate.of(now.getYear(), now.getMonth(), now.lengthOfMonth()))
         ).willReturn(dates);
 
         UserDTO.UserDetailWithStudyRecords priorStudyRecords = wordService.findPriorStudyRecords(user);
