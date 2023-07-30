@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import vanille.vocabe.entity.User;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class WordQuerydslRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public List<String> findByUserAndCreatedAtBetweenAndGroupBy(User user, LocalDateTime from, LocalDateTime to) {
+    public List<String> findByUserAndCreatedAtBetweenAndGroupBy(User user, LocalDate from, LocalDate to) {
 
         StringTemplate formattedDate = Expressions.stringTemplate(
                 "DATE_FORMAT({0}, {1})"
