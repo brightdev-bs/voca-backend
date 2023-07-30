@@ -1,9 +1,11 @@
 package vanille.vocabe.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpHeaders;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -19,16 +21,12 @@ import vanille.vocabe.entity.User;
 import vanille.vocabe.entity.Word;
 import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.fixture.WordFixture;
-import vanille.vocabe.global.util.DateFormatter;
 import vanille.vocabe.payload.WordDTO;
 import vanille.vocabe.repository.UserRepository;
 import vanille.vocabe.repository.WordRepository;
 
 import javax.transaction.Transactional;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -81,6 +79,7 @@ class WordControllerTest {
         WordDTO.NewWord request = WordDTO.NewWord.builder()
                 .word("test")
                 .definition("test입니다.")
+                .date(LocalDate.now().toString())
                 .build();
 
         mockMvc.perform(post("/api/v1/words")
@@ -123,7 +122,7 @@ class WordControllerTest {
             System.out.println(word);
         }
 
-        mockMvc.perform(get("/api/v1/words?date="  + LocalDate.now() + " 00:00:00")
+        mockMvc.perform(get("/api/v1/words?date="  + LocalDate.now())
                         .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
                 )
                 .andDo(print())
