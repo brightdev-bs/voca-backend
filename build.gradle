@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.8'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'jacoco'
 }
 
 group = 'vanille'
@@ -72,4 +73,45 @@ sourceSets {
 // gradle clean 시에 QClass 디렉토리 삭제
 clean {
     delete file(generated)
+}
+
+jacoco {
+    toolVersion = "0.8.10"
+}
+
+test {
+    jacoco {
+        // Jacoco 테스트 커버리지 설정
+        includes = [
+                'vanille/vocabe/**',
+        ]
+    }
+    finalizedBy 'jacocoTestReport'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        csv.enabled true
+        html.enabled true
+
+        xml.destination file("${buildDir}/jacoco/index.xml")
+        csv.destination file("${buildDir}/jacoco/index.csv")
+        html.destination file("${buildDir}/jacoco/index.html")
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(
+                files(classDirectories.files.collect {
+                    fileTree(dir: it, excludes: [
+                            '**/payload/**',
+                            '**/global/config/**',
+                            '**/global/constants/**',
+                            '**/global/exception/**',
+                            '**/global/response/**',
+                            '**/entity/**',
+                    ])
+                })
+        )
+    }
 }
