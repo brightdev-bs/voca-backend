@@ -1,6 +1,8 @@
 package vanille.vocabe.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vanille.vocabe.entity.User;
@@ -50,7 +52,7 @@ public class VocabularyServiceImpl implements VocabularyService {
     }
 
     @Override
-    public WordDTO.WordsResponse findAllWordsByVocabularies(VocaDTO.SearchForm form) throws IllegalAccessException {
+    public WordDTO.WordsResponse findAllWordsByVocabularies(Pageable pageable, VocaDTO.SearchForm form) throws IllegalAccessException {
         Vocabulary vocabulary = vocabularyRepository.findById(form.getVoca())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_VOCABULARY));
 
@@ -59,9 +61,8 @@ public class VocabularyServiceImpl implements VocabularyService {
             throw new IllegalAccessException(ErrorCode.NO_AUTHORITY.getMessage());
         }
 
-        List<Word> words = wordRepository.findALLByVocabularyId(vocabulary.getId());
+        Page<Word> words = wordRepository.findALLByVocabularyId(pageable, vocabulary.getId());
         return WordDTO.WordsResponse.from(user, words);
-
     }
 
 }

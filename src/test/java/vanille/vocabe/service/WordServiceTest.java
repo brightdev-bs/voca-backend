@@ -9,12 +9,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.entity.Vocabulary;
 import vanille.vocabe.entity.Word;
 import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.fixture.VocabularyFixture;
 import vanille.vocabe.fixture.WordFixture;
+import vanille.vocabe.global.util.DateFormatter;
 import vanille.vocabe.payload.UserDTO;
 import vanille.vocabe.payload.WordDTO;
 import vanille.vocabe.repository.UserRepository;
@@ -129,6 +132,4 @@ class WordServiceTest {
         UserDTO.UserDetailWithStudyRecords priorStudyRecords = wordService.findPriorStudyRecords(user);
         Assertions.assertEquals(5, priorStudyRecords.getDates().size());
     }
-
-
 }

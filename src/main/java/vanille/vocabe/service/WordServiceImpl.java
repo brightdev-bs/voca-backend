@@ -2,6 +2,8 @@ package vanille.vocabe.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.entity.UserVocabulary;
@@ -33,9 +35,9 @@ public class WordServiceImpl implements WordService {
     private final VocabularyRepository vocabularyRepository;
 
     @Override
-    public List<Word> findWordsWithDate(WordDTO.Request request) {
+    public Page<Word> findWordsWithDate(final Pageable pageable, final WordDTO.Request request) {
         LocalDate date = LocalDate.parse(request.getDate());
-        return wordRepository.findByUserAndCreatedAt(request.getUser(), date);
+        return wordRepository.findByUserAndCreatedAt(pageable, request.getUser(), date);
     }
 
     @Override

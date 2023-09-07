@@ -2,16 +2,15 @@ package vanille.vocabe.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpHeaders;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,12 +23,14 @@ import vanille.vocabe.fixture.WordFixture;
 import vanille.vocabe.payload.WordDTO;
 import vanille.vocabe.repository.UserRepository;
 import vanille.vocabe.repository.WordRepository;
+import vanille.vocabe.service.WordService;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -56,6 +57,8 @@ class WordControllerTest {
 
     @Autowired
     private WordRepository wordRepository;
+    @Autowired
+    private WordService wordService;
 
     private User user;
 
@@ -129,4 +132,48 @@ class WordControllerTest {
                 .andExpect(jsonPath("$.data.words", hasSize(3)));
     }
 
+    @DisplayName("단어가 많으면 10개씩 가져온다.")
+    @Test
+    void pagingTest() throws Exception {
+        initDummyWords(user);
+        WordDTO.Request request = WordDTO.Request.builder()
+                .date(String.valueOf(LocalDate.now()))
+                .user(user)
+                .build();
+
+        mockMvc.perform(get("/api/v1/words?date=" + request.getDate())
+                        .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                ).andExpect(jsonPath("statusCode").value(HttpStatus.OK.toString()))
+                .andExpect(jsonPath("$.data.words", hasSize(10)))
+                .andExpect(jsonPath("$.data.totalPage").value(2))
+                .andDo(print());
+
+    }
+
+    private void initDummyWords(User user) {
+        Word word = WordFixture.get(user);
+        Word word2 = WordFixture.get(user);
+        Word word3 = WordFixture.get(user);
+        Word word4 = WordFixture.get(user);
+        Word word5 = WordFixture.get(user);
+        Word word6 = WordFixture.get(user);
+        Word word7 = WordFixture.get(user);
+        Word word8 = WordFixture.get(user);
+        Word word9 = WordFixture.get(user);
+        Word word10 = WordFixture.get(user);
+        Word word11 = WordFixture.get(user);
+        Word word12 = WordFixture.get(user);
+        wordRepository.save(word);
+        wordRepository.save(word2);
+        wordRepository.save(word3);
+        wordRepository.save(word4);
+        wordRepository.save(word5);
+        wordRepository.save(word6);
+        wordRepository.save(word7);
+        wordRepository.save(word8);
+        wordRepository.save(word9);
+        wordRepository.save(word10);
+        wordRepository.save(word11);
+        wordRepository.save(word12);
+    }
 }

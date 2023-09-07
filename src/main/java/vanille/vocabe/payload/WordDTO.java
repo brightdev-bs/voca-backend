@@ -2,6 +2,7 @@ package vanille.vocabe.payload;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import org.springframework.data.domain.Page;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.entity.Word;
 
@@ -12,10 +13,10 @@ import java.util.stream.Collectors;
 public class WordDTO {
 
     @Data
+    @Builder
     public static class Request {
         @JsonFormat(pattern = "yyyy-MM-dd")
         private String date;
-        private int offset;
         private User user;
     }
 
@@ -47,17 +48,19 @@ public class WordDTO {
 
         private UserDTO.UserDetail user;
         private List<WordDetail> words;
+        private int totalPage;
 
         protected WordsResponse() {}
 
-        private WordsResponse(UserDTO.UserDetail user, List<WordDetail> words) {
+        private WordsResponse(UserDTO.UserDetail user, List<WordDetail> words, int totalPage) {
             this.user = user;
             this.words = words;
+            this.totalPage = totalPage;
         }
 
-        public static WordsResponse from(User user, List<Word> words) {
+        public static WordsResponse from(User user, Page<Word> words) {
             List<WordDetail> detailInfos = words.stream().map(WordDetail::from).collect(Collectors.toList());
-            return new WordsResponse(UserDTO.UserDetail.from(user), detailInfos);
+            return new WordsResponse(UserDTO.UserDetail.from(user), detailInfos, words.getTotalPages());
         }
     }
 

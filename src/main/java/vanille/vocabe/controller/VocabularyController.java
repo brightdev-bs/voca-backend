@@ -1,6 +1,8 @@
 package vanille.vocabe.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -34,9 +36,13 @@ public class VocabularyController {
     }
 
     @GetMapping("/v1/voca/words")
-    public ApiResponse getWordsByVoca(VocaDTO.SearchForm request, @AuthenticationPrincipal User user) throws IllegalAccessException {
+    public ApiResponse getWordsByVoca(
+            @PageableDefault Pageable pageable,
+            @Valid VocaDTO.SearchForm request,
+            @AuthenticationPrincipal User user
+    ) throws IllegalAccessException {
         request.setUser(user);
-        WordDTO.WordsResponse response = vocabularyService.findAllWordsByVocabularies(request);
+        WordDTO.WordsResponse response = vocabularyService.findAllWordsByVocabularies(pageable, request);
         return ApiResponse.of(HttpStatus.OK.toString(), response);
     }
 }

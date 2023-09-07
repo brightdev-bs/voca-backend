@@ -1,5 +1,7 @@
 package vanille.vocabe.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.entity.Word;
 import vanille.vocabe.payload.UserDTO;
@@ -8,7 +10,7 @@ import vanille.vocabe.payload.WordDTO;
 import java.util.List;
 
 public interface WordService {
-    List<Word> findWordsWithDate(WordDTO.Request request);
+    Page<Word> findWordsWithDate(Pageable pageable, WordDTO.Request request);
 
     Word saveWord(WordDTO.NewWord request) throws IllegalAccessException;
 

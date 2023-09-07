@@ -2,6 +2,9 @@ package vanille.vocabe.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -23,10 +26,12 @@ public class WordController {
     private final WordService wordService;
 
     @GetMapping("/words")
-    public ApiResponse getWords(@Valid WordDTO.Request request, @AuthenticationPrincipal User user) {
+    public ApiResponse getWords(
+            @PageableDefault Pageable pageable,
+            @Valid WordDTO.Request request,
+            @AuthenticationPrincipal User user) {
         request.setUser(user);
-        log.info("request = {}", request);
-        List<Word> words = wordService.findWordsWithDate(request);
+        Page<Word> words = wordService.findWordsWithDate(pageable, request);
         return ApiResponse.of(HttpStatus.OK.toString(), WordDTO.WordsResponse.from(user, words));
     }
 
