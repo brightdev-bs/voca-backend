@@ -23,7 +23,7 @@ public class EmailToken {
     private boolean expired;
     private String email;
 
-    private EmailToken() {}
+    protected EmailToken() {}
 
     public static EmailToken createEmailToken(String email) {
         EmailToken emailToken = new EmailToken();

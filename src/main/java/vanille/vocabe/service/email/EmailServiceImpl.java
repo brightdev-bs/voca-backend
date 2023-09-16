@@ -31,7 +31,7 @@ public class EmailServiceImpl implements EmailService {
     @Value("${front-server}")
     public String FRONT_SERVER;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     @Override
     public void sendSignUpConfirmEmail(String email) {
         EmailToken emailToken = emailTokenService.createEmailToken(email);
@@ -44,7 +44,7 @@ public class EmailServiceImpl implements EmailService {
      * @param subject
      * @param path 쿼리 파라미터의 경우 '?[name]='추가할 것. /example?token=
      */
-    private void sendEmail(EmailToken emailToken, String subject, String path) {
+    public void sendEmail(EmailToken emailToken, String subject, String path) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(emailToken.getEmail());
         mailMessage.setSubject(subject);
