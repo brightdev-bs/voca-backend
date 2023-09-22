@@ -20,6 +20,8 @@ import vanille.vocabe.entity.User;
 import vanille.vocabe.entity.Word;
 import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.fixture.WordFixture;
+import vanille.vocabe.global.constants.ErrorCode;
+import vanille.vocabe.global.exception.NotFoundException;
 import vanille.vocabe.payload.WordDTO;
 import vanille.vocabe.repository.UserRepository;
 import vanille.vocabe.repository.WordRepository;
@@ -36,6 +38,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static vanille.vocabe.constants.TestConstants.BEARER_TOKEN;
+import static vanille.vocabe.global.Constants.VERIFIED_USER_EMAIL;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @Transactional
@@ -53,13 +56,10 @@ class WordControllerTest {
     private WebApplicationContext webApplicationContext;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private WordRepository wordRepository;
-    @Autowired
-    private WordService wordService;
 
+    @Autowired
+    private UserRepository userRepository;
     private User user;
 
     @BeforeEach
@@ -68,12 +68,7 @@ class WordControllerTest {
                 .webAppContextSetup(webApplicationContext)
                 .build();
 
-        user = UserFixture.getVerifiedUser();
-        userRepository.save(user);
-
-        wordRepository.save(WordFixture.get(user));
-        wordRepository.save(WordFixture.get(user));
-        wordRepository.save(WordFixture.get(user));
+        user = userRepository.findByEmail(VERIFIED_USER_EMAIL).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
     }
 
     @DisplayName("[성공] 새로운 단어 추가 성공")
@@ -90,6 +85,7 @@ class WordControllerTest {
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
+                .andDo(print())
                 .andExpect(jsonPath("statusCode").value(HttpStatus.OK.toString()));
     }
 
@@ -120,10 +116,9 @@ class WordControllerTest {
     @DisplayName("[성공] 단어 조회 (날짜 기준)")
     @Test
     void getWordsWithDate() throws Exception {
-
-        for(Word word : wordRepository.findAll()) {
-            System.out.println(word);
-        }
+        wordRepository.save(WordFixture.get(user));
+        wordRepository.save(WordFixture.get(user));
+        wordRepository.save(WordFixture.get(user));
 
         mockMvc.perform(get("/api/v1/words?date="  + LocalDate.now())
                         .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
@@ -151,29 +146,8 @@ class WordControllerTest {
     }
 
     private void initDummyWords(User user) {
-        Word word = WordFixture.get(user);
-        Word word2 = WordFixture.get(user);
-        Word word3 = WordFixture.get(user);
-        Word word4 = WordFixture.get(user);
-        Word word5 = WordFixture.get(user);
-        Word word6 = WordFixture.get(user);
-        Word word7 = WordFixture.get(user);
-        Word word8 = WordFixture.get(user);
-        Word word9 = WordFixture.get(user);
-        Word word10 = WordFixture.get(user);
-        Word word11 = WordFixture.get(user);
-        Word word12 = WordFixture.get(user);
-        wordRepository.save(word);
-        wordRepository.save(word2);
-        wordRepository.save(word3);
-        wordRepository.save(word4);
-        wordRepository.save(word5);
-        wordRepository.save(word6);
-        wordRepository.save(word7);
-        wordRepository.save(word8);
-        wordRepository.save(word9);
-        wordRepository.save(word10);
-        wordRepository.save(word11);
-        wordRepository.save(word12);
+        for(int i = 0; i < 12; i++) {
+            wordRepository.save(WordFixture.get(user));
+        }
     }
 }

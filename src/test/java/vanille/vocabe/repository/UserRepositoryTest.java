@@ -17,6 +17,9 @@ import javax.transaction.Transactional;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import static vanille.vocabe.global.Constants.UNVERIFIED_USER_EMAIL;
+import static vanille.vocabe.global.Constants.VERIFIED_USER_EMAIL;
+
 @DataJpaTest
 @Import(JpaConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -29,10 +32,7 @@ class UserRepositoryTest {
     @DisplayName("인증된 사용자를 찾아 온다.")
     @Test
     void findByEmailAndVerifiedTrue() {
-        String email = "vanille@gmail.com";
-        User user = UserFixture.getVerifiedUser();
-        userRepository.saveAndFlush(user);
-
+        final String email = VERIFIED_USER_EMAIL;
         User findUser = userRepository.findByEmailAndVerifiedTrue(email).get();
         Assertions.assertEquals(findUser.getEmail(), email);
         Assertions.assertTrue(findUser.isVerified());
@@ -41,10 +41,7 @@ class UserRepositoryTest {
     @DisplayName("인증되지 않은 사용자는 찾아 오지 않는다.")
     @Test
     void notFoundIfUnverified() {
-        String email = "vanille@gmail.com";
-        User user = UserFixture.getUnverifiedUser();
-        userRepository.saveAndFlush(user);
-
+        final String email = UNVERIFIED_USER_EMAIL;
         Optional<User> findUser = userRepository.findByEmailAndVerifiedTrue(email);
         Assertions.assertThrows(NoSuchElementException.class, findUser::get);
     }
@@ -52,22 +49,19 @@ class UserRepositoryTest {
     @DisplayName("사용자 이름으로 사용자를 찾는다. - 인증된 사용자")
     @Test
     void findByUsername() {
-        User user = UserFixture.getVerifiedUser();
-        userRepository.saveAndFlush(user);
-
-        User findUser = userRepository.findByUsernameAndVerifiedTrue(user.getUsername()).get();
-        Assertions.assertEquals(user.getEmail(), findUser.getEmail());
-        Assertions.assertEquals(user.getUsername(), findUser.getUsername());
+        String username = "verifiedUser";
+        User findUser = userRepository.findByUsernameAndVerifiedTrue(username).get();
+        Assertions.assertEquals(VERIFIED_USER_EMAIL, findUser.getEmail());
+        Assertions.assertEquals(username, findUser.getUsername());
     }
 
     @DisplayName("사용자 이름으로 사용자를 찾는다. - 인증되지 않은 사용자")
     @Test
     void findByUsernameFail() {
-        User user = UserFixture.getUnverifiedUser();
-        userRepository.saveAndFlush(user);
+        final String username = "unverifiedUser";
 
         Assertions.assertThrows(NotFoundException.class,
-                () -> userRepository.findByUsernameAndVerifiedTrue(user.getUsername())
+                () -> userRepository.findByUsernameAndVerifiedTrue(username)
                         .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER)));
     }
 

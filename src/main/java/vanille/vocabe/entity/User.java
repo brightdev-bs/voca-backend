@@ -35,6 +35,7 @@ public class User {
 
     private boolean verified;
 
+    @Getter
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
@@ -47,10 +48,6 @@ public class User {
     @ToString.Exclude
     @OneToMany(mappedBy = "user")
     private List<UserVocabulary> vocabularies = new ArrayList<>();
-
-    @ToString.Exclude
-    @OneToMany(mappedBy = "user")
-    private List<CommunityUser> communities = new ArrayList<>();
 
     protected User() {}
 
@@ -104,12 +101,8 @@ public class User {
     public void setPasswordForTest(String pw) {
         this.password = pw;
     }
-    public void setCreatedAtForTest() {
-        this.createdAt = LocalDateTime.now();
-    }
 
     public void setCreatedAtForTest(LocalDateTime localDateTime) {
         this.createdAt = localDateTime;
     }
-
 }

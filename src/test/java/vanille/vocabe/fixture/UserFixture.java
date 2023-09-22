@@ -15,6 +15,10 @@ public class UserFixture {
         return User.of(username, email2, "{bcrypt}1kdasdfwcv", true);
     }
 
+    public static User getVerifiedUser(String username, String email) {
+        return User.of(username, email, "{bcrypt}1kdasdfwcv", true);
+    }
+
     public static User getUnverifiedUser() {
 
         return User.of("test", email, "{bcrypt}1kdasdfwcv", false);

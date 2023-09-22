@@ -12,6 +12,8 @@ import vanille.vocabe.entity.Word;
 import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.fixture.WordFixture;
 import vanille.vocabe.global.config.JpaConfig;
+import vanille.vocabe.global.constants.ErrorCode;
+import vanille.vocabe.global.exception.NotFoundException;
 
 import javax.transaction.Transactional;
 
@@ -20,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static vanille.vocabe.global.Constants.VERIFIED_USER_EMAIL;
 
 @SpringBootTest
 @Transactional
@@ -36,8 +39,7 @@ class WordQuerydslRepositoryTest {
 
     @Test
     void queryDslTest() {
-        User user = UserFixture.getVerifiedUser();
-        userRepository.saveAndFlush(user);
+        User user = userRepository.findByEmail(VERIFIED_USER_EMAIL).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
 
         wordRepository.saveAndFlush(WordFixture.get(user));
         wordRepository.saveAndFlush(WordFixture.get(user));

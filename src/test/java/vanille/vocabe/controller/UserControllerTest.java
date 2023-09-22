@@ -21,10 +21,12 @@ import vanille.vocabe.entity.EmailToken;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.fixture.EmailTokenFixture;
 import vanille.vocabe.fixture.UserFixture;
+import vanille.vocabe.global.Constants;
 import vanille.vocabe.global.config.OpenEntityManagerConfig;
 import vanille.vocabe.global.config.SecurityConfig;
 import vanille.vocabe.global.config.TestConfig;
 import vanille.vocabe.global.constants.ErrorCode;
+import vanille.vocabe.global.exception.NotFoundException;
 import vanille.vocabe.payload.UserDTO;
 import vanille.vocabe.repository.EmailTokenRepository;
 import vanille.vocabe.repository.UserRepository;
@@ -44,6 +46,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static vanille.vocabe.constants.TestConstants.TEST_EMAIL;
+import static vanille.vocabe.global.Constants.UNVERIFIED_USER_EMAIL;
+import static vanille.vocabe.global.Constants.VERIFIED_USER_EMAIL;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @Transactional
@@ -89,6 +93,7 @@ class UserControllerTest {
                         .content(objectMapper.writeValueAsString(signForm))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
+                .andDo(print())
                 .andExpect(jsonPath("statusCode").value("200 OK"))
                 .andExpect(jsonPath("data").value("test@naver.com"));
     }
@@ -124,11 +129,10 @@ class UserControllerTest {
     @DisplayName("[성공] 확인 메일을 클릭해서 URI로 접속했을 때")
     @Test
     void setVerificationStatusAsVerified() throws Exception {
-        EmailToken emailToken = EmailToken.createEmailToken("vanille@gmail.com");
+        EmailToken emailToken = EmailToken.createEmailToken(UNVERIFIED_USER_EMAIL);
         emailTokenRepository.save(emailToken);
 
-        User user = UserFixture.getUnverifiedUser();
-        userRepository.save(user);
+        User user = getUnverifiedUser();
 
         mockMvc.perform(get("/api/v1/email?token=" + emailToken.getToken()))
                 .andDo(print());
@@ -153,9 +157,8 @@ class UserControllerTest {
     @DisplayName("[실패] 확인 메일 유효시간이 지났을 때 - 회원가입한 이메일인 경우")
     @Test
     void expiredVerificationEmail() throws Exception {
-        User user = UserFixture.getUnverifiedUser();
-        userRepository.saveAndFlush(user);
-        EmailToken emailToken = EmailToken.createEmailToken("vanille@gmail.com");
+        userRepository.findByEmail(UNVERIFIED_USER_EMAIL).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
+        EmailToken emailToken = EmailToken.createEmailToken(UNVERIFIED_USER_EMAIL);
         emailToken.plusExpirationTimeForTest(-3L);
         emailTokenRepository.save(emailToken);
 
@@ -177,7 +180,7 @@ class UserControllerTest {
     @DisplayName("[성공] 로그인")
     @Test
     void login() throws Exception {
-        User user = UserFixture.getVerifiedUser();
+        User user = getVerifiedUser();
         user.setPasswordForTest(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
 
@@ -196,8 +199,8 @@ class UserControllerTest {
     @DisplayName("[실패] 로그인 - 비밀번호가 틀린 경우")
     @Test
     void loginFailWithWrongPassword() throws Exception {
-        User user = UserFixture.getVerifiedUser();
-        userRepository.save(user);
+
+        User user = getVerifiedUser();
 
         UserDTO.LoginForm request = UserDTO.LoginForm.builder()
                 .email("vanille@gmail.com")
@@ -217,12 +220,12 @@ class UserControllerTest {
     @DisplayName("[실패] 로그인 - 인증되지 않은 유저")
     @Test
     void loginFailWithUnverified() throws Exception {
-        User user = UserFixture.getUnverifiedUser();
+        User user = User.of("test", "test@naver.com", "testpassword", false);
         userRepository.save(user);
 
         UserDTO.LoginForm request = UserDTO.LoginForm.builder()
-                .email("vanille@gmail.com")
-                .password("{bcrypt}1kdasdfwcv")
+                .email("test@naver.com")
+                .password("testpassword")
                 .build();
 
         mockMvc.perform(post("/api/v1/login")
@@ -238,8 +241,6 @@ class UserControllerTest {
     @Test
     void findPassword() throws Exception {
         String email = UserFixture.email;
-        User user = UserFixture.getVerifiedUser();
-        userRepository.save(user);
 
         mockMvc.perform(get("/api/v1/password?email=" + email))
                 .andDo(print())
@@ -250,9 +251,6 @@ class UserControllerTest {
     @DisplayName("[성공] 비밀번호 변경")
     @Test
     void changePassword() throws Exception {
-        User user = UserFixture.getVerifiedUser();
-        userRepository.save(user);
-
         EmailToken emailToken = EmailTokenFixture.createEmailToken();
         emailTokenRepository.save(emailToken);
 
@@ -313,6 +311,14 @@ class UserControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath("statusCode").value(HttpStatus.BAD_REQUEST.toString()))
                 .andExpect(jsonPath("data").value(ErrorCode.EXPIRED_TOKEN.getMessage()));
+    }
+
+    private User getVerifiedUser() {
+        return userRepository.findByEmail(VERIFIED_USER_EMAIL).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
+    }
+
+    private User getUnverifiedUser() {
+        return userRepository.findByEmail(UNVERIFIED_USER_EMAIL).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
     }
 
 }

@@ -79,5 +79,4 @@ public class UserController {
         return ApiResponse.of(HttpStatus.OK.toString(), true);
     }
 
-
 }
