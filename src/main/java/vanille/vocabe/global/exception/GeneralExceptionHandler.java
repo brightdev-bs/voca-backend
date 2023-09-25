@@ -3,6 +3,7 @@ package vanille.vocabe.global.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import vanille.vocabe.global.response.common.ApiResponse;
 
 import javax.mail.AuthenticationFailedException;
-import javax.security.sasl.AuthenticationException;
 
 @Slf4j
 @RestControllerAdvice
@@ -124,7 +124,7 @@ public class GeneralExceptionHandler {
                 .body(errorResponse);
     }
 
-    @ExceptionHandler(value = {AuthenticationFailedException.class} )
+    @ExceptionHandler(value = {AuthenticationException.class} )
     protected ResponseEntity<ApiResponse> authenticationFailedExpcetion(Exception e) {
         log.error("AuthenticationFailed", e);
         ApiResponse errorResponse = ApiResponse.of(HttpStatus.BAD_REQUEST.toString(), e.getMessage());

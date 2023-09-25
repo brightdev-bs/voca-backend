@@ -23,4 +23,8 @@ public class UserFixture {
 
         return User.of("test", email, "{bcrypt}1kdasdfwcv", false);
     }
+
+    public static UserDTO.GoogleUser getGoogleUser() {
+        return new UserDTO.GoogleUser("test", "test@gmail.com");
+    }
 }

@@ -4,10 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import vanille.vocabe.entity.EmailToken;
 import vanille.vocabe.entity.User;
+import vanille.vocabe.global.oepnFeign.GoogleLogin;
 import vanille.vocabe.global.response.common.ApiResponse;
 import vanille.vocabe.global.util.JwtTokenUtils;
 import vanille.vocabe.payload.UserDTO;
@@ -16,6 +17,7 @@ import vanille.vocabe.service.WordService;
 import vanille.vocabe.service.email.EmailService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import static vanille.vocabe.global.constants.Constants.EMAIL_VERIFICATION;
 import static vanille.vocabe.payload.UserDTO.*;
@@ -29,6 +31,7 @@ public class UserController {
     private final UserService userService;
     private final EmailService emailService;
     private final WordService wordService;
+    private final GoogleLogin googleLogin;
 
     @Value("${jwt.secret-key}")
     private String key;
@@ -77,6 +80,22 @@ public class UserController {
     public ApiResponse changePassword(@RequestBody @Valid PasswordForm form) {
         userService.changeUserPassword(form);
         return ApiResponse.of(HttpStatus.OK.toString(), true);
+    }
+
+    @GetMapping("/v1/login/google")
+    public ApiResponse googleLogin(@NotNull String token) {
+        UserDTO.GoogleUser googleUser = googleLogin.googleLogin("Bearer " + token);
+        User user = userService.googleLogin(googleUser);
+        String accessToken = JwtTokenUtils.generateAccessToken(user.getUsername(), expiredTime, key);
+        return ApiResponse.of(HttpStatus.OK.toString(), UserLoginResponse.from(user, accessToken));
+    }
+
+    @GetMapping("/v1/signup/google")
+    public ApiResponse googleSignup(@NotNull String token) {
+        UserDTO.GoogleUser googleUser = googleLogin.googleLogin("Bearer " + token);
+        User user = userService.googleSignup(googleUser);
+        String accessToken = JwtTokenUtils.generateAccessToken(user.getUsername(), expiredTime, key);
+        return ApiResponse.of(HttpStatus.OK.toString(), UserLoginResponse.from(user, accessToken));
     }
 
 }

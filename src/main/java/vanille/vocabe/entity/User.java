@@ -30,7 +30,6 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
     private String password;
 
     private boolean verified;
@@ -64,6 +63,10 @@ public class User {
         this.password = password;
         this.verified = verified;
         this.role = UserRole.USER;
+    }
+
+    public static User ofSocial(String username, String email) {
+        return new User(username, email, null, true);
     }
 
     public static User of(String username, String email, String password) {

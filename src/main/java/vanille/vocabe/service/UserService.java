@@ -15,4 +15,9 @@ public interface UserService {
     User findUserByEmail(String email);
 
     boolean changeUserPassword(UserDTO.PasswordForm form);
+
+    User googleLogin(UserDTO.GoogleUser user);
+
+    @Transactional
+    User googleSignup(UserDTO.GoogleUser googleUser);
 }

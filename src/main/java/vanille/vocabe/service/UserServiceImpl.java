@@ -2,6 +2,7 @@ package vanille.vocabe.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,6 +77,9 @@ public class UserServiceImpl implements UserService{
         }
 
         String password = user.getPassword();
+        if(password == null || password.isBlank()) {
+            throw new AuthenticationCredentialsNotFoundException(ErrorCode.SOCIAL_LOGIN_ERROR.getMessage());
+        }
         if (!passwordEncoder.matches(form.getPassword(), password)) {
             throw new InvalidPasswordException(ErrorCode.INVALID_PASSWORD);
         }
@@ -113,6 +117,33 @@ public class UserServiceImpl implements UserService{
         }
 
         return false;
+    }
+
+    @Override
+    public User googleLogin(UserDTO.GoogleUser googleUser) {
+        User user = userRepository.findByEmail(googleUser.getEmail()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
+        if(user.getPassword() != null && !user.getPassword().isBlank()) {
+           throw new AuthenticationCredentialsNotFoundException(ErrorCode.SOCIAL_NOT_CONNECT.getMessage());
+        }
+
+        return user;
+    }
+
+    @Transactional
+    @Override
+    public User googleSignup(UserDTO.GoogleUser googleUser) {
+        Optional<User> byEmail = userRepository.findByEmail(googleUser.getEmail());
+        Optional<User> byUsername = userRepository.findByUsername(googleUser.getName());
+        if(byEmail.isPresent()) {
+            throw new DuplicatedEntityException(ErrorCode.DUPLICATED_USER);
+        }
+
+        if(byUsername.isPresent()) {
+            throw new DuplicatedEntityException(ErrorCode.DUPLICATED_USERNAME);
+        }
+
+        User user = User.ofSocial(googleUser.getName(), googleUser.getEmail());
+        return userRepository.save(user);
     }
 
 

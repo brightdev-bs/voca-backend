@@ -8,6 +8,7 @@ import vanille.vocabe.entity.User;
 import vanille.vocabe.entity.Vocabulary;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -102,6 +103,18 @@ public class UserDTO {
             this.password = password;
             this.password2 = password2;
             this.token = token;
+        }
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class GoogleUser {
+        private String name;
+        private String email;
+
+        public GoogleUser(String name, String email) {
+            this.name = name;
+            this.email = email;
         }
     }
 }

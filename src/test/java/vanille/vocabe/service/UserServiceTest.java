@@ -8,9 +8,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import vanille.vocabe.entity.EmailToken;
 import vanille.vocabe.entity.User;
+import vanille.vocabe.entity.UserRole;
 import vanille.vocabe.fixture.EmailTokenFixture;
 import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.global.config.TestConfig;
@@ -30,6 +32,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
 import static vanille.vocabe.constants.TestConstants.TEST_EMAIL;
 
 @Import(TestConfig.class)
@@ -172,6 +175,18 @@ class UserServiceTest {
         Assertions.assertThrows(InvalidPasswordException.class, () -> userService.login(loginForm));
     }
 
+    @DisplayName("[실패] 로그인 - 소셜로그인 회원")
+    @Test
+    void loginUserFailWithDifferentPlatform() {
+        given(userRepository.findByEmail(any(String.class))).willReturn(Optional.of(User.ofSocial("test", "test@gmail.com")));
+        UserDTO.LoginForm loginForm = UserDTO.LoginForm.builder()
+                .email("vanille@gmail.com")
+                .password("1kdasdfwcv")
+                .build();
+        assertThrows(AuthenticationCredentialsNotFoundException.class, () -> userService.login(loginForm));
+    }
+
+
     @DisplayName("[성공] 이메일 - 사용자 찾기")
     @Test
     void findUserByEmail() {
@@ -229,6 +244,66 @@ class UserServiceTest {
         emailToken = EmailTokenFixture.createEmailToken();
         given(emailTokenService.findByToken(any(String.class))).willReturn(Optional.of(emailToken));
         assertFalse(userService.changeUserPassword(form));
+    }
+
+    @DisplayName("[성공] 구글 회원가입 - 소셜 로그인 회원은 이메일 인증 없이 인증된 채로 가입된다.")
+    @Test
+    void googleSignup() {
+        UserDTO.GoogleUser googleUser = UserFixture.getGoogleUser();
+        given(userRepository.findByEmail(any(String.class))).willReturn(Optional.empty());
+        given(userRepository.findByUsername(any(String.class))).willReturn(Optional.empty());
+        given(userRepository.save(any(User.class))).willReturn(User.ofSocial(googleUser.getName(), googleUser.getEmail()));
+
+        User user = userService.googleSignup(googleUser);
+        then(userRepository).should().save(any(User.class));
+        assertTrue(user.isVerified());
+        assertNull(user.getPassword());
+        assertEquals(UserRole.USER, user.getRole());
+    }
+
+    @DisplayName("[실패] 구글 회원가입 - 일반 회원가입으로 이전에 이메일로 가입한 경우. ")
+    @Test
+    void googleSignupFailWithoutConnection() {
+        UserDTO.GoogleUser googleUser = UserFixture.getGoogleUser();
+        given(userRepository.findByEmail(any(String.class))).willReturn(Optional.of(mock(User.class)));
+
+        assertThrows(DuplicatedEntityException.class, () -> userService.googleSignup(googleUser));
+    }
+
+    @DisplayName("[실패] 구글 회원가입 - 같은 유저이름이 존재하는 경우")
+    @Test
+    void googleSignupFailWithSameUsername() {
+        UserDTO.GoogleUser googleUser = UserFixture.getGoogleUser();
+        given(userRepository.findByEmail(any(String.class))).willReturn(Optional.empty());
+        given(userRepository.findByUsername(any(String.class))).willReturn(Optional.of(mock(User.class)));
+
+        assertThrows(DuplicatedEntityException.class, () -> userService.googleSignup(googleUser));
+    }
+
+    @DisplayName("[성공] 구글 로그인")
+    @Test
+    void googleLogin() {
+        UserDTO.GoogleUser googleUser = UserFixture.getGoogleUser();
+        given(userRepository.findByEmail(any(String.class))).willReturn(Optional.of(User.ofSocial(googleUser.getName(), googleUser.getEmail())));
+        User user = userService.googleLogin(googleUser);
+        assertEquals("test", user.getUsername());
+        assertEquals("test@gmail.com", user.getEmail());
+    }
+
+    @DisplayName("[실패] 구글 로그인 - 일반 회원가입 유저")
+    @Test
+    void googleLoginFailWithNormalSignup() {
+        UserDTO.GoogleUser googleUser = UserFixture.getGoogleUser();
+        given(userRepository.findByEmail(any(String.class))).willReturn(Optional.of(User.of(googleUser.getName(), googleUser.getEmail(), "temporaryPassword1")));
+        assertThrows(AuthenticationCredentialsNotFoundException.class, () -> userService.googleLogin(googleUser));
+    }
+
+    @DisplayName("[실패] 구글 로그인 - 회원가입하지 않은 경우")
+    @Test
+    void googleLoginFailWithNotFound() {
+        UserDTO.GoogleUser googleUser = UserFixture.getGoogleUser();
+        given(userRepository.findByEmail(any(String.class))).willReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> userService.googleLogin(googleUser));
     }
 
 }
