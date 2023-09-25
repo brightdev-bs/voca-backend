@@ -49,12 +49,6 @@ management:
     web:
       exposure:
         include=health,metrics:
-google:
-  client-id: 178996359638-7l7a0t9l4slvtdvao0amrtf7tg47mphh.apps.googleusercontent.com
-  client-secret: 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
-  scope:
-    - email
-    - profile
 ---
 
 #spring:

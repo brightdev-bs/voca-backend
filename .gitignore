@@ -286,6 +286,7 @@ gradle-app.setting
 
 application.yml
 application-prod.yml
+application-oauth.yml
 db
 
 docker-compose-prod.yml
