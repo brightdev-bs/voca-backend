@@ -42,7 +42,7 @@ public class VocabularyServiceImpl implements VocabularyService {
     @Override
     public VocaDTO.Detail saveVocabulary(VocaDTO.SaveForm form) {
         User user = form.getUser();
-        Vocabulary voca = Vocabulary.of(form.getName(), form.getDescription(), form.isPublic());
+        Vocabulary voca = Vocabulary.of(form.getName(), form.getDescription(), form.isPublicFlag());
         vocabularyRepository.save(voca);
 
         UserVocabulary userVocabulary = UserVocabulary.of(user, voca);

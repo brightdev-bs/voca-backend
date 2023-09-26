@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -19,6 +21,7 @@ import vanille.vocabe.repository.UserVocabularyRepository;
 import vanille.vocabe.repository.VocabularyRepository;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,16 +41,23 @@ class VocabularyServiceImplTest {
 
 
     @DisplayName("[성공] 단어장 생성")
-    @Test
-    void saveVoca() {
-        VocaDTO.SaveForm saveForm = new VocaDTO.SaveForm("테스트 단어장", null, true);
+    @ParameterizedTest
+    @MethodSource("saveForm")
+    void saveVoca(VocaDTO.SaveForm saveForm) {
         User user = UserFixture.getVerifiedUser();
         saveForm.setUser(user);
 
-        vocabularyService.saveVocabulary(saveForm);
+        VocaDTO.Detail detail = vocabularyService.saveVocabulary(saveForm);
 
         then(vocabularyRepository).should().save(any(Vocabulary.class));
         then(userVocabularyRepository).should().save(any(UserVocabulary.class));
+        Assertions.assertEquals(saveForm.isPublicFlag(), detail.isPublic());
+    }
+    static Stream<VocaDTO.SaveForm> saveForm() {
+        return Stream.of(
+                new VocaDTO.SaveForm("테스트 단어장 1", null, true),
+                new VocaDTO.SaveForm("테스트 단어장 2", null, false)
+        );
     }
 
     @DisplayName("[성공] 단어장 리스트 검색")

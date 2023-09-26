@@ -15,14 +15,14 @@ public class VocaDTO {
         private String name;
         private String description;
         private User user;
-        private boolean isPublic;
+        private boolean publicFlag;
 
         public SaveForm() {}
 
         public SaveForm(String name, String description, boolean isPublic) {
             this.name = name;
             this.description = description;
-            this.isPublic = isPublic;
+            this.publicFlag = isPublic;
         }
     }
 
@@ -44,23 +44,26 @@ public class VocaDTO {
         private String description;
         private String username;
         private String createdAt;
+        private boolean isPublic;
 
         @Builder
-        public Detail(Long id, String name, String description, String username, String createdAt) {
+        public Detail(Long id, String name, String description, String username, String createdAt, boolean isPublic) {
             this.id = id;
             this.name = name;
             this.description = description;
             this.username = username;
             this.createdAt = createdAt;
+            this.isPublic = isPublic;
         }
 
         public static Detail from(User user, Vocabulary voca) {
-            return VocaDTO.Detail.builder()
+            return Detail.builder()
                     .id(voca.getId())
                     .name(voca.getName())
                     .description(voca.getDescription())
                     .username(user.getUsername())
                     .createdAt(voca.getCreatedAt() == null ? null : voca.getCreatedAt().toString())
+                    .isPublic(voca.isPublic())
                     .build();
         }
     }
