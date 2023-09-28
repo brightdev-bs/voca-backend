@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vanille.vocabe.entity.User;
@@ -35,7 +36,7 @@ public class WordServiceImpl implements WordService {
     @Override
     public Page<Word> findWordsWithDate(final Pageable pageable, final WordDTO.Request request) {
         LocalDate date = LocalDate.parse(request.getDate());
-        return wordRepository.findByUserAndCreatedAt(pageable, request.getUser(), date);
+        return wordRepository.findByUserAndCreatedAtAndDeleted(pageable, request.getUser(), date, false);
     }
 
     @Override
@@ -105,5 +106,15 @@ public class WordServiceImpl implements WordService {
         }
 
         return UserDTO.UserDetailWithStudyRecords.from(user, studiedDates, vocaList);
+    }
+
+    @Transactional
+    @Override
+    public void deleteWord(Long id, User user) throws IllegalAccessException {
+        Word word = wordRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_WORD));
+        if (!word.getCreatedBy().equals(user.getId())) {
+            throw new IllegalAccessException(ErrorCode.NO_AUTHORITY.getMessage());
+        }
+        wordRepository.delete(word);
     }
 }

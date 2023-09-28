@@ -21,4 +21,7 @@ public interface WordService {
     Word changeCheck(Long id);
 
     UserDTO.UserDetailWithStudyRecords findPriorStudyRecords(User user);
+
+    @Transactional
+    void deleteWord(Long id, User user) throws IllegalAccessException;
 }

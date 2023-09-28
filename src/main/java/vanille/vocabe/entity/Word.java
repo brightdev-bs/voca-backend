@@ -2,6 +2,7 @@ package vanille.vocabe.entity;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.hibernate.annotations.SQLDelete;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import vanille.vocabe.global.util.DateFormatter;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @ToString(callSuper = true)
+@SQLDelete(sql = "UPDATE word SET deleted = true WHERE id = ?")
 @EntityListeners(AuditingEntityListener.class)
 @Entity
 public class Word {
@@ -40,6 +42,9 @@ public class Word {
     @Column(updatable = false)
     private Long createdBy;
 
+    @Column(columnDefinition="BOOLEAN DEFAULT false")
+    private boolean deleted = Boolean.FALSE;
+
     protected Word() {}
 
     protected Word(String word, String definition, String note, User user, Vocabulary vocabulary, String date) {
@@ -49,6 +54,7 @@ public class Word {
         this.user = user;
         this.vocabulary = vocabulary;
         this.createdAt = LocalDate.parse(date);
+        this.deleted = Boolean.FALSE;
     }
 
     public static Word of(String word, String definition, String note, User user, Vocabulary vocabulary, String date) {

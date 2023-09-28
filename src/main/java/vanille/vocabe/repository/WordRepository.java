@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface WordRepository extends JpaRepository<Word, Long> {
 
-    Page<Word> findByUserAndCreatedAt(Pageable pageable, User user, LocalDate createdAt);
+    Page<Word> findByUserAndCreatedAtAndDeleted(Pageable pageable, User user, LocalDate createdAt, Boolean Deleted);
     Page<Word> findALLByVocabularyId(Pageable pageable, Long vocaId);
 
 }

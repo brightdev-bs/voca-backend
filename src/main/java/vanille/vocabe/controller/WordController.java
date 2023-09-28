@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.entity.Word;
+import vanille.vocabe.global.constants.Constants;
 import vanille.vocabe.global.response.common.ApiResponse;
 import vanille.vocabe.payload.WordDTO;
 import vanille.vocabe.service.WordService;
@@ -53,5 +54,11 @@ public class WordController {
     public ApiResponse changeCheck(@PathVariable Long id) {
         Word word = wordService.changeCheck(id);
         return ApiResponse.of(HttpStatus.OK.toString(), WordDTO.WordDetail.from(word));
+    }
+
+    @DeleteMapping("/words/{id}")
+    public ApiResponse deleteWord(@PathVariable Long id, @AuthenticationPrincipal User user) throws IllegalAccessException {
+        wordService.deleteWord(id, user);
+        return ApiResponse.of(HttpStatus.OK.toString(), Constants.SUCCESS);
     }
 }

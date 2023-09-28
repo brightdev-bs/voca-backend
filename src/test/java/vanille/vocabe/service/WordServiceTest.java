@@ -33,6 +33,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -131,5 +132,28 @@ class WordServiceTest {
 
         UserDTO.UserDetailWithStudyRecords priorStudyRecords = wordService.findPriorStudyRecords(user);
         Assertions.assertEquals(5, priorStudyRecords.getDates().size());
+    }
+
+    @DisplayName("[성공] 단어를 삭제한다.")
+    @Test
+    void deleteWord() throws IllegalAccessException {
+        Word word = mock(Word.class);
+        User user = mock(User.class);
+        given(wordRepository.findById(any(Long.class))).willReturn(Optional.of(word));
+        given(word.getCreatedBy()).willReturn(1L);
+        given(user.getId()).willReturn(1L);
+        wordService.deleteWord(any(Long.class), user);
+        then(wordRepository).should().delete(word);
+    }
+
+    @DisplayName("[실패] 단어를 만든 사람이 아닐 때 삭제할 수 없다.")
+    @Test
+    void deleteWordFail() throws IllegalAccessException {
+        Word word = mock(Word.class);
+        User user = mock(User.class);
+        given(wordRepository.findById(any(Long.class))).willReturn(Optional.of(word));
+        given(word.getCreatedBy()).willReturn(1L);
+        given(user.getId()).willReturn(2L);
+        Assertions.assertThrows(IllegalAccessException.class, () -> wordService.deleteWord(any(Long.class), user));
     }
 }
