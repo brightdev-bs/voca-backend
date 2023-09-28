@@ -5,6 +5,7 @@ import lombok.ToString;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import vanille.vocabe.global.util.DateFormatter;
+import vanille.vocabe.payload.WordDTO;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -56,5 +57,13 @@ public class Word {
 
     public void changeCheckStatus() {
         this.checked = !this.checked;
+    }
+
+    public void update(WordDTO.EditWord form, Vocabulary vocabulary) {
+        this.word = form.getWord();
+        this.definition = form.getDefinition();
+        this.note = form.getNote();
+        this.vocabulary = vocabulary;
+        this.createdAt = LocalDate.parse(form.getDate());
     }
 }

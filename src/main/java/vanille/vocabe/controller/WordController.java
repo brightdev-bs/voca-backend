@@ -42,6 +42,13 @@ public class WordController {
         return ApiResponse.of(HttpStatus.OK.toString(), WordDTO.WordDetail.from(word));
     }
 
+    @PutMapping("/words/{id}")
+    public ApiResponse changeWord(@PathVariable Long id, @RequestBody @Valid WordDTO.EditWord request, @AuthenticationPrincipal User user) throws IllegalAccessException {
+        request.setUser(user);
+        Word word = wordService.updateWord(request);
+        return ApiResponse.of(HttpStatus.OK.toString(), WordDTO.WordDetail.from(word));
+    }
+
     @PatchMapping("/words/{id}")
     public ApiResponse changeCheck(@PathVariable Long id) {
         Word word = wordService.changeCheck(id);

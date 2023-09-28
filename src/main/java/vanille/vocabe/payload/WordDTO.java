@@ -30,14 +30,18 @@ public class WordDTO {
         private String word;
         private String definition;
         private String note;
+        private Long vocabularyId;
         private boolean checked;
 
         public static WordDetail from(Word word) {
+            Long vocaId = null;
+            if(word.getVocabulary() != null) vocaId = word.getVocabulary().getId();
             return WordDetail.builder()
                     .id(word.getId())
                     .word(word.getWord())
                     .definition(word.getDefinition())
                     .note(word.getNote())
+                    .vocabularyId(vocaId)
                     .checked(word.isChecked())
                     .build();
         }
@@ -69,6 +73,23 @@ public class WordDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class NewWord {
+        @NotBlank
+        private String word;
+        @NotBlank
+        private String definition;
+        private String note;
+        private User user;
+        private Long vocaId;
+        @JsonFormat(pattern = "yyyy-MM-dd")
+        private String date;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class EditWord {
+        private Long id;
         @NotBlank
         private String word;
         @NotBlank

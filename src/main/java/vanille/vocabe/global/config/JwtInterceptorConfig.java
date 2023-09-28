@@ -21,13 +21,8 @@ public class JwtInterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(bearerAuthInterceptor)
-                .addPathPatterns("/api/v1/words")
+                .addPathPatterns("/api/v1/words/**")
                 .addPathPatterns("/api/v1/my-page")
-                .addPathPatterns("/api/v1/voca/**")
-                .addPathPatterns("/api/v1/community/form")
-                .addPathPatterns("/api/v1/community/{id}/posts/form")
-                .addPathPatterns("/api/v1/posts/{id}/comments/form")
-                .addPathPatterns("/api/v1/community/{id}/topic")
-                .addPathPatterns("/api/v1/community/{id}/members/**");
+                .addPathPatterns("/api/v1/voca/**");
     }
 }
