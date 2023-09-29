@@ -14,6 +14,7 @@ import vanille.vocabe.global.exception.NotFoundException;
 import vanille.vocabe.payload.VocaDTO;
 import vanille.vocabe.payload.WordDTO;
 import vanille.vocabe.repository.UserVocabularyRepository;
+import vanille.vocabe.repository.VocabularyQuerydslRepository;
 import vanille.vocabe.repository.VocabularyRepository;
 import vanille.vocabe.repository.WordRepository;
 
@@ -27,8 +28,15 @@ import java.util.stream.Collectors;
 public class VocabularyServiceImpl implements VocabularyService {
 
     private final VocabularyRepository vocabularyRepository;
+    private final VocabularyQuerydslRepository vocabularyQuerydslRepository;
     private final UserVocabularyRepository userVocabularyRepository;
     private final WordRepository wordRepository;
+
+    @Override
+    public List<VocaDTO.PopularVocabulary> findPublicVocabulariesForHome() {
+        List<Vocabulary> vocabularies = vocabularyQuerydslRepository.findPublicVocabulariesLimitFive();
+        return vocabularies.stream().map(VocaDTO.PopularVocabulary::from).collect(Collectors.toList());
+    }
 
     @Override
     public List<VocaDTO.Response> findAllVocabularies(User user) {

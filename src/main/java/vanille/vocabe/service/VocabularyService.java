@@ -9,6 +9,9 @@ import vanille.vocabe.payload.WordDTO;
 import java.util.List;
 
 public interface VocabularyService {
+
+    List<VocaDTO.PopularVocabulary> findPublicVocabulariesForHome();
+
     List<VocaDTO.Response> findAllVocabularies(User user);
 
     @Transactional

@@ -69,6 +69,35 @@ public class VocaDTO {
     }
 
     @Data
+    public static class PopularVocabulary {
+        private Long id;
+        private String name;
+        private String description;
+        private int liked;
+        private Long createdBy;
+
+        @Builder
+        public PopularVocabulary(Long id, String name, String description, Long createdBy, int liked) {
+            this.id = id;
+            this.name = name;
+            this.description = description;
+            this.liked = liked;
+            this.createdBy = createdBy;
+        }
+
+        public static PopularVocabulary from(Vocabulary voca) {
+            return PopularVocabulary.builder()
+                    .id(voca.getId())
+                    .name(voca.getName())
+                    .description(voca.getDescription())
+                    .liked(voca.getLiked())
+                    .createdBy(voca.getCreatedBy())
+                    .build();
+
+        }
+    }
+
+    @Data
     public static class Response {
         private Long id;
         private String name;

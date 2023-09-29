@@ -1,16 +1,16 @@
 package vanille.vocabe.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.aspectj.lang.annotation.Before;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,31 +21,21 @@ import vanille.vocabe.entity.EmailToken;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.fixture.EmailTokenFixture;
 import vanille.vocabe.fixture.UserFixture;
-import vanille.vocabe.global.Constants;
-import vanille.vocabe.global.config.OpenEntityManagerConfig;
-import vanille.vocabe.global.config.SecurityConfig;
-import vanille.vocabe.global.config.TestConfig;
 import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.global.exception.NotFoundException;
 import vanille.vocabe.payload.UserDTO;
 import vanille.vocabe.repository.EmailTokenRepository;
 import vanille.vocabe.repository.UserRepository;
-import vanille.vocabe.service.UserService;
-import vanille.vocabe.service.email.EmailService;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static vanille.vocabe.constants.TestConstants.TEST_EMAIL;
 import static vanille.vocabe.global.Constants.UNVERIFIED_USER_EMAIL;
 import static vanille.vocabe.global.Constants.VERIFIED_USER_EMAIL;
 

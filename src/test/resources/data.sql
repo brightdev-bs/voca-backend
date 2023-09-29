@@ -12,3 +12,11 @@ VALUES
     (5, false, '2023-09-07', 1, '양파', 'onion is delicious', 'onion', 1, null, true);
 
 
+INSERT INTO vocabulary(id, created_at, created_By, description, is_public, liked, name)
+VALUES
+    (1, '2023-09-07', 1, 'Test Vocabulary', 1, 30, 'First Favorite'),
+    (2, '2023-09-07', 1, 'Test Vocabulary', 1, 28, 'Second Favorite'),
+    (3, '2023-09-07', 1, 'Test Vocabulary', 1, 26, 'Third Favorite'),
+    (4, '2023-09-07', 1, 'Test Vocabulary', 1, 25, 'Fourth Favorite'),
+    (5, '2023-09-07', 1, 'Test Vocabulary', 1, 29, 'Mix Favorite'),
+    (6, '2023-09-07', 1, 'Test Vocabulary', 1, 10, 'Dummy Vocabulary');
