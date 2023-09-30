@@ -13,9 +13,11 @@ public class UserWord extends BaseEntity {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
+    @ToString.Exclude
     @JoinColumn(name = "vocabulary_id")
     private Vocabulary vocabulary;
     @ManyToOne
+    @ToString.Exclude
     @JoinColumn(name = "user_id")
     private User user;
     @OneToOne
