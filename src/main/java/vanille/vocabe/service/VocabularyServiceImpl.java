@@ -1,6 +1,7 @@
 package vanille.vocabe.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 
+@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
@@ -75,12 +77,14 @@ public class VocabularyServiceImpl implements VocabularyService {
     @Override
     public void addPublicVocabulary(User user, Long id) {
         Vocabulary vocabulary = vocabularyRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_VOCABULARY));
-
+        log.info("Vocabulary = {}", vocabulary);
         Optional<UserVocabulary> optionalUserVoca = userVocabularyRepository.findUserVocabularyByUserAndVocabulary(user, vocabulary);
         if(optionalUserVoca.isPresent()) {
             throw new DuplicatedEntityException(ErrorCode.DUPLICATED_VOCABULARY);
         }
         userVocabularyRepository.save(UserVocabulary.of(user, vocabulary));
+        log.info("userVocabulary저장");
         vocabulary.increaseLiked();
+        log.info("좋아요 증가");
     }
 }

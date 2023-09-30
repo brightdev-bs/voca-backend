@@ -18,5 +18,6 @@ public interface VocabularyService {
 
     VocaDTO.VocaWordResponse findAllWordsByVocabularies(Pageable pageable, Long id) throws IllegalAccessException;
 
+    @Transactional
     void addPublicVocabulary(User user, Long id);
 }
