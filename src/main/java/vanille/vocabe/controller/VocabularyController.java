@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import vanille.vocabe.entity.User;
+import vanille.vocabe.entity.UserVocabulary;
+import vanille.vocabe.global.constants.Constants;
 import vanille.vocabe.global.response.common.ApiResponse;
 import vanille.vocabe.payload.VocaDTO;
 import vanille.vocabe.payload.WordDTO;
@@ -43,6 +45,12 @@ public class VocabularyController {
     ) throws IllegalAccessException {
         VocaDTO.VocaWordResponse response = vocabularyService.findAllWordsByVocabularies(pageable, id);
         return ApiResponse.of(HttpStatus.OK.toString(), response);
+    }
+
+    @PostMapping("/v1/voca/{id}/liked")
+    public ApiResponse addLike(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        vocabularyService.addPublicVocabulary(user, id);
+        return ApiResponse.of(HttpStatus.OK.toString(), Constants.SUCCESS);
     }
 
 }

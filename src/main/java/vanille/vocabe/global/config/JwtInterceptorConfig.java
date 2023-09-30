@@ -23,6 +23,7 @@ public class JwtInterceptorConfig implements WebMvcConfigurer {
         registry.addInterceptor(bearerAuthInterceptor)
                 .addPathPatterns("/api/v1/words/**")
                 .addPathPatterns("/api/v1/my-page")
-                .addPathPatterns("/api/v1/voca");
+                .addPathPatterns("/api/v1/voca")
+                .addPathPatterns("/api/v1/voca/*/liked");
     }
 }

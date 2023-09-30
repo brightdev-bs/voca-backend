@@ -8,5 +8,5 @@ import vanille.vocabe.entity.Vocabulary;
 import java.util.Optional;
 
 public interface UserVocabularyRepository extends JpaRepository<UserVocabulary, Long> {
-
+    Optional<UserVocabulary> findUserVocabularyByUserAndVocabulary(User user, Vocabulary voca);
 }

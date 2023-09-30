@@ -10,6 +10,7 @@ import vanille.vocabe.entity.UserVocabulary;
 import vanille.vocabe.entity.Vocabulary;
 import vanille.vocabe.entity.Word;
 import vanille.vocabe.global.constants.ErrorCode;
+import vanille.vocabe.global.exception.DuplicatedEntityException;
 import vanille.vocabe.global.exception.NotFoundException;
 import vanille.vocabe.payload.VocaDTO;
 import vanille.vocabe.payload.WordDTO;
@@ -19,6 +20,7 @@ import vanille.vocabe.repository.VocabularyRepository;
 import vanille.vocabe.repository.WordRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -66,5 +68,19 @@ public class VocabularyServiceImpl implements VocabularyService {
         Page<Word> words = wordRepository.findALLByVocabularyId(pageable, vocabulary.getId());
         List<WordDTO.WordDetail> wordList = words.stream().map(w -> WordDTO.WordDetail.from(w)).collect(Collectors.toList());
         return VocaDTO.VocaWordResponse.of(wordList, words.getTotalPages());
+    }
+
+    // Todo : 테스트 작성 해야 함.
+    @Transactional
+    @Override
+    public void addPublicVocabulary(User user, Long id) {
+        Vocabulary vocabulary = vocabularyRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_VOCABULARY));
+
+        Optional<UserVocabulary> optionalUserVoca = userVocabularyRepository.findUserVocabularyByUserAndVocabulary(user, vocabulary);
+        if(optionalUserVoca.isPresent()) {
+            throw new DuplicatedEntityException(ErrorCode.DUPLICATED_VOCABULARY);
+        }
+        userVocabularyRepository.save(UserVocabulary.of(user, vocabulary));
+        vocabulary.increaseLiked();
     }
 }

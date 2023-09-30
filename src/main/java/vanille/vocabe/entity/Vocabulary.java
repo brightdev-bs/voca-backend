@@ -38,8 +38,10 @@ public class Vocabulary extends BaseEntity {
         return new Vocabulary(name, description, isPublic);
     }
 
-    public void setIdForTest(Long id) {
-        this.id = id;
+    public void increaseLiked() {
+        this.liked = this.liked + 1;
     }
+
+
 
 }
