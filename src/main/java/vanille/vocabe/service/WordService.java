@@ -18,7 +18,8 @@ public interface WordService {
     @Transactional
     Word updateWord(WordDTO.EditWord request) throws IllegalAccessException;
 
-    Word changeCheck(Long id);
+
+    Word changeCheck(Long id, User user);
 
     UserDTO.UserDetailWithStudyRecords findPriorStudyRecords(User user);
 

@@ -1,11 +1,15 @@
 package vanille.vocabe.payload;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.entity.Vocabulary;
 
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.List;
 
 public class VocaDTO {
 
@@ -116,6 +120,23 @@ public class VocaDTO {
                     .name(voca.getName())
                     .description(voca.getDescription())
                     .build();
+        }
+
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class VocaWordResponse {
+        private List<WordDTO.WordDetail> words = new ArrayList<>();
+        private int totalPage;
+
+        public VocaWordResponse(List<WordDTO.WordDetail> words, int totalPage) {
+            this.words = words;
+            this.totalPage = totalPage;
+        }
+
+        public static VocaWordResponse of(List<WordDTO.WordDetail> list, int totalPage) {
+            return new VocaDTO.VocaWordResponse(list, totalPage);
         }
 
     }

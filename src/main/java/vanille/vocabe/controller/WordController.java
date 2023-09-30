@@ -7,12 +7,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.entity.Word;
 import vanille.vocabe.global.constants.Constants;
 import vanille.vocabe.global.response.common.ApiResponse;
 import vanille.vocabe.payload.WordDTO;
+import vanille.vocabe.service.UserWordService;
 import vanille.vocabe.service.WordService;
 
 import javax.validation.Valid;
@@ -33,7 +35,7 @@ public class WordController {
             @AuthenticationPrincipal User user) {
         request.setUser(user);
         Page<Word> words = wordService.findWordsWithDate(pageable, request);
-        return ApiResponse.of(HttpStatus.OK.toString(), WordDTO.WordsResponse.from(user, words));
+        return ApiResponse.of(HttpStatus.OK.toString(), WordDTO.WordsResponse.from(words));
     }
 
     @PostMapping("/words")
@@ -51,8 +53,8 @@ public class WordController {
     }
 
     @PatchMapping("/words/{id}")
-    public ApiResponse changeCheck(@PathVariable Long id) {
-        Word word = wordService.changeCheck(id);
+    public ApiResponse changeCheck(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        Word word = wordService.changeCheck(id, user);
         return ApiResponse.of(HttpStatus.OK.toString(), WordDTO.WordDetail.from(word));
     }
 

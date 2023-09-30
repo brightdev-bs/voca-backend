@@ -11,6 +11,7 @@ import vanille.vocabe.global.response.common.ApiResponse;
 import vanille.vocabe.payload.VocaDTO;
 import vanille.vocabe.payload.WordDTO;
 import vanille.vocabe.service.VocabularyService;
+import vanille.vocabe.service.WordService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -35,14 +36,13 @@ public class VocabularyController {
         return ApiResponse.of(HttpStatus.OK.toString(), allVocabularies);
     }
 
-    @GetMapping("/v1/voca/words")
+    @GetMapping("/v1/voca/{id}")
     public ApiResponse getWordsByVoca(
             @PageableDefault Pageable pageable,
-            @Valid VocaDTO.SearchForm request,
-            @AuthenticationPrincipal User user
+            @PathVariable Long id
     ) throws IllegalAccessException {
-        request.setUser(user);
-        WordDTO.WordsResponse response = vocabularyService.findAllWordsByVocabularies(pageable, request);
+        VocaDTO.VocaWordResponse response = vocabularyService.findAllWordsByVocabularies(pageable, id);
         return ApiResponse.of(HttpStatus.OK.toString(), response);
     }
+
 }

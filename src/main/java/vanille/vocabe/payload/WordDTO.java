@@ -31,7 +31,6 @@ public class WordDTO {
         private String definition;
         private String note;
         private Long vocabularyId;
-        private boolean checked;
 
         public static WordDetail from(Word word) {
             Long vocaId = null;
@@ -42,7 +41,6 @@ public class WordDTO {
                     .definition(word.getDefinition())
                     .note(word.getNote())
                     .vocabularyId(vocaId)
-                    .checked(word.isChecked())
                     .build();
         }
     }
@@ -56,15 +54,14 @@ public class WordDTO {
 
         protected WordsResponse() {}
 
-        private WordsResponse(UserDTO.UserDetail user, List<WordDetail> words, int totalPage) {
-            this.user = user;
+        private WordsResponse(List<WordDetail> words, int totalPage) {
             this.words = words;
             this.totalPage = totalPage;
         }
 
-        public static WordsResponse from(User user, Page<Word> words) {
+        public static WordsResponse from(Page<Word> words) {
             List<WordDetail> detailInfos = words.stream().map(WordDetail::from).collect(Collectors.toList());
-            return new WordsResponse(UserDTO.UserDetail.from(user), detailInfos, words.getTotalPages());
+            return new WordsResponse(detailInfos, words.getTotalPages());
         }
     }
 

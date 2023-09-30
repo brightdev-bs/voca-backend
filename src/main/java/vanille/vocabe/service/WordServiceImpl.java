@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vanille.vocabe.entity.User;
@@ -25,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
 public class WordServiceImpl implements WordService {
@@ -32,13 +32,14 @@ public class WordServiceImpl implements WordService {
     private final WordRepository wordRepository;
     private final WordQuerydslRepository wordQuerydslRepository;
     private final VocabularyRepository vocabularyRepository;
-
+    private final UserWordService userWordService;
     @Override
     public Page<Word> findWordsWithDate(final Pageable pageable, final WordDTO.Request request) {
         LocalDate date = LocalDate.parse(request.getDate());
         return wordRepository.findByUserAndCreatedAtAndDeleted(pageable, request.getUser(), date, false);
     }
 
+    @Transactional
     @Override
     public Word saveWord(WordDTO.NewWord request) throws IllegalAccessException {
 
@@ -52,6 +53,7 @@ public class WordServiceImpl implements WordService {
         checkEditorableUser(vocabulary, user);
 
         Word word = Word.of(request.getWord(), request.getDefinition(), request.getNote(), user, vocabulary, request.getDate());
+        userWordService.save(user, vocabulary, word);
         return wordRepository.save(word);
     }
 
@@ -81,11 +83,12 @@ public class WordServiceImpl implements WordService {
         }
     }
 
+    @Transactional
     @Override
-    public Word changeCheck(Long id) {
+    public Word changeCheck(Long id, User user) {
         Word word = wordRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_WORD));
-        word.changeCheckStatus();
         wordRepository.save(word);
+        userWordService.createUserWordAndCheckStudied(user, word);
         return word;
     }
 

@@ -60,17 +60,11 @@ public class VocabularyServiceImpl implements VocabularyService {
     }
 
     @Override
-    public WordDTO.WordsResponse findAllWordsByVocabularies(Pageable pageable, VocaDTO.SearchForm form) throws IllegalAccessException {
-        Vocabulary vocabulary = vocabularyRepository.findById(form.getVoca())
+    public VocaDTO.VocaWordResponse findAllWordsByVocabularies(Pageable pageable, Long id) throws IllegalAccessException {
+        Vocabulary vocabulary = vocabularyRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_VOCABULARY));
-
-        User user = form.getUser();
-        if(!vocabulary.getCreatedBy().equals(user.getId())) {
-            throw new IllegalAccessException(ErrorCode.NO_AUTHORITY.getMessage());
-        }
-
         Page<Word> words = wordRepository.findALLByVocabularyId(pageable, vocabulary.getId());
-        return WordDTO.WordsResponse.from(user, words);
+        List<WordDTO.WordDetail> wordList = words.stream().map(w -> WordDTO.WordDetail.from(w)).collect(Collectors.toList());
+        return VocaDTO.VocaWordResponse.of(wordList, words.getTotalPages());
     }
-
 }

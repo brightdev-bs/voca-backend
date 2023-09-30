@@ -25,7 +25,6 @@ public class Word {
     private String word;
     private String definition;
     private String note;
-    private boolean checked;
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
@@ -59,10 +58,6 @@ public class Word {
 
     public static Word of(String word, String definition, String note, User user, Vocabulary vocabulary, String date) {
         return new Word(word, definition, note, user, vocabulary, date);
-    }
-
-    public void changeCheckStatus() {
-        this.checked = !this.checked;
     }
 
     public void update(WordDTO.EditWord form, Vocabulary vocabulary) {
