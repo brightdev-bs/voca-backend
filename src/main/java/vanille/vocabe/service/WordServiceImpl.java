@@ -32,7 +32,6 @@ public class WordServiceImpl implements WordService {
     private final WordRepository wordRepository;
     private final WordQuerydslRepository wordQuerydslRepository;
     private final VocabularyRepository vocabularyRepository;
-    private final UserWordService userWordService;
     @Override
     public Page<Word> findWordsWithDate(final Pageable pageable, final WordDTO.Request request) {
         LocalDate date = LocalDate.parse(request.getDate());
@@ -53,7 +52,6 @@ public class WordServiceImpl implements WordService {
         checkEditorableUser(vocabulary, user);
 
         Word word = Word.of(request.getWord(), request.getDefinition(), request.getNote(), user, vocabulary, request.getDate());
-        userWordService.save(user, vocabulary, word);
         return wordRepository.save(word);
     }
 
@@ -85,10 +83,9 @@ public class WordServiceImpl implements WordService {
 
     @Transactional
     @Override
-    public Word changeCheck(Long id, User user) {
+    public Word changeStudiedFlag(Long id, User user) {
         Word word = wordRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_WORD));
-        wordRepository.save(word);
-        userWordService.createUserWordAndCheckStudied(user, word);
+        word.changeStudyFlag();
         return word;
     }
 

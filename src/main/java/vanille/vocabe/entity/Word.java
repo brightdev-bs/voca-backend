@@ -5,12 +5,10 @@ import lombok.ToString;
 import org.hibernate.annotations.SQLDelete;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import vanille.vocabe.global.util.DateFormatter;
 import vanille.vocabe.payload.WordDTO;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 @ToString(callSuper = true)
@@ -42,6 +40,8 @@ public class Word {
     private Long createdBy;
 
     @Column(columnDefinition="BOOLEAN DEFAULT false")
+    private boolean studied = Boolean.FALSE;
+    @Column(columnDefinition="BOOLEAN DEFAULT false")
     private boolean deleted = Boolean.FALSE;
 
     protected Word() {}
@@ -53,7 +53,6 @@ public class Word {
         this.user = user;
         this.vocabulary = vocabulary;
         this.createdAt = LocalDate.parse(date);
-        this.deleted = Boolean.FALSE;
     }
 
     public static Word of(String word, String definition, String note, User user, Vocabulary vocabulary, String date) {
@@ -66,5 +65,9 @@ public class Word {
         this.note = form.getNote();
         this.vocabulary = vocabulary;
         this.createdAt = LocalDate.parse(form.getDate());
+    }
+
+    public void changeStudyFlag() {
+        this.studied = !this.studied;
     }
 }

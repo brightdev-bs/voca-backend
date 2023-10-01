@@ -2,50 +2,40 @@ package vanille.vocabe.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpHeaders;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import vanille.vocabe.entity.User;
-import vanille.vocabe.entity.Vocabulary;
-import vanille.vocabe.entity.Word;
-import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.fixture.WordFixture;
 import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.global.exception.NotFoundException;
 import vanille.vocabe.payload.WordDTO;
 import vanille.vocabe.repository.UserRepository;
-import vanille.vocabe.repository.UserWordRepository;
 import vanille.vocabe.repository.WordRepository;
-import vanille.vocabe.service.UserWordService;
-import vanille.vocabe.service.UserWordServiceImpl;
-import vanille.vocabe.service.WordService;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static vanille.vocabe.constants.TestConstants.BEARER_TOKEN;
 import static vanille.vocabe.global.Constants.VERIFIED_USER_EMAIL;
-import static vanille.vocabe.global.Constants.VERIFIED_USER_ID;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @Transactional

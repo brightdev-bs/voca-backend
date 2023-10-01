@@ -8,8 +8,6 @@ import vanille.vocabe.entity.Word;
 import vanille.vocabe.payload.UserDTO;
 import vanille.vocabe.payload.WordDTO;
 
-import java.util.List;
-
 public interface WordService {
     Page<Word> findWordsWithDate(Pageable pageable, WordDTO.Request request);
 
@@ -19,7 +17,7 @@ public interface WordService {
     Word updateWord(WordDTO.EditWord request) throws IllegalAccessException;
 
 
-    Word changeCheck(Long id, User user);
+    Word changeStudiedFlag(Long id, User user);
 
     UserDTO.UserDetailWithStudyRecords findPriorStudyRecords(User user);
 
