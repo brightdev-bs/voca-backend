@@ -285,6 +285,7 @@ gradle-app.setting
 *.hprof
 
 application.yml
+application-local.yml
 application-prod.yml
 application-oauth.yml
 db
