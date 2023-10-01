@@ -34,8 +34,7 @@ public class EmailServiceImpl implements EmailService {
     @Transactional
     @Override
     public void sendSignUpConfirmEmail(String email) {
-        EmailToken emailToken = emailTokenService.createEmailToken(email);
-        sendEmail(emailToken, SIGN_UP_MAIL_SUBJECT, "/email?token=");
+        emailTokenService.createEmailToken(email);
     }
 
     /**
