@@ -14,6 +14,7 @@ import vanille.vocabe.global.exception.InvalidPasswordException;
 import vanille.vocabe.global.exception.NotFoundException;
 import vanille.vocabe.global.exception.UnverifiedException;
 import vanille.vocabe.payload.UserDTO;
+import vanille.vocabe.repository.UserCacheRepository;
 import vanille.vocabe.repository.UserRepository;
 import vanille.vocabe.service.email.EmailService;
 import vanille.vocabe.service.email.EmailTokenService;
@@ -30,6 +31,7 @@ public class UserServiceImpl implements UserService{
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
     private final EmailTokenService emailTokenService;
+    private final UserCacheRepository userCacheRepository;
 
     @Transactional
     @Override
@@ -84,12 +86,16 @@ public class UserServiceImpl implements UserService{
             throw new InvalidPasswordException(ErrorCode.INVALID_PASSWORD);
         }
 
+        userCacheRepository.setUser(user);
+
         return user;
     }
 
     @Override
     public User findUserByUsername(String username) {
-        return userRepository.findByUsernameAndVerifiedTrue(username).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
+        return userCacheRepository.getUser(username).orElseGet(() ->
+                userRepository.findByUsernameAndVerifiedTrue(username).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER))
+        );
     }
 
     @Override

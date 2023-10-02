@@ -8,8 +8,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import vanille.vocabe.entity.User;
-import vanille.vocabe.fixture.UserFixture;
-import vanille.vocabe.global.config.JpaConfig;
+import vanille.vocabe.global.config.jpaConfig.JpaConfig;
 import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.global.exception.NotFoundException;
 

@@ -11,7 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import vanille.vocabe.entity.User;
 import vanille.vocabe.entity.Word;
-import vanille.vocabe.global.config.JpaConfig;
+import vanille.vocabe.global.config.jpaConfig.JpaConfig;
 import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.global.exception.NotFoundException;
 

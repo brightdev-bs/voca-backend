@@ -1,5 +1,6 @@
 package vanille.vocabe.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -15,6 +16,7 @@ public class UserVocabulary {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

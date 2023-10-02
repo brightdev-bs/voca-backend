@@ -7,13 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.Rollback;
 import vanille.vocabe.entity.EmailToken;
-import vanille.vocabe.global.config.JpaConfig;
-
-import javax.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.util.Optional;
+import vanille.vocabe.global.config.jpaConfig.JpaConfig;
 
 @DataJpaTest
 @Import(JpaConfig.class)

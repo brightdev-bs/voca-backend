@@ -3,25 +3,17 @@ package vanille.vocabe.repository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import vanille.vocabe.entity.User;
-import vanille.vocabe.entity.Word;
-import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.fixture.WordFixture;
-import vanille.vocabe.global.config.JpaConfig;
 import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.global.exception.NotFoundException;
 
 import javax.transaction.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static vanille.vocabe.global.Constants.VERIFIED_USER_EMAIL;
 
 @SpringBootTest
