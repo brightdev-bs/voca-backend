@@ -1,4 +1,4 @@
-package vanille.vocabe.global.config;
+package vanille.vocabe.global.config.jpaConfig;
 
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
