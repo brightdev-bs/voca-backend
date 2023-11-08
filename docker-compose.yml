@@ -29,6 +29,10 @@ services:
       - MYSQL_ROOT_PASSWORD=vanille
     networks:
       - voca
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
   voca-backend:
     build:
       context: .
@@ -44,6 +48,7 @@ services:
       spring.profiles.active: local
     depends_on:
       - mysql
+      - redis
     networks:
       - voca
 
