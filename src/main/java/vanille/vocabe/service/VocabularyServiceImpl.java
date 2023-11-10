@@ -15,10 +15,7 @@ import vanille.vocabe.global.exception.DuplicatedEntityException;
 import vanille.vocabe.global.exception.NotFoundException;
 import vanille.vocabe.payload.VocaDTO;
 import vanille.vocabe.payload.WordDTO;
-import vanille.vocabe.repository.UserVocabularyRepository;
-import vanille.vocabe.repository.VocabularyQuerydslRepository;
-import vanille.vocabe.repository.VocabularyRepository;
-import vanille.vocabe.repository.WordRepository;
+import vanille.vocabe.repository.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +32,7 @@ public class VocabularyServiceImpl implements VocabularyService {
     private final VocabularyQuerydslRepository vocabularyQuerydslRepository;
     private final UserVocabularyRepository userVocabularyRepository;
     private final WordRepository wordRepository;
+    private final UserCacheRepository userCacheRepository;
 
     @Override
     public List<VocaDTO.PopularVocabulary> findPublicVocabulariesForHome() {
@@ -59,12 +57,14 @@ public class VocabularyServiceImpl implements VocabularyService {
 
         UserVocabulary userVocabulary = UserVocabulary.of(user, voca);
         userVocabularyRepository.save(userVocabulary);
+        user.getVocabularies().add(userVocabulary);
+        userCacheRepository.setUser(user);
 
         return VocaDTO.Detail.from(user, voca);
     }
 
     @Override
-    public VocaDTO.VocaWordResponse findAllWordsByVocabularies(Pageable pageable, Long id) throws IllegalAccessException {
+    public VocaDTO.VocaWordResponse findAllWordsByVocabularies(Pageable pageable, Long id) {
         Vocabulary vocabulary = vocabularyRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_VOCABULARY));
         Page<Word> words = wordRepository.findALLByVocabularyId(pageable, vocabulary.getId());
@@ -81,7 +81,9 @@ public class VocabularyServiceImpl implements VocabularyService {
         if(optionalUserVoca.isPresent()) {
             throw new DuplicatedEntityException(ErrorCode.DUPLICATED_VOCABULARY);
         }
-        userVocabularyRepository.save(UserVocabulary.of(user, vocabulary));
+        UserVocabulary userVocabulary = userVocabularyRepository.save(UserVocabulary.of(user, vocabulary));
+        user.getVocabularies().add(userVocabulary);
+        userCacheRepository.setUser(user);
         vocabulary.increaseLiked();
     }
 }

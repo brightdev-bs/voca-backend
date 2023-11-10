@@ -1,11 +1,17 @@
 package vanille.vocabe.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.ToString;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.persistence.*;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @ToString
@@ -21,6 +27,7 @@ public class Vocabulary extends BaseEntity {
 
     private boolean isPublic;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "vocabulary")
     private List<UserVocabulary> userVocabularies;
 

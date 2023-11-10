@@ -52,7 +52,6 @@ public class User {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    @JsonIgnore
     @ToString.Exclude
     @OneToMany(mappedBy = "user")
     private List<UserVocabulary> vocabularies = new ArrayList<>();
