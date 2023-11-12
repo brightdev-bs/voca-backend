@@ -21,6 +21,7 @@ import vanille.vocabe.global.exception.InvalidPasswordException;
 import vanille.vocabe.global.exception.NotFoundException;
 import vanille.vocabe.global.exception.UnverifiedException;
 import vanille.vocabe.payload.UserDTO;
+import vanille.vocabe.repository.UserCacheRepository;
 import vanille.vocabe.repository.UserRepository;
 import vanille.vocabe.service.email.EmailServiceImpl;
 import vanille.vocabe.service.email.EmailTokenServiceImpl;
@@ -48,6 +49,9 @@ class UserServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private UserCacheRepository userCacheRepository;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -124,7 +128,6 @@ class UserServiceTest {
         User user = UserFixture.getVerifiedUser();
         given(userRepository.findByEmail("vanille@gmail.com")).willReturn(Optional.ofNullable(user));
         given(passwordEncoder.matches("{bcrypt}1kdasdfwcv", "{bcrypt}1kdasdfwcv")).willReturn(true);
-
         UserDTO.LoginForm loginForm = UserDTO.LoginForm.builder()
                 .email("vanille@gmail.com")
                 .password("{bcrypt}1kdasdfwcv")

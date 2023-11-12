@@ -38,12 +38,12 @@ public class VocabularyController {
         return ApiResponse.of(HttpStatus.OK.toString(), allVocabularies);
     }
 
-    @GetMapping("/v1/voca/{id}")
+    @GetMapping("/v1/voca/{voca}")
     public ApiResponse getWordsByVoca(
             @PageableDefault Pageable pageable,
-            @PathVariable Long id
+            @PathVariable String voca
     ) throws IllegalAccessException {
-        VocaDTO.VocaWordResponse response = vocabularyService.findAllWordsByVocabularies(pageable, id);
+        VocaDTO.VocaWordResponse response = vocabularyService.findAllWordsByVocabularies(pageable, voca);
         return ApiResponse.of(HttpStatus.OK.toString(), response);
     }
 

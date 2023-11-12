@@ -16,7 +16,7 @@ public interface VocabularyService {
     @Transactional
     VocaDTO.Detail saveVocabulary(VocaDTO.SaveForm form);
 
-    VocaDTO.VocaWordResponse findAllWordsByVocabularies(Pageable pageable, Long id) throws IllegalAccessException;
+    VocaDTO.VocaWordResponse findAllWordsByVocabularies(Pageable pageable, String voca) throws IllegalAccessException;
 
     @Transactional
     void addPublicVocabulary(User user, Long id);

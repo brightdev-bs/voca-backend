@@ -16,6 +16,7 @@ import vanille.vocabe.entity.Vocabulary;
 import vanille.vocabe.fixture.UserFixture;
 import vanille.vocabe.fixture.VocabularyFixture;
 import vanille.vocabe.payload.VocaDTO;
+import vanille.vocabe.repository.UserCacheRepository;
 import vanille.vocabe.repository.UserRepository;
 import vanille.vocabe.repository.UserVocabularyRepository;
 import vanille.vocabe.repository.VocabularyRepository;
@@ -35,6 +36,9 @@ class VocabularyServiceImplTest {
 
     @Mock
     private UserVocabularyRepository userVocabularyRepository;
+
+    @Mock
+    private UserCacheRepository userCacheRepository;
 
     @InjectMocks
     private VocabularyServiceImpl vocabularyService;
