@@ -129,14 +129,16 @@ public class VocaDTO {
     public static class VocaWordResponse {
         private List<WordDTO.WordDetail> words = new ArrayList<>();
         private int totalPage;
+        private String title;
 
-        public VocaWordResponse(List<WordDTO.WordDetail> words, int totalPage) {
+        public VocaWordResponse(List<WordDTO.WordDetail> words, int totalPage, String title) {
             this.words = words;
             this.totalPage = totalPage;
+            this.title = title;
         }
 
-        public static VocaWordResponse of(List<WordDTO.WordDetail> list, int totalPage) {
-            return new VocaDTO.VocaWordResponse(list, totalPage);
+        public static VocaWordResponse of(List<WordDTO.WordDetail> list, int totalPage, String name) {
+            return new VocaDTO.VocaWordResponse(list, totalPage, name);
         }
 
     }

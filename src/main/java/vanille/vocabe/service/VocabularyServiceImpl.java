@@ -64,13 +64,12 @@ public class VocabularyServiceImpl implements VocabularyService {
     }
 
     @Override
-
-    public VocaDTO.VocaWordResponse findAllWordsByVocabularies(Pageable pageable, String voca) {
-        Vocabulary vocabulary = vocabularyRepository.findByName(voca)
+    public VocaDTO.VocaWordResponse findAllWordsByVocabularies(Pageable pageable, Long voca) {
+        Vocabulary vocabulary = vocabularyRepository.findById(voca)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_VOCABULARY));
         Page<Word> words = wordRepository.findALLByVocabularyId(pageable, vocabulary.getId());
         List<WordDTO.WordDetail> wordList = words.stream().map(WordDTO.WordDetail::from).collect(Collectors.toList());
-        return VocaDTO.VocaWordResponse.of(wordList, words.getTotalPages());
+        return VocaDTO.VocaWordResponse.of(wordList, words.getTotalPages(), vocabulary.getName());
     }
 
     // Todo : 테스트 작성 해야 함.
