@@ -132,6 +132,8 @@ public class UserServiceImpl implements UserService{
            throw new AuthenticationCredentialsNotFoundException(ErrorCode.SOCIAL_NOT_CONNECT.getMessage());
         }
 
+        userCacheRepository.setUser(user);
+
         return user;
     }
 

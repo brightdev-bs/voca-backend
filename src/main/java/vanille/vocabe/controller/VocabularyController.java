@@ -1,6 +1,7 @@
 package vanille.vocabe.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
+@Slf4j
 @RequestMapping("/api")
 @RequiredArgsConstructor
 @RestController
@@ -46,6 +48,7 @@ public class VocabularyController {
             HttpServletRequest request
     ) throws IllegalAccessException {
         VocaDTO.VocaWordResponse response = vocabularyService.findAllWordsByVocabularies(pageable, voca, request);
+        log.info("{}", response);
         return ApiResponse.of(HttpStatus.OK.toString(), response);
     }
 
