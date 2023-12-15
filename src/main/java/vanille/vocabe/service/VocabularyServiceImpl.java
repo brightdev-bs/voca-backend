@@ -2,6 +2,8 @@ package vanille.vocabe.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,10 +15,12 @@ import vanille.vocabe.entity.Word;
 import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.global.exception.DuplicatedEntityException;
 import vanille.vocabe.global.exception.NotFoundException;
+import vanille.vocabe.global.util.JwtTokenUtils;
 import vanille.vocabe.payload.VocaDTO;
 import vanille.vocabe.payload.WordDTO;
 import vanille.vocabe.repository.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,6 +32,11 @@ import java.util.stream.Collectors;
 @Service
 public class VocabularyServiceImpl implements VocabularyService {
 
+
+    @Value("${jwt.secret-key}")
+    private String secretKey;
+
+    private final UserRepository userRepository;
     private final VocabularyRepository vocabularyRepository;
     private final VocabularyQuerydslRepository vocabularyQuerydslRepository;
     private final UserVocabularyRepository userVocabularyRepository;
@@ -64,12 +73,28 @@ public class VocabularyServiceImpl implements VocabularyService {
     }
 
     @Override
-    public VocaDTO.VocaWordResponse findAllWordsByVocabularies(Pageable pageable, Long voca) {
+    public VocaDTO.VocaWordResponse findAllWordsByVocabularies(Pageable pageable, Long voca, HttpServletRequest request) {
         Vocabulary vocabulary = vocabularyRepository.findById(voca)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_VOCABULARY));
         Page<Word> words = wordRepository.findALLByVocabularyId(pageable, vocabulary.getId());
         List<WordDTO.WordDetail> wordList = words.stream().map(WordDTO.WordDetail::from).collect(Collectors.toList());
-        return VocaDTO.VocaWordResponse.of(wordList, words.getTotalPages(), vocabulary.getName());
+
+        String token = request.getHeader("Authorization");
+        boolean liked = false;
+        if (token != null && !token.isEmpty()) {
+            String username = JwtTokenUtils.getUsername(token, secretKey);
+            User user = userRepository.findByUsername(username).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER));
+            liked = checkIfTheUserAlreadyLikedVoca(user, vocabulary);
+        }
+
+        return VocaDTO.VocaWordResponse.of(wordList, words.getTotalPages(), vocabulary.getName(), liked);
+    }
+
+    private boolean checkIfTheUserAlreadyLikedVoca(User user, Vocabulary voca) {
+
+        Optional<UserVocabulary> _result = userVocabularyRepository.findUserVocabularyByUserAndVocabulary(user, voca);
+        return _result.isPresent();
+
     }
 
     // Todo : 테스트 작성 해야 함.

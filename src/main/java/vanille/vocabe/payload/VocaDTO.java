@@ -130,15 +130,17 @@ public class VocaDTO {
         private List<WordDTO.WordDetail> words = new ArrayList<>();
         private int totalPage;
         private String title;
+        private boolean liked;
 
-        public VocaWordResponse(List<WordDTO.WordDetail> words, int totalPage, String title) {
+        public VocaWordResponse(List<WordDTO.WordDetail> words, int totalPage, String title, boolean liked) {
             this.words = words;
             this.totalPage = totalPage;
             this.title = title;
+            this.liked = liked;
         }
 
-        public static VocaWordResponse of(List<WordDTO.WordDetail> list, int totalPage, String name) {
-            return new VocaDTO.VocaWordResponse(list, totalPage, name);
+        public static VocaWordResponse of(List<WordDTO.WordDetail> list, int totalPage, String name, boolean liked) {
+            return new VocaDTO.VocaWordResponse(list, totalPage, name, liked);
         }
 
     }

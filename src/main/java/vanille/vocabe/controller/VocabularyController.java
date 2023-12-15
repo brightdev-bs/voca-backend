@@ -15,6 +15,7 @@ import vanille.vocabe.payload.WordDTO;
 import vanille.vocabe.service.VocabularyService;
 import vanille.vocabe.service.WordService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -41,9 +42,10 @@ public class VocabularyController {
     @GetMapping("/v1/voca/{voca}")
     public ApiResponse getWordsByVoca(
             @PageableDefault Pageable pageable,
-            @PathVariable Long voca
+            @PathVariable Long voca,
+            HttpServletRequest request
     ) throws IllegalAccessException {
-        VocaDTO.VocaWordResponse response = vocabularyService.findAllWordsByVocabularies(pageable, voca);
+        VocaDTO.VocaWordResponse response = vocabularyService.findAllWordsByVocabularies(pageable, voca, request);
         return ApiResponse.of(HttpStatus.OK.toString(), response);
     }
 
