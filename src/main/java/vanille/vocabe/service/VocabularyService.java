@@ -21,4 +21,6 @@ public interface VocabularyService {
 
     @Transactional
     void addPublicVocabulary(User user, Long id);
+
+    List<VocaDTO.Response> findAllVocabulariesByKeyword(String keyword);
 }

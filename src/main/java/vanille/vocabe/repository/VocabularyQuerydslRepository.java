@@ -22,4 +22,12 @@ public class VocabularyQuerydslRepository {
                 .limit(5)
                 .fetch();
     }
+
+    public List<Vocabulary> findVocabulariesByKeyword(String keyword) {
+        return queryFactory
+                .selectFrom(vocabulary)
+                .where(vocabulary.name.contains(keyword))
+                .limit(10)
+                .fetch();
+    }
 }

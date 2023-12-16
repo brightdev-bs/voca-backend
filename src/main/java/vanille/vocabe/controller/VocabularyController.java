@@ -8,13 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import vanille.vocabe.entity.User;
-import vanille.vocabe.entity.UserVocabulary;
 import vanille.vocabe.global.constants.Constants;
 import vanille.vocabe.global.response.common.ApiResponse;
 import vanille.vocabe.payload.VocaDTO;
-import vanille.vocabe.payload.WordDTO;
 import vanille.vocabe.service.VocabularyService;
-import vanille.vocabe.service.WordService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -36,7 +33,7 @@ public class VocabularyController {
     }
 
     @GetMapping("/v1/voca")
-    public ApiResponse getVocabularies(@AuthenticationPrincipal User user) {
+    public ApiResponse getMyVocabularies(@AuthenticationPrincipal User user) {
         List<VocaDTO.Response> allVocabularies = vocabularyService.findAllVocabularies(user);
         return ApiResponse.of(HttpStatus.OK.toString(), allVocabularies);
     }
@@ -56,6 +53,12 @@ public class VocabularyController {
     public ApiResponse addLike(@PathVariable Long id, @AuthenticationPrincipal User user) {
         vocabularyService.addPublicVocabulary(user, id);
         return ApiResponse.of(HttpStatus.OK.toString(), Constants.SUCCESS);
+    }
+
+    @GetMapping("/v1/voca/search")
+    public ApiResponse getVocabularyByKeyword(@RequestParam String keyword) {
+        List<VocaDTO.Response> allVocabularies = vocabularyService.findAllVocabulariesByKeyword(keyword);
+        return ApiResponse.of(HttpStatus.OK.toString(), allVocabularies);
     }
 
 }

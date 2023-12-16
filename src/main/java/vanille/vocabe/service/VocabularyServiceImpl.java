@@ -111,4 +111,10 @@ public class VocabularyServiceImpl implements VocabularyService {
         userCacheRepository.setUser(user);
         vocabulary.increaseLiked();
     }
+
+    @Override
+    public List<VocaDTO.Response> findAllVocabulariesByKeyword(String keyword) {
+        List<Vocabulary> vocabulariesByKeyword = vocabularyQuerydslRepository.findVocabulariesByKeyword(keyword);
+        return vocabulariesByKeyword.stream().map(VocaDTO.Response::from).collect(Collectors.toList());
+    }
 }
