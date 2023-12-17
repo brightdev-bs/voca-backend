@@ -62,7 +62,7 @@ class BearerAuthInterceptorTest {
     void invokedInterceptor() throws Exception {
         User user = getVerifiedUser();
 
-        mockMvc.perform(post("/api/v1/words")
+        mockMvc.perform(get("/api/v1/my-page")
                 .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(WordFixture.get(user)))

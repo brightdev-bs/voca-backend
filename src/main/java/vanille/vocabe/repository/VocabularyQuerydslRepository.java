@@ -13,13 +13,15 @@ import static vanille.vocabe.entity.QVocabulary.vocabulary;
 @RequiredArgsConstructor
 public class VocabularyQuerydslRepository {
     private final JPAQueryFactory queryFactory;
+    private final int HOME_PAGE_SIZE = 5;
 
-    public List<Vocabulary> findPublicVocabulariesLimitFive() {
+    public List<Vocabulary> findPublicVocabulariesLimitFive(int page) {
         return queryFactory
                 .selectFrom(vocabulary)
                 .where(vocabulary.isPublic.eq(true))
                 .orderBy(vocabulary.liked.desc())
-                .limit(5)
+                .offset((long) page * HOME_PAGE_SIZE)
+                .limit(HOME_PAGE_SIZE)
                 .fetch();
     }
 

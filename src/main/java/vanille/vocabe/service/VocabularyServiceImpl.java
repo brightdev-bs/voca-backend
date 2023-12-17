@@ -44,8 +44,8 @@ public class VocabularyServiceImpl implements VocabularyService {
     private final UserCacheRepository userCacheRepository;
 
     @Override
-    public List<VocaDTO.PopularVocabulary> findPublicVocabulariesForHome() {
-        List<Vocabulary> vocabularies = vocabularyQuerydslRepository.findPublicVocabulariesLimitFive();
+    public List<VocaDTO.PopularVocabulary> findPublicVocabulariesForHome(int page) {
+        List<Vocabulary> vocabularies = vocabularyQuerydslRepository.findPublicVocabulariesLimitFive(page);
         return vocabularies.stream().map(VocaDTO.PopularVocabulary::from).collect(Collectors.toList());
     }
 

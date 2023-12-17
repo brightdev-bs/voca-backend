@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface VocabularyService {
 
-    List<VocaDTO.PopularVocabulary> findPublicVocabulariesForHome();
+    List<VocaDTO.PopularVocabulary> findPublicVocabulariesForHome(int page);
 
     List<VocaDTO.Response> findAllVocabularies(User user);
 

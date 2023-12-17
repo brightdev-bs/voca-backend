@@ -22,7 +22,7 @@ class VocabularyQuerydslRepositoryTest {
     @DisplayName("좋아요 많은 공개 단어장 5개 가져오기")
     @Test
     public void getPublicVocabularyLimit() {
-        List<Vocabulary> publicVocabulariesLimitFive = vocabularyRepository.findPublicVocabulariesLimitFive();
+        List<Vocabulary> publicVocabulariesLimitFive = vocabularyRepository.findPublicVocabulariesLimitFive(0);
         Assertions.assertEquals(5, publicVocabulariesLimitFive.size());
         Assertions.assertEquals("First Favorite", publicVocabulariesLimitFive.get(0).getName());
         Assertions.assertEquals(30, publicVocabulariesLimitFive.get(0).getLiked());
