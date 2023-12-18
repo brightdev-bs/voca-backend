@@ -25,16 +25,20 @@ public class UserVocabulary {
     @JoinColumn(name = "vocabulary_id")
     private Vocabulary vocabulary;
 
+    @Enumerated(value = EnumType.STRING)
+    VocabularyType type = VocabularyType.CREATED;
+
     protected UserVocabulary(){}
 
 
-    protected UserVocabulary(User user, Vocabulary vocabulary) {
+    protected UserVocabulary(User user, Vocabulary vocabulary, VocabularyType type) {
         this.user = user;
         this.vocabulary = vocabulary;
+        this.type = type;
     }
 
 
-    public static UserVocabulary of(User user, Vocabulary vocabulary) {
-        return new UserVocabulary(user, vocabulary);
+    public static UserVocabulary of(User user, Vocabulary vocabulary, VocabularyType type) {
+        return new UserVocabulary(user, vocabulary, type);
     }
 }

@@ -8,10 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vanille.vocabe.entity.User;
-import vanille.vocabe.entity.UserVocabulary;
-import vanille.vocabe.entity.Vocabulary;
-import vanille.vocabe.entity.Word;
+import vanille.vocabe.entity.*;
 import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.global.exception.DuplicatedEntityException;
 import vanille.vocabe.global.exception.NotFoundException;
@@ -64,7 +61,7 @@ public class VocabularyServiceImpl implements VocabularyService {
         Vocabulary voca = Vocabulary.of(form.getName(), form.getDescription(), form.isPublicFlag());
         vocabularyRepository.save(voca);
 
-        UserVocabulary userVocabulary = UserVocabulary.of(user, voca);
+        UserVocabulary userVocabulary = UserVocabulary.of(user, voca, VocabularyType.CREATED);
         userVocabularyRepository.save(userVocabulary);
         user.getVocabularies().add(userVocabulary);
         userCacheRepository.setUser(user);
@@ -100,13 +97,13 @@ public class VocabularyServiceImpl implements VocabularyService {
     // Todo : 테스트 작성 해야 함.
     @Transactional
     @Override
-    public void addPublicVocabulary(User user, Long id) {
+    public void likeVocabulary(User user, Long id) {
         Vocabulary vocabulary = vocabularyRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_VOCABULARY));
         Optional<UserVocabulary> optionalUserVoca = userVocabularyRepository.findUserVocabularyByUserAndVocabulary(user, vocabulary);
         if(optionalUserVoca.isPresent()) {
             throw new DuplicatedEntityException(ErrorCode.DUPLICATED_VOCABULARY);
         }
-        UserVocabulary userVocabulary = userVocabularyRepository.save(UserVocabulary.of(user, vocabulary));
+        UserVocabulary userVocabulary = userVocabularyRepository.save(UserVocabulary.of(user, vocabulary, VocabularyType.LIKED));
         user.getVocabularies().add(userVocabulary);
         userCacheRepository.setUser(user);
         vocabulary.increaseLiked();

@@ -20,7 +20,7 @@ public interface VocabularyService {
     VocaDTO.VocaWordResponse findAllWordsByVocabularies(Pageable pageable, Long vocaId, HttpServletRequest request) throws IllegalAccessException;
 
     @Transactional
-    void addPublicVocabulary(User user, Long id);
+    void likeVocabulary(User user, Long id);
 
     List<VocaDTO.Response> findAllVocabulariesByKeyword(String keyword);
 }

@@ -51,7 +51,7 @@ public class VocabularyController {
 
     @PostMapping("/v1/voca/{id}/liked")
     public ApiResponse addLike(@PathVariable Long id, @AuthenticationPrincipal User user) {
-        vocabularyService.addPublicVocabulary(user, id);
+        vocabularyService.likeVocabulary(user, id);
         return ApiResponse.of(HttpStatus.OK.toString(), Constants.SUCCESS);
     }
 
