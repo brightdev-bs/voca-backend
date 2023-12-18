@@ -5,7 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import vanille.vocabe.entity.User;
+import vanille.vocabe.entity.UserVocabulary;
 import vanille.vocabe.entity.Vocabulary;
+import vanille.vocabe.entity.VocabularyType;
 
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
@@ -99,6 +101,33 @@ public class VocaDTO {
                     .build();
 
         }
+    }
+
+    @Data
+    public static class MyVocaResponse {
+        private Long id;
+        private String name;
+        private String description;
+        private String type;
+
+        @Builder
+        public MyVocaResponse(Long id, String name, String description, VocabularyType type) {
+            this.id = id;
+            this.name = name;
+            this.description = description;
+            this.type = type.toString();
+        }
+
+        public static MyVocaResponse from(UserVocabulary uv) {
+            Vocabulary voca = uv.getVocabulary();
+            return MyVocaResponse.builder()
+                    .id(voca.getId())
+                    .name(voca.getName())
+                    .description(voca.getDescription())
+                    .type(uv.getType())
+                    .build();
+        }
+
     }
 
     @Data

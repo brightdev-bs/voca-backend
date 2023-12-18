@@ -34,7 +34,7 @@ public class VocabularyController {
 
     @GetMapping("/v1/voca")
     public ApiResponse getMyVocabularies(@AuthenticationPrincipal User user) {
-        List<VocaDTO.Response> allVocabularies = vocabularyService.findAllVocabularies(user);
+        List<VocaDTO.MyVocaResponse> allVocabularies = vocabularyService.findAllMyVocabularies(user);
         return ApiResponse.of(HttpStatus.OK.toString(), allVocabularies);
     }
 

@@ -2,7 +2,6 @@ package vanille.vocabe.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,10 +46,10 @@ public class VocabularyServiceImpl implements VocabularyService {
     }
 
     @Override
-    public List<VocaDTO.Response> findAllVocabularies(User user) {
+    public List<VocaDTO.MyVocaResponse> findAllMyVocabularies(User user) {
         List<UserVocabulary> userVocabularies = user.getVocabularies();
         return userVocabularies.stream()
-                .map(uv -> VocaDTO.Response.from(uv.getVocabulary()))
+                .map(VocaDTO.MyVocaResponse::from)
                 .collect(Collectors.toList());
     }
 

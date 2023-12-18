@@ -12,7 +12,7 @@ public interface VocabularyService {
 
     List<VocaDTO.PopularVocabulary> findPublicVocabulariesForHome(int page);
 
-    List<VocaDTO.Response> findAllVocabularies(User user);
+    List<VocaDTO.MyVocaResponse> findAllMyVocabularies(User user);
 
     @Transactional
     VocaDTO.Detail saveVocabulary(VocaDTO.SaveForm form);

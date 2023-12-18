@@ -73,16 +73,16 @@ public class UserDTO {
     @Data
     public static class UserDetailWithStudyRecords {
         private UserDetail user;
-        private List<VocaDTO.Response> vocabularyList;
+        private List<VocaDTO.MyVocaResponse> vocabularyList;
         private List<String> dates;
 
-        protected UserDetailWithStudyRecords(User user, List<String> dates, List<Vocabulary> vocabularyList) {
+        protected UserDetailWithStudyRecords(User user, List<String> dates, List<VocaDTO.MyVocaResponse> vocabularyList) {
             this.user = UserDetail.from(user);
             this.dates = dates;
-            this.vocabularyList = vocabularyList.stream().map(VocaDTO.Response::from).collect(Collectors.toList());
+            this.vocabularyList = vocabularyList;
         }
 
-        public static UserDetailWithStudyRecords from(User user, List<String> list, List<Vocabulary> vocabularyList) {
+        public static UserDetailWithStudyRecords from(User user, List<String> list, List<VocaDTO.MyVocaResponse> vocabularyList) {
             return new UserDetailWithStudyRecords(user, list, vocabularyList);
         }
     }

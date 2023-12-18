@@ -13,6 +13,7 @@ import vanille.vocabe.entity.Word;
 import vanille.vocabe.global.constants.ErrorCode;
 import vanille.vocabe.global.exception.NotFoundException;
 import vanille.vocabe.payload.UserDTO;
+import vanille.vocabe.payload.VocaDTO;
 import vanille.vocabe.payload.WordDTO;
 import vanille.vocabe.repository.VocabularyRepository;
 import vanille.vocabe.repository.WordQuerydslRepository;
@@ -22,6 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -100,10 +102,9 @@ public class WordServiceImpl implements WordService {
         );
 
         List<UserVocabulary> vocabularies = user.getVocabularies();
-        List<Vocabulary> vocaList = new ArrayList<>();
-        for (UserVocabulary uv : vocabularies) {
-            vocaList.add(uv.getVocabulary());
-        }
+        List<VocaDTO.MyVocaResponse> vocaList = vocabularies.stream()
+                .map(VocaDTO.MyVocaResponse::from)
+                .collect(Collectors.toList());
 
         return UserDTO.UserDetailWithStudyRecords.from(user, studiedDates, vocaList);
     }
