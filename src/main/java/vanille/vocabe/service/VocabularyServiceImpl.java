@@ -104,7 +104,9 @@ public class VocabularyServiceImpl implements VocabularyService {
         }
         UserVocabulary userVocabulary = userVocabularyRepository.save(UserVocabulary.of(user, vocabulary, VocabularyType.LIKED));
         user.getVocabularies().add(userVocabulary);
+        log.info("getVocabularies : {}", user.getVocabularies());
         userCacheRepository.setUser(user);
+        log.info("cached on redis");
         vocabulary.increaseLiked();
     }
 
