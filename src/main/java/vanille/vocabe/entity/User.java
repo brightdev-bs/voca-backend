@@ -52,6 +52,7 @@ public class User {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "user")
     private List<UserVocabulary> vocabularies = new ArrayList<>();
 
