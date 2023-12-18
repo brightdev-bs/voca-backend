@@ -21,6 +21,7 @@ public class UserVocabulary {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "vocabulary_id")
     private Vocabulary vocabulary;
